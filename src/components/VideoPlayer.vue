@@ -24,6 +24,7 @@
 
 <script>
 import videojs from 'video.js';
+import 'videojs-markers';
 
 export default {
   name: 'VideoPlayer',
@@ -45,22 +46,34 @@ export default {
     return {
       player: null,
 			selectedOption: 0,
+      videoMarker: 0,
     }
   },
   mounted() {
-    // const vm = this
+    const vm = this
 		// const quizzSet = [...this.modules.content[0].check_point_quizzes]
     this.player = videojs(this.$refs.videoPlayer, this.options, () => {
       this.player.log('onPlayerReady', this);
+      this.player.markers({
+          markers: [
+            { time: vm.videoMarker, text: 'Current playing' },
+          ]
+        });
       let currentTime = 0;
+      let markedTime = vm.videoMarker
 			const self = this
       this.player.on('seeking', function(){
-        if(self.player.currentTime() > currentTime) {
+        if(self.player.currentTime() > currentTime && self.player.currentTime() > markedTime) {
           self.player.currentTime(currentTime);
         }
       });
 			setInterval(() => {
 				currentTime = self.player.currentTime();
+        if (currentTime > markedTime) {
+          self.player.markers.removeAll();
+          self.player.markers.add([{ time: currentTime, text: 'Current playing' }]);
+          markedTime = currentTime
+        }
 			}, 1000);
     });
   },
@@ -71,3 +84,7 @@ export default {
   }
 }
 </script>
+<style scoped>
+@import 'video.js/dist/video-js.css';
+@import 'videojs-markers/dist/videojs.markers.css';
+</style>
