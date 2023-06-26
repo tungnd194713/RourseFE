@@ -4,7 +4,7 @@
 			{{modules.name}}
 		</h1>
 		<div class="video-container">
-      <video ref="videoPlayer" class="video-js"></video>
+      <video ref="videoPlayer" :class="{'no-pointer': isStop}" class="video-js"></video>
 			<div class="quizzes-cotainer">
 				<div v-for="(quizz, index) in modules.content[0].check_point_quizzes" :key="index">
 					<div>
@@ -47,6 +47,7 @@ export default {
       player: null,
 			selectedOption: 0,
       videoMarker: 0,
+      isStop: false,
     }
   },
   mounted() {
@@ -59,6 +60,7 @@ export default {
             { time: vm.videoMarker, text: 'Current playing' },
           ]
         });
+        console.log(this.player.controlBar)
       let currentTime = 0;
       let markedTime = vm.videoMarker
 			const self = this
@@ -67,6 +69,13 @@ export default {
           self.player.currentTime(currentTime);
         }
       });
+      this.player.on('timeupdate', function() {
+        if (currentTime >= 10) {
+          vm.isStop = true
+          self.player.controlBar.hide()
+          self.player.pause();
+        }
+      })
 			setInterval(() => {
 				currentTime = self.player.currentTime();
         if (currentTime > markedTime) {
@@ -87,4 +96,12 @@ export default {
 <style scoped>
 @import 'video.js/dist/video-js.css';
 @import 'videojs-markers/dist/videojs.markers.css';
+.no-pointer {
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
 </style>
