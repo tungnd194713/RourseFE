@@ -4,10 +4,11 @@
 			{{modules.name}}
 		</h1>
 		<div class="video-container">
-      <video ref="videoPlayer" :class="{'no-pointer': isStop}" class="video-js"></video>
-			<div class="quizzes-cotainer">
+      <video ref="videoPlayer" :class="{'no-pointer': isStop}" class="video-js vjs-default-skin"></video>
+			<div v-if="isStop" class="quizzes-container">
+        <h2>Please answer the quizz before continue watching</h2>
 				<div v-for="(quizz, index) in modules.content[0].check_point_quizzes" :key="index">
-					<div>
+					<div v-if="quizzShown == index">
 						<h2>{{quizz.question}}</h2>
 						<div v-for="(option, ind) in quizz.answers" :key="ind">
 							<label :for="option.text">
@@ -15,6 +16,7 @@
 								{{ option.text }}
 							</label>
 						</div>
+            <button @click="chooseAnswer(index)">Choose</button>
 					</div>
 				</div>
 			</div>
@@ -48,10 +50,27 @@ export default {
 			selectedOption: 0,
       videoMarker: 0,
       isStop: false,
+      quizzShown: -1,
+      remainedQuizzes: [],
+    }
+  },
+  watch: {
+    isStop(val) {
+      if (val) {
+        // this.player.controls(false)
+        this.player.pause();
+      } else {
+        // this.player.controls(true)
+        this.player.play();
+      }
     }
   },
   mounted() {
     const vm = this
+    this.remainedQuizzes = this.modules.content[0].check_point_quizzes.map((items) => {
+      if (items.check_time > vm.videoMarker)
+        return {...items, is_answered: false};
+    })
 		// const quizzSet = [...this.modules.content[0].check_point_quizzes]
     this.player = videojs(this.$refs.videoPlayer, this.options, () => {
       this.player.log('onPlayerReady', this);
@@ -60,7 +79,6 @@ export default {
             { time: vm.videoMarker, text: 'Current playing' },
           ]
         });
-        console.log(this.player.controlBar)
       let currentTime = 0;
       let markedTime = vm.videoMarker
 			const self = this
@@ -70,11 +88,13 @@ export default {
         }
       });
       this.player.on('timeupdate', function() {
-        if (currentTime >= 10) {
-          vm.isStop = true
-          self.player.controlBar.hide()
-          self.player.pause();
-        }
+        vm.remainedQuizzes.forEach((items, index) => {
+          if (currentTime > items.check_time && currentTime < items.check_time + 1 && !items.is_answered) {
+            vm.isStop = true
+            vm.quizzShown = index
+            vm.selectedOption = 0
+          }
+        })
       })
 			setInterval(() => {
 				currentTime = self.player.currentTime();
@@ -85,6 +105,15 @@ export default {
         }
 			}, 1000);
     });
+  },
+  methods: {
+    chooseAnswer(index) {
+      if (this.selectedOption) {
+        this.isStop = false
+        this.quizzShown = -1
+        this.remainedQuizzes[index].is_answered = true
+      }
+    }
   },
   beforeDestroy() {
     if (this.player) {
@@ -98,10 +127,26 @@ export default {
 @import 'videojs-markers/dist/videojs.markers.css';
 .no-pointer {
   pointer-events: none;
+}
+.video-js > video {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
+}
+.video-container {
+  position: relative;
+}
+.video-container .quizzes-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 1280px;
+  height: calc(100% - 30px);
+  background-color: rgba(0, 0, 0, 0.7); /* Adjust overlay color as needed */
+  margin-right: auto;
+  margin-left: auto;
 }
 </style>

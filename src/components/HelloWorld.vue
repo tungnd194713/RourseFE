@@ -55,7 +55,7 @@ export default {
                   }
                 ],
                 corrent_answer: 3,
-                check_time: 15,
+                check_time: 5,
                 is_answered: false,
               },
               {
