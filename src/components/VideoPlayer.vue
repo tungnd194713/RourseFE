@@ -7,7 +7,7 @@
       <video ref="videoPlayer" :class="{'no-pointer': isStop}" class="video-js vjs-default-skin"></video>
 			<div v-if="isStop" class="quizzes-container">
         <h2>Please answer the quizz before continue watching</h2>
-				<div v-for="(quizz, index) in modules.content[0].check_point_quizzes" :key="index">
+				<div v-for="(quizz, index) in modules.check_point_quizzes" :key="index">
 					<div v-if="quizzShown == index">
 						<h2>{{quizz.question}}</h2>
 						<div v-for="(option, ind) in quizz.answers" :key="ind">
@@ -27,26 +27,25 @@
 <script>
 import videojs from 'video.js';
 import 'videojs-markers';
+import { CourseService } from '@/services'
 
 export default {
   name: 'VideoPlayer',
-  props: {
-    options: {
-      type: Object,
-      default() {
-        return {};
-      }
-    },
-		modules: {
-      type: Object,
-      default() {
-        return {};
-      }
-    }
-  },
   data() {
     return {
       player: null,
+      videoOptions: {
+        autoplay: true,
+        controls: true,
+        sources: [
+          {
+            src:
+              'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+              type: 'video/mp4'
+          }
+        ]
+      },
+      modules: {},
 			selectedOption: 0,
       videoMarker: 0,
       isStop: false,
@@ -65,14 +64,15 @@ export default {
       }
     }
   },
-  mounted() {
+  async mounted() {
+    await this.getCourse()
     const vm = this
-    this.remainedQuizzes = this.modules.content[0].check_point_quizzes.map((items) => {
+    this.remainedQuizzes = this.modules.check_point_quizzes.map((items) => {
       if (items.check_time > vm.videoMarker)
         return {...items, is_answered: false};
     })
 		// const quizzSet = [...this.modules.content[0].check_point_quizzes]
-    this.player = videojs(this.$refs.videoPlayer, this.options, () => {
+    this.player = videojs(this.$refs.videoPlayer, this.videoOptions, () => {
       this.player.log('onPlayerReady', this);
       this.player.markers({
           markers: [
@@ -113,6 +113,11 @@ export default {
         this.quizzShown = -1
         this.remainedQuizzes[index].is_answered = true
       }
+    },
+    async getCourse() {
+      const { data } = await CourseService.getCourse();
+      this.modules = {...data[0].modules[0]};
+      this.videoOptions.sources[0].src = this.modules.video;
     }
   },
   beforeDestroy() {
