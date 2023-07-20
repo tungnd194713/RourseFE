@@ -20,7 +20,7 @@ const ApiService = {
       (request) => {
         const accessToken = store.getters.accessToken || localStorage.getItem('accessToken')
         if (accessToken) {
-          request.headers.common['Authorization'] = `Bearer ${accessToken}`
+          request.headers["Authorization"] = `Bearer ${accessToken}`
         }
         if (request.setLoading) {
           store.dispatch(ACTION_SET_LOADING)
@@ -40,19 +40,19 @@ const ApiService = {
     Vue.axios.interceptors.response.use(
       (response) => {
         const { config } = response;
-        if (config.setLoading) {
+        if (config?.setLoading) {
           store.dispatch(ACTION_FINISH_LOADING)
         }
         return response
       },
       (error) => {
         const { response, config } = error;
-        if (config.setLoading) {
+        if (config?.setLoading) {
           store.dispatch(ACTION_FINISH_LOADING)
         }
         // check if config errorHandler is on
-        if (config.globalErrorHandler.on) {
-          service.handleError(response, config.globalErrorHandler.exclude)
+        if (config?.globalErrorHandler.on) {
+          service.handleError(response, config?.globalErrorHandler.exclude)
         }
         return Promise.reject(response)
       })
