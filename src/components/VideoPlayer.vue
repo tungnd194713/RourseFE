@@ -201,8 +201,8 @@ export default {
   async mounted() {
     await this.getCourse()
     this.connectWebsocket()
-    await this.getDiscussion(this.modules._id)
-    await this.getNotes(this.modules._id)
+    await this.getDiscussion(this.modules.id)
+    await this.getNotes(this.modules.id)
     console.log(this.discussionList)
     const vm = this
     this.remainedQuizzes = this.modules.check_point_quizzes.map((items) => {
@@ -212,6 +212,10 @@ export default {
 		// const quizzSet = [...this.modules.content[0].check_point_quizzes]
     this.player = videojs(this.$refs.videoPlayer, this.videoOptions, () => {
       this.player.log('onPlayerReady', this);
+      let videoDuration = 0;
+      this.player.on('loadedmetadata', function() {
+        videoDuration = self.player.duration();
+      })
       
       this.player.markers({
         markers: [
@@ -239,6 +243,7 @@ export default {
             progress_id: vm.moduleProgress.id,
             module_progress: {
               video_played_time: self.player.currentTime(),
+              progress: self.player.currentTime() / videoDuration * 100,
             },
           }
           vm.websocket.send(JSON.stringify(updateData))
