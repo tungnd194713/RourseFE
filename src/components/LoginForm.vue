@@ -2,20 +2,14 @@
   <div class="register-form">
     <h2 class="form-title">Create an Account</h2>
     <el-form :model="form" ref="form" :rules="rules" label-width="120px" class="form">
-      <el-form-item label="Name" prop="name">
-        <el-input v-model="form.name"></el-input>
-      </el-form-item>
       <el-form-item label="Email" prop="email">
         <el-input v-model="form.email"></el-input>
       </el-form-item>
       <el-form-item label="Password" prop="password">
         <el-input type="password" v-model="form.password"></el-input>
       </el-form-item>
-      <el-form-item label="Re-password" prop="confirmPassword">
-        <el-input type="password" v-model="form.confirmPassword"></el-input>
-      </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="submitForm">Register</el-button>
+        <el-button type="primary" @click="submitForm">Login</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -28,15 +22,10 @@ export default {
   data() {
     return {
       form: {
-        name: '',
         email: '',
         password: '',
-        confirmPassword: '',
       },
       rules: {
-        name: [
-          { required: true, message: 'Please enter your name', trigger: 'blur' },
-        ],
         email: [
           { required: true, message: 'Please enter your email', trigger: 'blur' },
           { type: 'email', message: 'Please enter a valid email address', trigger: ['blur', 'change'] },
@@ -44,19 +33,6 @@ export default {
         password: [
           { required: true, message: 'Please enter your password', trigger: 'blur' },
           { min: 6, message: 'Password must be at least 6 characters', trigger: 'blur' },
-        ],
-        confirmPassword: [
-          { required: true, message: 'Please confirm your password', trigger: 'blur' },
-          {
-            validator: (rule, value, callback) => {
-              if (value === this.form.password) {
-                callback();
-              } else {
-                callback(new Error('Passwords do not match'));
-              }
-            },
-            trigger: 'blur',
-          },
         ],
       },
     };
@@ -67,7 +43,7 @@ export default {
         if (valid) {
           try {
             delete this.form.confirmPassword
-            const { data } = await UserService.register(this.form);
+            const { data } = await UserService.login(this.form);
             localStorage.setItem('accessToken', data.tokens.access.token);
             localStorage.setItem('accessTokenExpires', data.tokens.access.expires);
             localStorage.setItem('refreshToken', data.tokens.refresh.token);

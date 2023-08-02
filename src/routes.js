@@ -3,31 +3,48 @@ import CreateModule from './components/CreateModule'
 import CreateCourse from './components/CreateCourse'
 import InstructorDashboard from './components/InstructorDashboard'
 import RegisterForm from './components/RegisterForm'
-import UserCourseList from './components/UserCourseList'
+import LoginForm from './components/LoginForm'
+import CourseList from './components/CourseList'
 
 export default [
     {
       path: '/',
-      component: VideoPlayer,
+      component: CourseList,
     },
     {
       path: '/create-module',
       component: CreateModule,
+      meta: {
+        requiresAuth: true,
+      },
     },
     {
       path: '/create-course',
       component: CreateCourse,
+      meta: {
+        requiresAuth: true,
+      },
     },
     {
       path: '/instructor-dashboard',
       component: InstructorDashboard,
+      meta: {
+        requiresAuth: true,
+      },
     },
     {
-      path: '/register-form',
+      path: '/register',
       component: RegisterForm,
     },
     {
-      path: '/courses',
-      component: UserCourseList,
+      path: '/login',
+      component: LoginForm,
+    },
+    {
+      path: '/course/module',
+      component: VideoPlayer,
+      meta: {
+        requiresAuth: true,
+      },
     },
   ]

@@ -39,7 +39,7 @@
           <el-transfer
             v-model="transferData"
             :data="data"
-            :titles="['Source', 'Target']"
+            :titles="['Existing Modules', 'Added Modules']"
             @change="handleChange"
           >
             <template #default="{ option }">
@@ -49,6 +49,7 @@
               </div>
             </template>
           </el-transfer>
+          <el-button type="primary">Submit</el-button>
         </div>
       </div>
     </div>
