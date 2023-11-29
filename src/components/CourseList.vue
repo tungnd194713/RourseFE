@@ -18,6 +18,58 @@
         </el-card>
       </el-col>
     </el-row>
+    <div :style="{ height: 5 * 10 + 'rem' }" style="display: flex;">
+      <el-steps direction="vertical" :active="1" style="padding-top: 80px">
+        <el-step />
+        <el-step/>
+        <el-step/>
+        <el-step/>
+        <el-step/>
+      </el-steps>
+      <div class="step-content">
+        <div class="step-content-item">
+          <h2 @click="dialogVisible = true">Title</h2>
+          <h4>Estimated time</h4>
+          <h5>Status: Done / Skipped / In progress</h5>
+        </div>
+        <div class="step-content-item">
+          <h2 @click="dialogVisible = true">Title 2</h2>
+          <h4>Estimated time</h4>
+          <h5>Status: Done / Skipped / In progress</h5>
+        </div>
+        <div class="step-content-item">
+          <h2 @click="dialogVisible = true">Title 3</h2>
+          <h4>Estimated time</h4>
+          <h5>Status: Done / Skipped / In progress</h5>
+        </div>
+        <div class="step-content-item">
+          <h2 @click="dialogVisible = true">Title 3</h2>
+          <h4>Estimated time</h4>
+          <h5>Status: Done / Skipped / In progress</h5>
+        </div>
+        <div class="step-content-item">
+          <h2 @click="dialogVisible = true">Title 3</h2>
+          <h4>Estimated time</h4>
+          <h5>Status: Done / Skipped / In progress</h5>
+        </div>
+      </div>
+      <el-dialog
+        :visible.sync="dialogVisible"
+        :before-close="handleClose"
+        :close-on-press-escape="false"
+        width="400px"
+        :custom-class="'right-dialog'"
+      >
+        <!-- Your dialog content goes here -->
+        <div>
+          <h3>Title</h3>
+          <p>Your dialog content goes here.</p>
+          <p>Your dialog content goes here.</p>
+          <p>Your dialog content goes here.</p>
+          <p>Your dialog content goes here.</p>
+        </div>
+      </el-dialog>
+    </div>
   </div>
 </template>
 
@@ -25,6 +77,7 @@
 export default {
   data() {
     return {
+      dialogVisible: false,
       courses: [
         {
           id: 1,
@@ -70,7 +123,12 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
+.right-dialog {
+  margin: 0 0 0 auto !important;
+  height: 100vh;
+}
+
 .course-list {
   max-width: 1000px;
   margin: 0 auto;
@@ -122,5 +180,21 @@ export default {
 
 .course-duration {
   color: #888;
+}
+
+.step-content {
+  margin-left: 2rem;
+  h2 {
+    cursor: pointer;
+  }
+}
+
+.step-content-item {
+  height: 136px;
+  width: 20rem;
+  border: 3px solid green;
+  margin: 1rem 0;
+  padding: 1rem;
+  border-radius: 1rem;
 }
 </style>
