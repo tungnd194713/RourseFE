@@ -2,7 +2,7 @@
 <template>
   <div class="course-list">
     <h2 class="page-title">Course List</h2>
-    <el-row>
+    <!-- <el-row>
       <el-col :span="6" v-for="course in courses" :key="course.id">
         <el-card class="course-card">
           <div class="course-thumbnail">
@@ -17,10 +17,10 @@
           </div>
         </el-card>
       </el-col>
-    </el-row>
+    </el-row> -->
     <div :style="{ height: 5 * 10 + 'rem' }" style="display: flex;">
-      <el-steps direction="vertical" :active="1" style="padding-top: 80px">
-        <el-step />
+      <el-steps direction="vertical" :active="1" style="padding-top: 80px" finish-status="success">
+        <el-step/>
         <el-step/>
         <el-step/>
         <el-step/>
@@ -28,7 +28,7 @@
       </el-steps>
       <div class="step-content">
         <div class="step-content-item">
-          <h2 @click="dialogVisible = true">Title</h2>
+          <h2 @click="dialogVisible = true">Title asdasdasdas asdasdsadasdasd sdasd</h2>
           <h4>Estimated time</h4>
           <h5>Status: Done / Skipped / In progress</h5>
         </div>
@@ -62,11 +62,55 @@
       >
         <!-- Your dialog content goes here -->
         <div>
-          <h3>Title</h3>
-          <p>Your dialog content goes here.</p>
-          <p>Your dialog content goes here.</p>
-          <p>Your dialog content goes here.</p>
-          <p>Your dialog content goes here.</p>
+          <h1><em>Title</em></h1>
+          <h3>Some descriptions are written but not every one give enough f to read. Some descriptions are written but not every one give enough f to read.</h3>
+          <h3>Title modules:</h3>
+          <el-collapse v-model="activeNames" @change="handleChange" class="module-container">
+            <el-collapse-item title="Consistency" name="1">
+              <div>
+                Consistent with real life: in line with the process and logic of real
+                life, and comply with languages and habits that the users are used to;
+              </div>
+              <div>
+                Consistent within interface: all elements should be consistent, such
+                as: design style, icons and texts, position of elements, etc.
+              </div>
+            </el-collapse-item>
+            <el-collapse-item title="Feedback" name="2">
+              <div>
+                Operation feedback: enable the users to clearly perceive their
+                operations by style updates and interactive effects;
+              </div>
+              <div>
+                Visual feedback: reflect current state by updating or rearranging
+                elements of the page.
+              </div>
+            </el-collapse-item>
+            <el-collapse-item title="Efficiency" name="3">
+              <div>
+                Simplify the process: keep operating process simple and intuitive;
+              </div>
+              <div>
+                Definite and clear: enunciate your intentions clearly so that the
+                users can quickly understand and make decisions;
+              </div>
+              <div>
+                Easy to identify: the interface should be straightforward, which helps
+                the users to identify and frees them from memorizing and recalling.
+              </div>
+            </el-collapse-item>
+            <el-collapse-item title="Controllability" name="4">
+              <div>
+                Decision making: giving advices about operations is acceptable, but do
+                not make decisions for the users;
+              </div>
+              <div>
+                Controlled consequences: users should be granted the freedom to
+                operate, including canceling, aborting or terminating current
+                operation.
+              </div>
+            </el-collapse-item>
+          </el-collapse>
         </div>
       </el-dialog>
     </div>
@@ -78,6 +122,7 @@ export default {
   data() {
     return {
       dialogVisible: false,
+      activeNames: [],
       courses: [
         {
           id: 1,
@@ -123,6 +168,12 @@ export default {
 };
 </script>
 
+
+<style lang="scss">
+.el-collapse-item__header {
+  font-weight: bold;
+}
+</style>
 <style lang="scss">
 .right-dialog {
   margin: 0 0 0 auto !important;
@@ -191,10 +242,13 @@ export default {
 
 .step-content-item {
   height: 136px;
-  width: 20rem;
   border: 3px solid green;
   margin: 1rem 0;
   padding: 1rem;
   border-radius: 1rem;
+}
+
+.module-container {
+  border: 1px solid gray;
 }
 </style>
