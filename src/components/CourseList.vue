@@ -18,39 +18,23 @@
         </el-card>
       </el-col>
     </el-row> -->
-    <div :style="{ height: 5 * 10 + 'rem' }" style="display: flex;">
-      <el-steps direction="vertical" :active="1" style="padding-top: 80px" finish-status="success">
-        <el-step/>
-        <el-step/>
-        <el-step/>
-        <el-step/>
-        <el-step/>
+    <div class="roadmap-header">
+      <div class="roadmap-title">
+        <h1>Here is roadmap title</h1>
+        <button>Apply</button>
+      </div>
+      <h4><em>Description: </em>Here is roadmap title</h4>
+      <h4><em>Level: </em>Intermediate</h4>
+    </div>
+    <div :style="{ height: roadmap.milestones?.length * 9 + 'rem' }" style="display: flex; justify-content: center;">
+      <el-steps direction="vertical" :active="0" style="padding-top: 80px" finish-status="success">
+        <el-step v-for="(milestone, index) in roadmap.milestones" :key="index"/>
       </el-steps>
       <div class="step-content">
-        <div class="step-content-item">
-          <h2 @click="dialogVisible = true">Title asdasdasdas asdasdsadasdasd sdasd</h2>
-          <h4>Estimated time</h4>
-          <h5>Status: Done / Skipped / In progress</h5>
-        </div>
-        <div class="step-content-item">
-          <h2 @click="dialogVisible = true">Title 2</h2>
-          <h4>Estimated time</h4>
-          <h5>Status: Done / Skipped / In progress</h5>
-        </div>
-        <div class="step-content-item">
-          <h2 @click="dialogVisible = true">Title 3</h2>
-          <h4>Estimated time</h4>
-          <h5>Status: Done / Skipped / In progress</h5>
-        </div>
-        <div class="step-content-item">
-          <h2 @click="dialogVisible = true">Title 3</h2>
-          <h4>Estimated time</h4>
-          <h5>Status: Done / Skipped / In progress</h5>
-        </div>
-        <div class="step-content-item">
-          <h2 @click="dialogVisible = true">Title 3</h2>
-          <h4>Estimated time</h4>
-          <h5>Status: Done / Skipped / In progress</h5>
+        <div v-for="(milestone, index) in roadmap.milestones" :key="index" class="step-content-item">
+          <h2 @click="openDialog(index)">{{ milestone.title }}</h2>
+          <h4>Estimated time: {{ milestone.estimated_time }} hours</h4>
+          <h5>Number of modules: {{ milestone.modules?.length }}</h5>
         </div>
       </div>
       <el-dialog
@@ -62,52 +46,13 @@
       >
         <!-- Your dialog content goes here -->
         <div>
-          <h1><em>Title</em></h1>
+          <h1><em>{{ dialogMilestone.title }}</em></h1>
           <h3>Some descriptions are written but not every one give enough f to read. Some descriptions are written but not every one give enough f to read.</h3>
           <h3>Title modules:</h3>
           <el-collapse v-model="activeNames" @change="handleChange" class="module-container">
-            <el-collapse-item title="Consistency" name="1">
+            <el-collapse-item v-for="(mileModule, index) in dialogMilestone.modules" :key="index" :title="`${index + 1}: ${mileModule.name}`" :name="index">
               <div>
-                Consistent with real life: in line with the process and logic of real
-                life, and comply with languages and habits that the users are used to;
-              </div>
-              <div>
-                Consistent within interface: all elements should be consistent, such
-                as: design style, icons and texts, position of elements, etc.
-              </div>
-            </el-collapse-item>
-            <el-collapse-item title="Feedback" name="2">
-              <div>
-                Operation feedback: enable the users to clearly perceive their
-                operations by style updates and interactive effects;
-              </div>
-              <div>
-                Visual feedback: reflect current state by updating or rearranging
-                elements of the page.
-              </div>
-            </el-collapse-item>
-            <el-collapse-item title="Efficiency" name="3">
-              <div>
-                Simplify the process: keep operating process simple and intuitive;
-              </div>
-              <div>
-                Definite and clear: enunciate your intentions clearly so that the
-                users can quickly understand and make decisions;
-              </div>
-              <div>
-                Easy to identify: the interface should be straightforward, which helps
-                the users to identify and frees them from memorizing and recalling.
-              </div>
-            </el-collapse-item>
-            <el-collapse-item title="Controllability" name="4">
-              <div>
-                Decision making: giving advices about operations is acceptable, but do
-                not make decisions for the users;
-              </div>
-              <div>
-                Controlled consequences: users should be granted the freedom to
-                operate, including canceling, aborting or terminating current
-                operation.
+                {{ mileModule.description }}
               </div>
             </el-collapse-item>
           </el-collapse>
@@ -118,6 +63,8 @@
 </template>
 
 <script>
+import { RoadMapService } from '@/services'
+
 export default {
   data() {
     return {
@@ -163,8 +110,25 @@ export default {
           thumbnail: 'https://caodang.fpt.edu.vn/wp-content/uploads/a-9.png', // Replace with the actual URL of the thumbnail image.
         },
       ],
+      roadmap: {},
+      dialogMilestone: {},
     };
   },
+  async mounted() {
+    await this.getRoadmap()
+  },
+  methods: {
+    async getRoadmap() {
+      const { data } = await RoadMapService.findRoadMap();
+      console.log(data)
+      this.roadmap = { ...data }
+    },
+
+    openDialog(index) {
+      this.dialogMilestone = { ...this.roadmap.milestones[index] }
+      this.dialogVisible = true
+    }
+  }
 };
 </script>
 
@@ -173,8 +137,38 @@ export default {
 .el-collapse-item__header {
   font-weight: bold;
 }
+.module-container {
+  .el-collapse-item {
+    .el-collapse-item__header {
+      padding: 1rem;
+    }
+    .el-collapse-item__content {
+      padding: 1.2rem;
+    }
+  }
+}
 </style>
 <style lang="scss">
+.roadmap-header {
+  border: 2px solid #EBEEF5;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  .roadmap-title {
+    display: flex;
+    justify-content: space-between;
+    button {
+      margin: 1rem 0;
+      padding: 0 1rem;
+      border: none;
+      background: #6dbb6d;
+      color: white;
+      font-weight: bold;
+      border-radius: .2rem;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+  }
+}
 .right-dialog {
   margin: 0 0 0 auto !important;
   height: 100vh;
@@ -249,6 +243,6 @@ export default {
 }
 
 .module-container {
-  border: 1px solid gray;
+  border: 1px solid #EBEEF5;
 }
 </style>
