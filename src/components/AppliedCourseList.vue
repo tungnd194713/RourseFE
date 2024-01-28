@@ -203,7 +203,7 @@ export default {
   }
 }
 </style>
-<style lang="scss">
+<style lang="scss" scoped>
 .roadmap-header {
   border: 2px solid #EBEEF5;
   padding: 1rem;
