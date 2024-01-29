@@ -4,7 +4,7 @@ import CreateCourse from './components/CreateCourse'
 import InstructorDashboard from './components/InstructorDashboard'
 import RegisterForm from './components/RegisterForm'
 import LoginForm from './components/LoginForm'
-// import CourseList from './components/CourseList'
+import CourseList from './components/CourseList'
 import HomePage from './pages/HomePage'
 import AppliedCourseList from './components/AppliedCourseList'
 
@@ -12,6 +12,10 @@ export default [
     {
       path: '/',
       component: HomePage,
+    },
+    {
+      path: '/roadmaps',
+      component: CourseList,
     },
     {
       path: '/roadmaps/1',

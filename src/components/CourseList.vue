@@ -1,7 +1,72 @@
 <!-- CourseList.vue -->
 <template>
   <div class="course-list">
-    <h2 class="page-title">Course List</h2>
+    <div class="feedback">
+      <div class="row">
+          <div class="col-xs-4">
+              <div class="wrapper">
+                  <span class="title">Career</span>
+                  <el-select 
+                      v-model="categoryChoice"
+                      class="full-width">
+                      <el-option 
+                          v-for="opt in categoryList" 
+                          :value="opt.value" 
+                          :key="opt.value"
+                          :label="opt.text">
+                      </el-option>
+                  </el-select>
+              </div>
+          </div>
+          <div class="col-xs-8">
+              <div class="wrapper">
+                  <span class="title">Goal</span>
+                  <el-select 
+                      v-model="specCategoryChoice"
+                      class="full-width">
+                      <el-option 
+                          v-for="opt in specCategoryList" 
+                          :value="opt.value" 
+                          :key="opt.value"
+                          :label="opt.text">
+                      </el-option>
+                  </el-select>
+              </div>
+          </div>
+          <div class="col-xs-8">
+              <div class="wrapper">
+                  <span class="title">Mastery</span>
+                  <el-select 
+                      v-model="masteryChoice"
+                      class="full-width">
+                      <el-option 
+                          v-for="opt in masteryList" 
+                          :value="opt.value" 
+                          :key="opt.value"
+                          :label="opt.text">
+                      </el-option>
+                  </el-select>
+              </div>
+          </div>
+          <div class="col-xs-8">
+              <div class="wrapper">
+                  <span class="title">Skill set</span>
+                  <el-select 
+                      v-model="skillSet"
+                      multiple
+                      class="full-width">
+                      <el-option 
+                          v-for="opt in skillSetList" 
+                          :value="opt.value" 
+                          :key="opt.value"
+                          :label="opt.text">
+                      </el-option>
+                  </el-select>
+              </div>
+          </div>
+      </div>
+  </div>
+    <h2 class="page-title">Your route</h2>
     <!-- <el-row>
       <el-col :span="6" v-for="course in courses" :key="course.id">
         <el-card class="course-card">
@@ -68,6 +133,53 @@ import { RoadMapService } from '@/services'
 export default {
   data() {
     return {
+      categoryChoice: '1',
+      specCategoryChoice: '1',
+      categoryList: [
+          { text: 'Information Technology (IT)', value: '1' },
+          { text: 'Healthcare', value: '2' },
+          { text: 'Finance', value: '3' },
+          { text: 'Engineering', value: '4' },
+          { text: 'Education', value: '5' },
+          { text: 'Business Management', value: '6' },
+          { text: 'Marketing and Advertising', value: '7' },
+          { text: 'Arts and Entertainment', value: '8' },
+          { text: 'Law and Legal Services', value: '9' },
+          { text: 'Science and Research', value: '10' },
+          { text: 'Sales and Customer Service', value: '11' },
+          { text: 'Humanitarian and Nonprofit Work', value: '12' },
+      ],
+      specCategoryList: [
+        { text: 'Software Development', value: '1' },
+        { text: 'Data Analysis and Analytics', value: '2' },
+        { text: 'Network Engineering', value: '3' },
+        { text: 'Cybersecurity', value: '4' },
+        { text: 'Database Administration', value: '5' },
+        { text: 'Cloud Computing', value: '6' },
+        { text: 'Web Development', value: '7' },
+        { text: 'Mobile App Development', value: '8' },
+        { text: 'Artificial Intelligence and Machine Learning', value: '9' },
+        { text: 'DevOps and Continuous Integration/Continuous Deployment (CI/CD)', value: '10' },
+      ],
+      masteryChoice: '1',
+      masteryList: [
+        { text: 'Beginner', value: '1' },
+        { text: 'Intermediate', value: '2' },
+        { text: 'Advanced', value: '3' },
+      ],
+      skillSet: [],
+      skillSetList: [
+        { text: 'Programming Languages (e.g., Python, Java, C++)', value: '1' },
+        { text: 'Database Management (e.g., SQL, NoSQL)', value: '2' },
+        { text: 'Operating Systems (e.g., Linux, Windows)', value: '3' ,},
+        { text: 'Networking Protocols and Technologies', value: '4' },
+        { text: 'Web Development (e.g., HTML/CSS, JavaScript)', value: '5' },
+        { text: 'Cybersecurity Practices and Tools', value: '6' },
+        { text: 'Cloud Computing Platforms (e.g., AWS, Azure)', value: '7' },
+        { text: 'Data Analysis and Visualization', value: '8' },
+        { text: 'Version Control Systems (e.g., Git)', value: '9' },
+        { text: 'Agile Methodologies (e.g., Scrum, Kanban)', value: '10' },
+      ],
       dialogVisible: false,
       activeNames: [],
       courses: [
@@ -149,6 +261,10 @@ export default {
 }
 </style>
 <style lang="scss">
+.row {
+  display: flex;
+  justify-content: space-between;
+}
 .roadmap-header {
   border: 2px solid #EBEEF5;
   padding: 1rem;
@@ -245,4 +361,65 @@ export default {
 .module-container {
   border: 1px solid #EBEEF5;
 }
+.title {
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 30px;
+    color: #061325;
+}
+.feedback {
+    padding-top: 20px;
+
+    .wrapper {
+        position: relative;
+        padding-top: 10px;
+        margin-right: 1rem;
+
+        .title {
+            position: absolute;
+            background-color: #fff;
+            z-index: 1;
+            left: 20px;
+            bottom: 30px;
+            color: #072856;
+            font-size: 12px;
+        }
+
+        .title-textarea {
+            position: absolute;
+            background-color: #fff;
+            z-index: 1;
+            left: 20px;
+            top: 2px;
+            color: #072856;
+            font-size: 12px;
+            padding: 0 10px;
+            font-weight: 500;
+        }
+    }
+    .description {
+        margin-top: 20px;
+    }    
+
+    .button {
+        margin-top: 20px;
+
+        .background {
+            background: linear-gradient(263.55deg, #2EAC4A 17.14%, #82D9AF 124.02%);
+            border-radius: 5px;
+            color: #fff;
+        }
+    }
+    .el-input {
+    .el-input__inner {
+      border: 1px solid #0E0E0E;
+      border-radius: 4px;
+      font-size: 13px;
+      height: 45px;
+      color: #072856;
+    }
+  }
+}
+
+        
 </style>
