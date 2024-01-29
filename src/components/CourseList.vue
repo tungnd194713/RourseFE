@@ -85,10 +85,10 @@
     </el-row> -->
     <div class="roadmap-header">
       <div class="roadmap-title">
-        <h1>Here is roadmap title</h1>
+        <h1>Software Development Roadmap</h1>
         <button>Apply</button>
       </div>
-      <h4><em>Description: </em>Here is roadmap title</h4>
+      <h4><em>Description: </em>Software Development</h4>
       <h4><em>Level: </em>Intermediate</h4>
     </div>
     <div :style="{ height: roadmap.milestones?.length * 9 + 'rem' }" style="display: flex; justify-content: center;">
