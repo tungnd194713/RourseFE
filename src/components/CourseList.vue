@@ -232,7 +232,6 @@ export default {
   methods: {
     async getRoadmap() {
       const { data } = await RoadMapService.findRoadMap();
-      console.log(data)
       this.roadmap = { ...data }
     },
 
@@ -291,7 +290,6 @@ export default {
 }
 
 .course-list {
-  max-width: 1000px;
   margin: 0 auto;
   padding: 20px;
 }

@@ -76,7 +76,7 @@ export default {
   }
 }
 </style>
-<style lang="scss">
+<style lang="scss" scoped>
 .roadmap-header {
   padding: 1rem;
   margin-bottom: 1rem;
@@ -116,9 +116,7 @@ export default {
 }
 
 .course-list {
-  max-width: 1000px;
   margin: 0 auto;
-  padding: 20px;
 }
 
 .page-title {

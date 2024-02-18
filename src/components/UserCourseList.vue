@@ -76,7 +76,6 @@ export default {
 
 <style>
 .course-list {
-  max-width: 1000px;
   margin: 0 auto;
   padding: 20px;
 }

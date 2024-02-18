@@ -4,9 +4,11 @@ import CreateCourse from './components/CreateCourse'
 import InstructorDashboard from './components/InstructorDashboard'
 import RegisterForm from './components/RegisterForm'
 import LoginForm from './components/LoginForm'
-import CourseList from './components/CourseList'
+// import CourseList from './components/CourseList'
 import HomePage from './pages/HomePage'
 import AppliedCourseList from './components/AppliedCourseList'
+import RoadmapDetail from './components/roadmap/RoadmapDetail'
+import AppliedRoadmapDetail from './components/roadmap/AppliedRoadmapDetail'
 
 export default [
     {
@@ -15,7 +17,11 @@ export default [
     },
     {
       path: '/roadmaps',
-      component: CourseList,
+      component: RoadmapDetail,
+    },
+    {
+      path: '/applied-roadmaps',
+      component: AppliedRoadmapDetail,
     },
     {
       path: '/roadmaps/1',

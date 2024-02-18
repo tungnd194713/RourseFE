@@ -6,6 +6,9 @@ import 'element-ui/lib/theme-chalk/index.css';
 import routers from './routes'
 import VueRouter from 'vue-router'
 import authMiddleware from './authMiddleware';
+import "bootstrap/dist/css/bootstrap.min.css"
+import "bootstrap"
+import store from '@/stores'
 
 Vue.use(ElementUI);
 
@@ -29,6 +32,7 @@ router.beforeEach((to, from, next) => {
 });
 
 new Vue({
-  render: h => h(App),
+  store,
   router,
+  render: h => h(App),
 }).$mount('#app')

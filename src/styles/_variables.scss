@@ -1,0 +1,10 @@
+@mixin font-size-classes($max-size: 80, $step: 1) {
+    @for $i from 1 through $max-size / $step {
+      .fs-#{$i} {
+        font-size: $i * $step + px;
+      }
+    }
+  }
+  
+// Apply the mixin to generate font size classes
+@include font-size-classes;
