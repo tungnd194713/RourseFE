@@ -14,9 +14,9 @@
 		</div>
 		<div class="category-container">
 			<div class="card-grid">
-				<div v-for="(item, index) in cardItems" :key="index" class="card">
+				<div v-for="(item, index) in cardItems" :key="index" class="card" @click="redirectRoadmap(item.id)">
 					<img :src="item.image" alt="Card Image" class="card-image">
-					<div>{{ item.text }}</div>
+					<div>{{ item.title }}</div>
 				</div>
 			</div>
 		</div>
@@ -24,26 +24,29 @@
 </template>
 
 <script>
+import { RoadMapService } from '@/services'
+
 export default {
   data() {
     return {
       searchingCareer: '',
-			cardItems: [
-        { image: 'https://via.placeholder.com/200', text: 'Information Technology (IT)' },
-				{ image: 'https://via.placeholder.com/200', text: 'Healthcare' },
-				{ image: 'https://via.placeholder.com/200', text: 'Finance' },
-				{ image: 'https://via.placeholder.com/200', text: 'Engineering' },
-				{ image: 'https://via.placeholder.com/200', text: 'Education' },
-				{ image: 'https://via.placeholder.com/200', text: 'Business Management' },
-				{ image: 'https://via.placeholder.com/200', text: 'Marketing and Advertising' },
-				{ image: 'https://via.placeholder.com/200', text: 'Arts and Entertainment' },
-				{ image: 'https://via.placeholder.com/200', text: 'Law and Legal Services' },
-				{ image: 'https://via.placeholder.com/200', text: 'Science and Research' },
-				{ image: 'https://via.placeholder.com/200', text: 'Sales and Customer Service' },
-				{ image: 'https://via.placeholder.com/200', text: 'Humanitarian and Nonprofit Work' },
-      ]
+			cardItems: []
     };
   },
+
+  async mounted() {
+    this.getCategories()
+  },
+
+  methods: {
+    async getCategories() {
+      const { data } = await RoadMapService.fetchCategories();
+      this.cardItems = [...data]
+    },
+    redirectRoadmap(categoryId) {
+      this.$router.push({path: '/roadmaps', query: {career: categoryId}})
+    }
+  }
 };
 </script>
 
@@ -101,6 +104,8 @@ export default {
       width: 200px;
       margin: 10px;
       text-align: center;
+      border-radius: 15px;
+      cursor: pointer;
     }
     .card-image {
       width: 100%;
@@ -116,6 +121,7 @@ export default {
 }
 
 .course-list {
+  width: 100vh;
   margin: 0 auto;
 }
 

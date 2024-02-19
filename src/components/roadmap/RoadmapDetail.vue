@@ -1,7 +1,7 @@
 <!-- CourseList.vue -->
 <template>
   <div class="course-list">
-		<div class="feedback">
+	<div class="feedback">
       <div class="d-flex justify-content-center mb-4 mx-3">
           <div class="col-xs-4">
               <div class="wrapper">
@@ -11,9 +11,9 @@
                       class="full-width">
                       <el-option 
                           v-for="opt in categoryList" 
-                          :value="opt.value" 
-                          :key="opt.value"
-                          :label="opt.text">
+                          :value="opt.id"
+                          :key="opt.id"
+                          :label="opt.title">
                       </el-option>
                   </el-select>
               </div>
@@ -26,9 +26,9 @@
                       class="full-width">
                       <el-option 
                           v-for="opt in specCategoryList" 
-                          :value="opt.value" 
-                          :key="opt.value"
-                          :label="opt.text">
+                          :value="opt.id" 
+                          :key="opt.id"
+                          :label="opt.title">
                       </el-option>
                   </el-select>
               </div>
@@ -41,22 +41,22 @@
                       class="full-width">
                       <el-option 
                           v-for="opt in masteryList" 
-                          :value="opt.value" 
-                          :key="opt.value"
-                          :label="opt.text">
+                          :value="opt" 
+                          :key="opt"
+                          :label="opt">
                       </el-option>
                   </el-select>
               </div>
           </div>
           <div class="col-xs-8 d-flex align-items-center">
-              <el-button type="primary">Search</el-button>
+              <el-button type="primary" @click="buildRoadmap">Search</el-button>
           </div>
       </div>
     </div>
     <div class="roadmap-header">
       <div class="roadmap-title">
-				<h1>Here is roadmap title </h1>
-				<p>As a front-end developer, you’ll design and develop the look, feel, function and experience of a website. You’ll be responsible for developing features with users in mind while ensuring design maintains brand consistency. A front-end developer writes reusable code that is optimized for speed and scalability using programming languages like HTML, CSS, and JavaScript, in addition to building web designs that work well for smartphones. Developers also review code and troubleshoot technical issues.</p>
+				<h1>{{ routeTitle }} Route </h1>
+				<p>{{ routeDescription }}</p>
 				<el-button class="mt-3" type="success" @click="applyRoadmap">
 					<div class="fs-16 fw-bold">Apply route</div>
 				</el-button>
@@ -79,51 +79,19 @@
 				</div>
 			</div>
     </div>
-		<h1 class="text-center fw-bold">Roadmap title route - 6 courses series</h1>
+		<h1 class="text-center fw-bold">Roadmap title route - {{ milestones.length }} courses series</h1>
     <div class="roadmap-milestones">
-			<div class="milestone-container" :style="{ height: 5 * 10 + 'rem' }" style="display: flex; justify-content: center;">
+			<div class="milestone-container" :style="{ height: milestones?.length * 10 + 'rem' }" style="display: flex; justify-content: center;">
 				<el-steps direction="vertical" style="padding-top: 80px" finish-status="success">
-					<el-step/>
-					<el-step/>
-					<el-step/>
-					<el-step/>
-					<el-step/>
+					<el-step v-for="(stone, index) in milestones" :key="index"/>
 				</el-steps>
 				<div class="step-content">
-					<div class="step-content-item">
-						<h2 @click="dialogVisible = true">Basic web dev</h2>
+					<div v-for="(milestone, index) in milestones" :key="index" class="step-content-item">
+						<h2 @click="showMilestone(index)">{{ milestone.title }}</h2>
 						<h4 style="display: flex; justify-content: space-between">
-							<div>Estimated time: 14 hours</div>
+							<div>Estimated time: {{ milestone.estimated_time.value }} hours</div>
 						</h4>
-						<h5>5 videos courses</h5>
-					</div>
-					<div class="step-content-item">
-						<h2 @click="dialogVisible = true">Server building</h2>
-						<h4 style="display: flex; justify-content: space-between">
-							<div>Estimated time: 15 hours</div>
-						</h4>
-						<h5>5 videos courses</h5>
-					</div>
-					<div class="step-content-item">
-						<h2 @click="dialogVisible = true">Network configuration</h2>
-						<h4 style="display: flex; justify-content: space-between">
-							<div>Estimated time: 15 hours</div>
-						</h4>
-						<h5>5 videos courses</h5>
-					</div>
-					<div class="step-content-item">
-						<h2 @click="dialogVisible = true">Load balancing</h2>
-						<h4 style="display: flex; justify-content: space-between">
-							<div>Estimated time: 15 hours</div>
-						</h4>
-						<h5>5 videos courses</h5>
-					</div>
-					<div class="step-content-item">
-						<h2 @click="dialogVisible = true">Network security</h2>
-						<h4 style="display: flex; justify-content: space-between">
-							<div>Estimated time: 15 hours</div>
-						</h4>
-						<h5>5 videos courses</h5>
+						<h5>{{ milestone.modules.length }} videos courses</h5>
 					</div>
 				</div>
 				<el-dialog
@@ -136,7 +104,7 @@
 					<!-- Your dialog content goes here -->
 					<div>
 						<div style="display: flex; justify-content: space-between; align-items: center">
-							<h1><em>Title</em></h1>
+							<h1><em>{{ showedMilestone?.title }}</em></h1>
 						</div>
 						<p class="fw-bold">What you will learn:</p>
 						<ul style="padding-left: 0">
@@ -167,64 +135,22 @@
 						</ul>
 						<p class="fw-bold">Module list:</p>
 						<el-collapse v-model="activeNames" @change="handleChange" class="module-container">
-							<el-collapse-item title="1: HTML" name="1">
-								<div>
-									Consistent with real life: in line with the process and logic of real
-									life, and comply with languages and habits that the users are used to;
-								</div>
-								<div>
-									Consistent within interface: all elements should be consistent, such
-									as: design style, icons and texts, position of elements, etc.
-								</div>
-								<router-link :to="{ path: '/course/module' }">To module > </router-link>
-							</el-collapse-item>
-							<el-collapse-item title="2: CSS" name="2">
-								<div>
-									Operation feedback: enable the users to clearly perceive their
-									operations by style updates and interactive effects;
-								</div>
-								<div>
-									Visual feedback: reflect current state by updating or rearranging
-									elements of the page.
-								</div>
-							</el-collapse-item>
-							<el-collapse-item title="3: Basic JS" name="3">
-								<div>
-									Simplify the process: keep operating process simple and intuitive;
-								</div>
-								<div>
-									Definite and clear: enunciate your intentions clearly so that the
-									users can quickly understand and make decisions;
-								</div>
-								<div>
-									Easy to identify: the interface should be straightforward, which helps
-									the users to identify and frees them from memorizing and recalling.
-								</div>
-							</el-collapse-item>
-							<el-collapse-item title="4: Intermediate JS" name="4">
-								<div>
-									Decision making: giving advices about operations is acceptable, but do
-									not make decisions for the users;
-								</div>
-								<div>
-									Controlled consequences: users should be granted the freedom to
-									operate, including canceling, aborting or terminating current
-									operation.
-								</div>
+							<el-collapse-item v-for="(modu, index) in showedMilestone?.modules" :key="index" :title="`${index + 1}: ${modu.name}`" :name="modu.name">
+								<div>{{ modu.description }}</div>
 							</el-collapse-item>
 						</el-collapse>
 					</div>
 				</el-dialog>
 			</div>
-			<div class="roadmap-info">
+			<div v-if="milestones?.length" class="roadmap-info">
 				<div>
-					<div>5 courses series</div>
+					<div>{{ milestones.length }} courses series</div>
 					<div>
-						<div>Beginner level</div>
+						<div>{{ masteryChoice }} level</div>
 						<div>No prior experience required</div>
 					</div>
 					<div>
-						<div>3 months estimated</div>
+						<div>{{ monthTime }} months estimated</div>
 						<div>10 hours a week recommended</div>
 					</div>
 					<div>
@@ -239,6 +165,7 @@
 
 <script>
 import LoginModal from "../common/LoginModal.vue";
+import { RoadMapService } from "@/services"
 
 export default {
 	components: {
@@ -247,6 +174,16 @@ export default {
   data() {
     return {
       dialogVisible: false,
+			categoryChoice: '',
+			categoryList: [],
+			specCategoryChoice: '',
+			specCategoryList: [],
+			masteryList: [
+				'Beginner',
+				'Intermediate',
+				'Advanced',
+			],
+			masteryChoice: 'Beginner',
 			skillTags: [
 				"Programming Language Proficiency",
 				"Database Management",
@@ -257,58 +194,76 @@ export default {
 				"Problem-Solving and Troubleshooting"
 			],
       activeNames: [],
-      courses: [
-        {
-          id: 1,
-          title: 'Introduction to Vue.js',
-          description: 'Learn the basics of Vue.js and build interactive web applications.',
-          instructor: 'John Doe',
-          duration: '4 weeks',
-          thumbnail: 'https://i0.wp.com/css-tricks.com/wp-content/uploads/2017/01/vue-1.jpg?ssl=1', // Replace with the actual URL of the thumbnail image.
-          module: 5,
-          moduled: 5,
-          isCompleted: true,
-        },
-        {
-          id: 2,
-          title: 'JavaScript Fundamentals',
-          description: 'Master the core concepts of JavaScript and modern web development.',
-          instructor: 'Jane Smith',
-          duration: '6 weeks',
-          thumbnail: 'https://m.media-amazon.com/images/I/31b4PMOj80L._SY346_.jpg', // Replace with the actual URL of the thumbnail image.
-        },
-        {
-          id: 3,
-          title: 'Front-end Web Design',
-          description: 'Design beautiful and responsive websites using HTML, CSS, and JavaScript.',
-          instructor: 'David Johnson',
-          duration: '5 weeks',
-          thumbnail: 'https://bs-uploads.toptal.io/blackfish-uploads/components/seo/content/og_image_file/og_image/1284736/op-Ten-Front-End-Design-Rules-For-Developers_Luke-Social-33a3a7c9b759fdaa22973906070f8065.png', // Replace with the actual URL of the thumbnail image.
-          module: 6,
-          moduled: 2,
-          isCompleted: false,
-        },
-        {
-          id: 4,
-          title: 'Node.js and Express.js',
-          description: 'Build scalable and efficient server-side applications with Node.js and Express.js.',
-          instructor: 'Emily Brown',
-          duration: '8 weeks',
-          thumbnail: 'https://caodang.fpt.edu.vn/wp-content/uploads/a-9.png', // Replace with the actual URL of the thumbnail image.
-        },
-      ],
+      routeTitle: '',
+			routeDescription: '',
+			routeSkillSet: [],
+			routeJobReference: [],
+			milestones: [],
     };
   },
+	async mounted() {
+		this.getCategories()
+		this.getSpecCategories(this.$route.query?.career)
+	},
 	methods: {
     showLoginModal() {
       this.$refs.loginModal.visible = true;
     },
-		applyRoadmap() {
+		async applyRoadmap() {
 			if (!this.$store.getters.accessToken) {
 				this.showLoginModal()
+			} else {
+				const params = {
+					title: this.routeTitle,
+					description: this.routeDescription,
+					milestone: this.milestones,
+					user_id: this.$store.getters.authUser?.id,
+					category_id: this.categoryChoice,
+					sub_category_id: this.specCategoryChoice,
+					skill_set: [],
+					experience_level: this.masteryChoice,
+				}
+				const { data } = await RoadMapService.applyRoadmap(params)
+				if (data) {
+					this.$router.push({path: 'applied-roadmaps'});
+				}
 			}
+		},
+		async getCategories() {
+      const { data } = await RoadMapService.fetchCategories();
+      this.categoryList = [...data]
+			this.categoryChoice = this.$route.query?.career
+    },
+		async getSpecCategories(categoryId) {
+			const { data } = await RoadMapService.fetchSpecCategories(categoryId)
+			this.specCategoryList = [...data]
+			this.specCategoryChoice = data[0].id
+		},
+		async buildRoadmap() {
+			const params = {
+				main_goal: this.categoryChoice,
+				specific_goal: this.specCategoryChoice,
+				experience_level: this.masteryChoice,
+			}
+
+			const { data } = await RoadMapService.buildRoadmap(params)
+			console.log(data)
+			this.routeTitle = data.title
+			this.routeDescription = data.description
+			this.routeSkillSet = data.skill_set
+			this.milestones = [...data.milestone]
+			this.monthTime = Math.round(this.milestones.reduce((time, item) => time + item.estimated_time.value, 0) / 720)
+		},
+		showMilestone(index) {
+			this.showedMilestone = this.milestones[index]
+			this.dialogVisible = true;
+		},
+  },
+	watch: {
+		categoryChoice() {
+			this.getSpecCategories(this.categoryChoice)
 		}
-  }
+	}
 };
 </script>
 

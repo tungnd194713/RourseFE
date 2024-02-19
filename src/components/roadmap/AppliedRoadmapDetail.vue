@@ -6,10 +6,10 @@
 				<h1>Here is roadmap title </h1>
 				<p>As a front-end developer, you’ll design and develop the look, feel, function and experience of a website. You’ll be responsible for developing features with users in mind while ensuring design maintains brand consistency. A front-end developer writes reusable code that is optimized for speed and scalability using programming languages like HTML, CSS, and JavaScript, in addition to building web designs that work well for smartphones. Developers also review code and troubleshoot technical issues.</p>
 				<el-button class="mt-3" type="success" @click="handleRegister">
-					<div class="fs-16 fw-bold">40%</div>
+					<div class="fs-16 fw-bold">{{ roadmapProgress }}%</div>
 				</el-button>
-                <div class="mt-2 fw-bold">Applied date: 2024-02-01</div>
-                <div class="mt-2 fw-bold">Current learning: JS constants</div>
+                <div class="mt-2 fw-bold">Applied date: {{ appliedDate }}</div>
+                <div class="mt-2 fw-bold">Current learning: {{ route?.current_module?.name }}</div>
 			</div>
 			<div class="roadmap-skill">
 				<div class="mb-4">
@@ -31,49 +31,17 @@
     </div>
 		<h1 class="text-center fw-bold">Your route</h1>
     <div class="roadmap-milestones">
-			<div class="milestone-container" :style="{ height: 5 * 10 + 'rem' }" style="display: flex; justify-content: center;">
-				<el-steps direction="vertical" style="padding-top: 80px" finish-status="success">
-					<el-step/>
-					<el-step/>
-					<el-step/>
-					<el-step/>
-					<el-step/>
+			<div class="milestone-container" :style="{ height: milestones?.length * 10 + 'rem' }" style="display: flex; justify-content: center;">
+				<el-steps direction="vertical" style="padding-top: 80px" finish-status="success" :active="getCurrentMilestoneIndex">
+					<el-step v-for="(stone, index) in milestones" :key="index"/>
 				</el-steps>
 				<div class="step-content">
-					<div class="step-content-item">
-						<h2 @click="dialogVisible = true">Basic web dev</h2>
+					<div v-for="(milestone, index) in milestones" :key="index" :class="{ 'current-item': route.current_milestone.id == milestone.milestone.id, 'finished-item': milestone.is_finished }" class="step-content-item unknown-item">
+						<h2 @click="dialogVisible = true">{{ milestone.milestone.title }}</h2>
 						<h4 style="display: flex; justify-content: space-between">
-							<div>Estimated time: 14 hours</div>
+							<div>Estimated time: {{ milestone.milestone.estimated_time.value }} hours</div>
 						</h4>
-						<h5>5 videos courses</h5>
-					</div>
-					<div class="step-content-item">
-						<h2 @click="dialogVisible = true">Server building</h2>
-						<h4 style="display: flex; justify-content: space-between">
-							<div>Estimated time: 15 hours</div>
-						</h4>
-						<h5>5 videos courses</h5>
-					</div>
-					<div class="step-content-item">
-						<h2 @click="dialogVisible = true">Network configuration</h2>
-						<h4 style="display: flex; justify-content: space-between">
-							<div>Estimated time: 15 hours</div>
-						</h4>
-						<h5>5 videos courses</h5>
-					</div>
-					<div class="step-content-item">
-						<h2 @click="dialogVisible = true">Load balancing</h2>
-						<h4 style="display: flex; justify-content: space-between">
-							<div>Estimated time: 15 hours</div>
-						</h4>
-						<h5>5 videos courses</h5>
-					</div>
-					<div class="step-content-item">
-						<h2 @click="dialogVisible = true">Network security</h2>
-						<h4 style="display: flex; justify-content: space-between">
-							<div>Estimated time: 15 hours</div>
-						</h4>
-						<h5>5 videos courses</h5>
+						<h5>{{ milestone.modules.length }} videos courses</h5>
 					</div>
 				</div>
 				<el-dialog
@@ -187,6 +155,8 @@
 </template>
 
 <script>
+import { RoadMapService } from "@/services"
+
 export default {
   data() {
     return {
@@ -201,48 +171,31 @@ export default {
 				"Problem-Solving and Troubleshooting"
 			],
       activeNames: [],
-      courses: [
-        {
-          id: 1,
-          title: 'Introduction to Vue.js',
-          description: 'Learn the basics of Vue.js and build interactive web applications.',
-          instructor: 'John Doe',
-          duration: '4 weeks',
-          thumbnail: 'https://i0.wp.com/css-tricks.com/wp-content/uploads/2017/01/vue-1.jpg?ssl=1', // Replace with the actual URL of the thumbnail image.
-          module: 5,
-          moduled: 5,
-          isCompleted: true,
-        },
-        {
-          id: 2,
-          title: 'JavaScript Fundamentals',
-          description: 'Master the core concepts of JavaScript and modern web development.',
-          instructor: 'Jane Smith',
-          duration: '6 weeks',
-          thumbnail: 'https://m.media-amazon.com/images/I/31b4PMOj80L._SY346_.jpg', // Replace with the actual URL of the thumbnail image.
-        },
-        {
-          id: 3,
-          title: 'Front-end Web Design',
-          description: 'Design beautiful and responsive websites using HTML, CSS, and JavaScript.',
-          instructor: 'David Johnson',
-          duration: '5 weeks',
-          thumbnail: 'https://bs-uploads.toptal.io/blackfish-uploads/components/seo/content/og_image_file/og_image/1284736/op-Ten-Front-End-Design-Rules-For-Developers_Luke-Social-33a3a7c9b759fdaa22973906070f8065.png', // Replace with the actual URL of the thumbnail image.
-          module: 6,
-          moduled: 2,
-          isCompleted: false,
-        },
-        {
-          id: 4,
-          title: 'Node.js and Express.js',
-          description: 'Build scalable and efficient server-side applications with Node.js and Express.js.',
-          instructor: 'Emily Brown',
-          duration: '8 weeks',
-          thumbnail: 'https://caodang.fpt.edu.vn/wp-content/uploads/a-9.png', // Replace with the actual URL of the thumbnail image.
-        },
-      ],
+      roadmapProgress: 0,
+			routeTitle: '',
+			routeDescription: '',
+			appliedDate: '',
+			route: {},
     };
   },
+	computed: {
+		getCurrentMilestoneIndex() {
+			return this.route.roadmap_milestone.findIndex((item) => item?.milestone?.id == this.route.current_milestone.id);
+		}
+	},
+	async mounted() {
+		this.getUserRoadmap()
+	},
+	methods: {
+		async getUserRoadmap() {
+			const { data } = await RoadMapService.getUserRoadmap(this.$store.getters.authUser?.id);
+			console.log(data)
+			this.route = {...data}
+			this.roadmapProgress = Math.round(data.roadmap_milestone.reduce((progress, milestone) => milestone.is_finished ? progress + 1 / data.roadmap_milestone?.length * 100 : 0 , 0))
+			this.appliedDate = new Date(data.applied_date).toISOString().slice(0, 10);
+			this.milestones = data.roadmap_milestone
+		},
+	}
 };
 </script>
 
@@ -386,7 +339,6 @@ export default {
 
 .step-content-item {
   height: 156px;
-  border: 3px solid green;
   margin: 1rem 0;
   padding: 1rem;
   border-radius: 1rem;
@@ -394,5 +346,17 @@ export default {
 
 .module-container {
   border: 1px solid #EBEEF5;
+}
+
+.unknown-item {
+	border: 3px solid gray;
+}
+
+.finished-item {
+  border: 3px solid green;
+}
+
+.current-item {
+	border: 3px solid yellow;
 }
 </style>

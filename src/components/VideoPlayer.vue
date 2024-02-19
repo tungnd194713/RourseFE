@@ -233,16 +233,37 @@ export default {
           self.player.currentTime(currentTime);
         }
       });
-      this.player.on('timeupdate', function() {
-        if (self.player.currentTime() > markedTime) {
+
+      function updateProgress() {
+        if (currentTime > markedTime) {
           const updateData = {
             progress_id: vm.moduleProgress.id,
             module_progress: {
-              video_played_time: self.player.currentTime(),
+              video_played_time: currentTime,
             },
-          }
-          vm.websocket.send(JSON.stringify(updateData))
+          };
+          vm.websocket.send(JSON.stringify(updateData));
+          console.log('progress updated!')
         }
+      }
+      this.player.on('play', function() {
+        updateProgress();
+        this.updateIntervalId = setInterval(updateProgress, 2000);
+      });
+      this.player.on('pause', function() {
+        clearInterval(this.updateIntervalId);
+      });
+
+      this.player.on('timeupdate', function() {
+        // if (self.player.currentTime() > markedTime) {
+        //   const updateData = {
+        //     progress_id: vm.moduleProgress.id,
+        //     module_progress: {
+        //       video_played_time: self.player.currentTime(),
+        //     },
+        //   }
+        //   vm.websocket.send(JSON.stringify(updateData))
+        // }
         vm.remainedQuizzes.forEach((items, index) => {
           if (currentTime > items?.check_time && currentTime < items?.check_time + 1 && !items.is_answered) {
             vm.isStop = true

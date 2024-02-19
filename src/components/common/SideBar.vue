@@ -12,7 +12,7 @@
       <el-button type="primary" @click="handleLogout">Logout</el-button>
       <el-button type="primary">Logo</el-button>
 			<div class="d-flex align-items-center" style="margin-left: 16px">
-				{{ $store.getters.authUser.name }}
+				{{ $store.getters?.authUser?.name }}
 			</div>
 			<div></div>
     </div>
