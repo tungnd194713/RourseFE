@@ -65,7 +65,7 @@
               </div>
           </div>
       </div>
-  </div>
+    </div>
     <h2 class="page-title">Your route</h2>
     <!-- <el-row>
       <el-col :span="6" v-for="course in courses" :key="course.id">

@@ -1,6 +1,58 @@
 <!-- CourseList.vue -->
 <template>
   <div class="course-list">
+		<div class="feedback">
+      <div class="d-flex justify-content-center mb-4 mx-3">
+          <div class="col-xs-4">
+              <div class="wrapper">
+                  <span class="title">Career</span>
+                  <el-select 
+                      v-model="categoryChoice"
+                      class="full-width">
+                      <el-option 
+                          v-for="opt in categoryList" 
+                          :value="opt.value" 
+                          :key="opt.value"
+                          :label="opt.text">
+                      </el-option>
+                  </el-select>
+              </div>
+          </div>
+          <div class="col-xs-8">
+              <div class="wrapper">
+                  <span class="title">Goal</span>
+                  <el-select 
+                      v-model="specCategoryChoice"
+                      class="full-width">
+                      <el-option 
+                          v-for="opt in specCategoryList" 
+                          :value="opt.value" 
+                          :key="opt.value"
+                          :label="opt.text">
+                      </el-option>
+                  </el-select>
+              </div>
+          </div>
+          <div class="col-xs-8">
+              <div class="wrapper">
+                  <span class="title">Mastery</span>
+                  <el-select 
+                      v-model="masteryChoice"
+                      class="full-width">
+                      <el-option 
+                          v-for="opt in masteryList" 
+                          :value="opt.value" 
+                          :key="opt.value"
+                          :label="opt.text">
+                      </el-option>
+                  </el-select>
+              </div>
+          </div>
+          <div class="col-xs-8 d-flex align-items-center">
+              <el-button type="primary">Search</el-button>
+          </div>
+      </div>
+    </div>
     <div class="roadmap-header">
       <div class="roadmap-title">
 				<h1>Here is roadmap title </h1>
@@ -408,5 +460,59 @@ export default {
 
 .module-container {
   border: 1px solid #EBEEF5;
+}
+
+.feedback {
+    padding-top: 20px;
+
+    .wrapper {
+        position: relative;
+        padding-top: 10px;
+        margin-right: 1rem;
+
+        .title {
+            position: absolute;
+            background-color: #fff;
+            z-index: 1;
+            left: 20px;
+            bottom: 30px;
+            color: #072856;
+            font-size: 12px;
+        }
+
+        .title-textarea {
+            position: absolute;
+            background-color: #fff;
+            z-index: 1;
+            left: 20px;
+            top: 2px;
+            color: #072856;
+            font-size: 12px;
+            padding: 0 10px;
+            font-weight: 500;
+        }
+    }
+    .description {
+        margin-top: 20px;
+    }    
+
+    .button {
+        margin-top: 20px;
+
+        .background {
+            background: linear-gradient(263.55deg, #2EAC4A 17.14%, #82D9AF 124.02%);
+            border-radius: 5px;
+            color: #fff;
+        }
+    }
+    .el-input {
+    .el-input__inner {
+      border: 1px solid #0E0E0E;
+      border-radius: 4px;
+      font-size: 13px;
+      height: 45px;
+      color: #072856;
+    }
+  }
 }
 </style>
