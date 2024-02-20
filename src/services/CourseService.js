@@ -1,8 +1,8 @@
 import ApiService from '@/services/ApiService'
 
 const CourseService = {
-  getCourse() {
-    return ApiService.get('/course')
+  getCourse(moduleId) {
+    return ApiService.get('/course/module/' + moduleId)
   },
   getNotes(moduleId) {
     return ApiService.get('/course/module/' + moduleId + '/note')

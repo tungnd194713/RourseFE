@@ -19,6 +19,12 @@ const RoadMapService = {
   getUserRoadmap(user_id) {
     return ApiService.get(`/roadmap/get-user-roadmap?user_id=${user_id}`)
   },
+  getMilestoneModuleProgress(milestone_id) {
+    return ApiService.get('/roadmap/get-milestone-module-progress/' + milestone_id)
+  },
+  completeMilestone(milestone_id) {
+    return ApiService.post(`/roadmap/milestone/${milestone_id}/complete`);
+  },
 }
 
 export default RoadMapService

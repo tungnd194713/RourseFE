@@ -3,13 +3,13 @@
   <div class="course-list">
     <div class="roadmap-header">
       <div class="roadmap-title">
-				<h1>Here is roadmap title </h1>
-				<p>As a front-end developer, you’ll design and develop the look, feel, function and experience of a website. You’ll be responsible for developing features with users in mind while ensuring design maintains brand consistency. A front-end developer writes reusable code that is optimized for speed and scalability using programming languages like HTML, CSS, and JavaScript, in addition to building web designs that work well for smartphones. Developers also review code and troubleshoot technical issues.</p>
+				<h1>{{route.title}} route </h1>
+				<p>{{ route.description }}</p>
 				<el-button class="mt-3" type="success" @click="handleRegister">
 					<div class="fs-16 fw-bold">{{ roadmapProgress }}%</div>
 				</el-button>
-                <div class="mt-2 fw-bold">Applied date: {{ appliedDate }}</div>
-                <div class="mt-2 fw-bold">Current learning: {{ route?.current_module?.name }}</div>
+				<div class="mt-2 fw-bold">Applied date: {{ appliedDate }}</div>
+				<div class="mt-2 fw-bold"><span style="cursor: pointer" @click="$router.push({name: 'VideoPlayer', params: {id: route?.current_module.id}})">Current learning: {{ route?.current_module?.name }}</span></div>
 			</div>
 			<div class="roadmap-skill">
 				<div class="mb-4">
@@ -37,9 +37,10 @@
 				</el-steps>
 				<div class="step-content">
 					<div v-for="(milestone, index) in milestones" :key="index" :class="{ 'current-item': route.current_milestone.id == milestone.milestone.id, 'finished-item': milestone.is_finished }" class="step-content-item unknown-item">
-						<h2 @click="dialogVisible = true">{{ milestone.milestone.title }}</h2>
+						<h2 @click="getMilestoneModuleProgress(milestone.milestone)">{{ milestone.milestone.title }}</h2>
 						<h4 style="display: flex; justify-content: space-between">
-							<div>Estimated time: {{ milestone.milestone.estimated_time.value }} hours</div>
+							<div v-if="milestone.is_finished">Finished: <span class="fw-bold">{{ new Date(milestone.finished_date).toISOString().slice(0, 10) }}</span></div>
+							<div v-else>Estimated time: {{ milestone.milestone.estimated_time.value }} hours</div>
 						</h4>
 						<h5>{{ milestone.modules.length }} videos courses</h5>
 					</div>
@@ -54,83 +55,24 @@
 					<!-- Your dialog content goes here -->
 					<div>
 						<div style="display: flex; justify-content: space-between; align-items: center">
-							<h1><em>Title</em></h1>
+							<h1><em>{{ showedMilestone.title }}</em></h1>
 						</div>
-						<p class="fw-bold">What you will learn:</p>
-						<ul style="padding-left: 0">
-							<li>
-								<div class="d-flex">
-									<svg aria-hidden="true" fill="none" focusable="false" height="16" viewBox="0 0 16 16" width="100" class="css-4v75v4" id="cds-react-aria-25"><path fill-rule="evenodd" clip-rule="evenodd" d="M15.74 3.672L6.225 14.168.323 8.736l1.354-1.472 4.419 4.068 8.163-9.004 1.482 1.344z" fill="currentColor"></path></svg>
-									<div>Define front-end development, list roles and skills, outline web development steps, and explore UI/UX design, collaboration, and industry trends.</div>
-								</div>
-							</li>
-							<li>
-								<div class="d-flex">
-									<svg aria-hidden="true" fill="none" focusable="false" height="16" viewBox="0 0 16 16" width="100" class="css-4v75v4" id="cds-react-aria-25"><path fill-rule="evenodd" clip-rule="evenodd" d="M15.74 3.672L6.225 14.168.323 8.736l1.354-1.472 4.419 4.068 8.163-9.004 1.482 1.344z" fill="currentColor"></path></svg>
-									<div>Explore web browsers, load balancing, and define web frameworks, platforms, hosting, languages, accessibility, and cloud benefits.</div>
-								</div>
-							</li>
-							<li>
-								<div class="d-flex">
-									<svg aria-hidden="true" fill="none" focusable="false" height="16" viewBox="0 0 16 16" width="100" class="css-4v75v4" id="cds-react-aria-25"><path fill-rule="evenodd" clip-rule="evenodd" d="M15.74 3.672L6.225 14.168.323 8.736l1.354-1.472 4.419 4.068 8.163-9.004 1.482 1.344z" fill="currentColor"></path></svg>
-									<div>Compare front-end and back-end roles, version control, and CI/CD, discuss No-Code advantages and tools, and define CMS and SEO patterns.</div>
-								</div>
-							</li>
-							<li>
-								<div class="d-flex">
-									<svg aria-hidden="true" fill="none" focusable="false" height="16" viewBox="0 0 16 16" width="100" class="css-4v75v4" id="cds-react-aria-25"><path fill-rule="evenodd" clip-rule="evenodd" d="M15.74 3.672L6.225 14.168.323 8.736l1.354-1.472 4.419 4.068 8.163-9.004 1.482 1.344z" fill="currentColor"></path></svg>
-									<div>Create websites using WordPress and plugins for website enhancement, outline qualifications, portfolio elements, and specialization paths.</div>
-								</div>
-							</li>
-						</ul>
 						<p class="fw-bold">Module list:</p>
-						<el-collapse v-model="activeNames" @change="handleChange" class="module-container">
-							<el-collapse-item title="1: HTML" name="1">
-								<div>
-									Consistent with real life: in line with the process and logic of real
-									life, and comply with languages and habits that the users are used to;
+						<div>
+								<div v-for="(mod, index) in milestoneModules" :key="index" class="progress-container">
+										<div class="progress-title" @click="goToModule(showedMilestone.id, mod.module_id)">{{ mod.name }}</div>
+										<el-progress
+										:percentage="mod?.progress ? Math.round(mod?.progress) : 0"
+										color="#409eff"
+										text-inside
+										:stroke-width="18"
+										:format="formatProgress"
+										></el-progress>
 								</div>
-								<div>
-									Consistent within interface: all elements should be consistent, such
-									as: design style, icons and texts, position of elements, etc.
-								</div>
-								<router-link :to="{ path: '/course/module' }">To module > </router-link>
-							</el-collapse-item>
-							<el-collapse-item title="2: CSS" name="2">
-								<div>
-									Operation feedback: enable the users to clearly perceive their
-									operations by style updates and interactive effects;
-								</div>
-								<div>
-									Visual feedback: reflect current state by updating or rearranging
-									elements of the page.
-								</div>
-							</el-collapse-item>
-							<el-collapse-item title="3: Basic JS" name="3">
-								<div>
-									Simplify the process: keep operating process simple and intuitive;
-								</div>
-								<div>
-									Definite and clear: enunciate your intentions clearly so that the
-									users can quickly understand and make decisions;
-								</div>
-								<div>
-									Easy to identify: the interface should be straightforward, which helps
-									the users to identify and frees them from memorizing and recalling.
-								</div>
-							</el-collapse-item>
-							<el-collapse-item title="4: Intermediate JS" name="4">
-								<div>
-									Decision making: giving advices about operations is acceptable, but do
-									not make decisions for the users;
-								</div>
-								<div>
-									Controlled consequences: users should be granted the freedom to
-									operate, including canceling, aborting or terminating current
-									operation.
-								</div>
-							</el-collapse-item>
-						</el-collapse>
+						</div>
+						<div>
+							<el-button type="primary" @click="completeMilestone">Enter exam</el-button>
+						</div>
 					</div>
 				</el-dialog>
 			</div>
@@ -176,12 +118,14 @@ export default {
 			routeDescription: '',
 			appliedDate: '',
 			route: {},
+			milestoneModules: [],
+			showedMilestone: {},
     };
   },
 	computed: {
 		getCurrentMilestoneIndex() {
 			return this.route.roadmap_milestone.findIndex((item) => item?.milestone?.id == this.route.current_milestone.id);
-		}
+		},
 	},
 	async mounted() {
 		this.getUserRoadmap()
@@ -191,10 +135,43 @@ export default {
 			const { data } = await RoadMapService.getUserRoadmap(this.$store.getters.authUser?.id);
 			console.log(data)
 			this.route = {...data}
-			this.roadmapProgress = Math.round(data.roadmap_milestone.reduce((progress, milestone) => milestone.is_finished ? progress + 1 / data.roadmap_milestone?.length * 100 : 0 , 0))
+			let progress = 0;
+			data.roadmap_milestone.forEach(milestone => {
+					if (milestone.is_finished) {
+							progress += (1 / data.roadmap_milestone.length) * 100;
+					}
+			});
+			this.roadmapProgress = Math.round(progress);
 			this.appliedDate = new Date(data.applied_date).toISOString().slice(0, 10);
 			this.milestones = data.roadmap_milestone
+			console.log(data.roadmap_milestone.map(x => x.is_finished), 1 / data.roadmap_milestone?.length * 100)
 		},
+		async getMilestoneModuleProgress(milestone) {
+			const { data } = await RoadMapService.getMilestoneModuleProgress(milestone.id);
+			console.log(data)
+			this.milestoneModules = [...data]
+			this.showedMilestone = {...milestone}
+			this.dialogVisible = true
+		},
+		async completeMilestone() {
+			if (this.showedMilestone?.id) {
+				await RoadMapService.completeMilestone(this.showedMilestone.id);
+				this.$router.go(0);
+			}
+		},
+		formatProgress(percentage) {
+      return `${percentage}%`;
+    },
+		ableToModule(milestone_id) {
+			return this.route.roadmap_milestone.findIndex((item) => item?.milestone?.id == this.route.current_milestone.id) >= this.route.roadmap_milestone.findIndex((item) => item?.milestone?.id == milestone_id)
+		},
+		goToModule(milestone_id, module_id) {
+			if (this.ableToModule(milestone_id)) {
+				this.$router.push({name: 'VideoPlayer', params: {id: module_id}})
+			} else {
+				alert('Unable to go to this module!')
+			}
+		}
 	}
 };
 </script>
@@ -358,5 +335,15 @@ export default {
 
 .current-item {
 	border: 3px solid yellow;
+}
+
+.progress-container {
+  margin: 20px auto;
+}
+
+.progress-title {
+  margin-bottom: 5px;
+	cursor: pointer;
+	font-size: 24px;
 }
 </style>

@@ -4,7 +4,7 @@
 			{{modules.name}}
 		</h1>
 		<div class="video-container">
-      <video ref="videoPlayer" :class="{'no-pointer': isStop}" class="video-js vjs-default-skin" height="600"></video>
+      <video id="video-player" ref="videoPlayer" :class="{'no-pointer': isStop}" class="video-js vjs-default-skin" height="600"></video>
 			<div v-if="isStop" class="quizzes-container">
         <h2>Please answer the quizz before continue watching</h2>
 				<div v-for="(quizz, index) in modules.check_point_quizzes" :key="index">
@@ -180,6 +180,8 @@ export default {
       currentDiscussionIndex: -1,
       currentDiscussion: {},
       replyText: '',
+      videoDuration: 0,
+      currentInterval: 0,
     }
   },
   computed: {
@@ -201,15 +203,18 @@ export default {
   async mounted() {
     await this.getCourse()
     this.connectWebsocket()
-    await this.getDiscussion(this.modules._id)
-    await this.getNotes(this.modules._id)
-    console.log(this.discussionList)
+    await this.getDiscussion(this.$route.params.id)
+    await this.getNotes(this.$route.params.id)
     const vm = this
-    this.remainedQuizzes = this.modules.check_point_quizzes.map((items) => {
+    this.remainedQuizzes = this.modules.check_point_quizzes?.map((items) => {
       if (items.check_time > vm.videoMarker)
         return {...items, is_answered: false};
     })
 		// const quizzSet = [...this.modules.content[0].check_point_quizzes]
+    var myVideo = document.getElementById("video-player");
+    myVideo.onloadedmetadata = function() {
+      vm.videoDuration = this.duration
+    };
     this.player = videojs(this.$refs.videoPlayer, this.videoOptions, () => {
       this.player.log('onPlayerReady', this);
       
@@ -226,25 +231,24 @@ export default {
       })
       let currentTime = 0;
       let markedTime = vm.videoMarker
-      this.player.currentTime(vm.videoMarker)
+      this.player?.currentTime(vm.videoMarker)
 			const self = this
       this.player.on('seeking', function(){
-        if(self.player.currentTime() > currentTime && self.player.currentTime() > markedTime) {
-          self.player.currentTime(currentTime);
+        if(self.player?.currentTime() > currentTime && self.player?.currentTime() > markedTime) {
+          self.player?.currentTime(currentTime);
         }
       });
 
       function updateProgress() {
-        if (currentTime > markedTime) {
-          const updateData = {
-            progress_id: vm.moduleProgress.id,
-            module_progress: {
-              video_played_time: currentTime,
-            },
-          };
-          vm.websocket.send(JSON.stringify(updateData));
-          console.log('progress updated!')
-        }
+        const updateData = {
+          module_id: vm.modules._id,
+          module_progress: {
+            video_played_time: currentTime,
+            user_id: vm.$store.getters.authUser.id,
+          },
+          video_duration: vm.videoDuration,
+        };
+        vm.websocket.send(JSON.stringify(updateData));
       }
       this.player.on('play', function() {
         updateProgress();
@@ -272,15 +276,18 @@ export default {
           }
         })
       })
-			setInterval(() => {
-				currentTime = self.player.currentTime();
-        if (currentTime > markedTime) {
+			vm.currentInterval = setInterval(() => {
+				currentTime = self.player?.currentTime();
+        if (currentTime > markedTime && currentTime) {
           self.player.markers.removeAll();
           self.player.markers.add([{ time: currentTime, text: 'Current playing' }]);
           markedTime = currentTime
         }
 			}, 1000);
     });
+  },
+  destroyed() {
+    clearInterval(this.currentInterval)
   },
   methods: {
     formattedCurrentTime(value) {
@@ -301,10 +308,10 @@ export default {
       }
     },
     async getCourse() {
-      const { data } = await CourseService.getCourse();
-      this.modules = {...data.modules[0]};
-      this.moduleProgress = data.moduleProgress;
-      this.videoMarker = this.moduleProgress.video_played_time;
+      const { data } = await CourseService.getCourse(this.$route.params.id);
+      console.log(data)
+      this.modules = {...data};
+      this.videoMarker = this.modules.video_played_time;
       this.videoOptions.sources[0].src = this.modules.video;
     },
     async getNotes(moduleId) {

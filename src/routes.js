@@ -57,8 +57,9 @@ export default [
       component: LoginForm,
     },
     {
-      path: '/course/module',
+      path: '/modules/:id',
       component: VideoPlayer,
+      name: 'VideoPlayer',
       meta: {
         requiresAuth: true,
       },

@@ -10,7 +10,7 @@
     </div>
     <div v-else class="buttons">
       <el-button type="primary" @click="handleLogout">Logout</el-button>
-      <el-button type="primary">Logo</el-button>
+      <el-button type="primary" @click="$router.push({path: '/applied-roadmaps'})">Your route</el-button>
 			<div class="d-flex align-items-center" style="margin-left: 16px">
 				{{ $store.getters?.authUser?.name }}
 			</div>
