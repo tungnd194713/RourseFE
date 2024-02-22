@@ -6,6 +6,7 @@ import RegisterForm from './components/RegisterForm'
 import LoginForm from './components/LoginForm'
 // import CourseList from './components/CourseList'
 import HomePage from './pages/HomePage'
+import SurveyPage from './pages/SurveyPage'
 import AppliedCourseList from './components/AppliedCourseList'
 import RoadmapDetail from './components/roadmap/RoadmapDetail'
 import AppliedRoadmapDetail from './components/roadmap/AppliedRoadmapDetail'
@@ -55,6 +56,10 @@ export default [
     {
       path: '/login',
       component: LoginForm,
+    },
+    {
+      path: '/survey',
+      component: SurveyPage,
     },
     {
       path: '/modules/:id',
