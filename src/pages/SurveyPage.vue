@@ -5,46 +5,46 @@
     <!-- Background Information -->
 			<el-card class="mb-3">
 				<div slot="header">Thông tin cơ bản</div>
-				<el-form-item label="Độ tuổi của bạn">
-					<el-select v-model="form.ageGroup" placeholder="Tuổi">
-						<el-option v-for="ageOption in ageOptions" :key="ageOption.value" :label="ageOption.label" :value="ageOption.value"></el-option>
+				<el-form-item :label="ageGroupQ?.label">
+					<el-select v-model="form.AgeGroup" placeholder="Tuổi">
+						<el-option v-for="ageOption in ageGroupQ?.options" :key="ageOption.id" :label="ageOption.label" :value="ageOption.id"></el-option>
 					</el-select>
 				</el-form-item>
-				<el-form-item label="Bạn đã học: ">
-					<el-select v-model="form.educationLevel" placeholder="Trình độ giáo dục">
-						<el-option v-for="eduOption in educationOptions" :key="eduOption.value" :label="eduOption.label" :value="eduOption.value"></el-option>
+				<el-form-item :label="educationLevelQ?.label">
+					<el-select v-model="form.EducationLevel" placeholder="Trình độ giáo dục">
+						<el-option v-for="eduOption in educationLevelQ?.options" :key="eduOption.id" :label="eduOption.label" :value="eduOption.id"></el-option>
 					</el-select>
 				</el-form-item>
-				<el-form-item label="Hiện bạn đang: ">
-					<el-select v-model="form.employmentStatus" placeholder="Tình trạng công việc">
-						<el-option v-for="employmentOption in employmentOptions" :key="employmentOption.value" :label="employmentOption.label" :value="employmentOption.value"></el-option>
+				<el-form-item :label="employmentStatusQ?.label">
+					<el-select v-model="form.EmploymentStatus" placeholder="Tình trạng công việc">
+						<el-option v-for="employmentOption in employmentStatusQ?.options" :key="employmentOption.id" :label="employmentOption.label" :value="employmentOption.id"></el-option>
 					</el-select>
 				</el-form-item>
 			</el-card>
 
 			<!-- Interests and Goals -->
 			<el-card class="mb-3">
+				<el-form-item :label="goalQ?.label">
+					<el-select v-model="form.Goal" placeholder="Mục tiêu ngắn hạn" multiple>
+						<el-option v-for="shortTermOption in goalQ?.options" :key="shortTermOption.id" :label="shortTermOption.label" :value="shortTermOption.id"></el-option>
+					</el-select>
+				</el-form-item>
 				<div slot="header">Sở thích và mục tiêu</div>
-				<el-form-item label="Điều gì đưa bạn đến với CNTT?">
-					<el-select v-model="form.attraction" placeholder="Nguyên nhân" multiple>
-						<el-option v-for="attractionOption in attractionOptions" :key="attractionOption.value" :label="attractionOption.label" :value="attractionOption.value"></el-option>
+				<el-form-item :label="ITAttractionQ?.label">
+					<el-select v-model="form.ITAttraction" placeholder="Nguyên nhân" multiple>
+						<el-option v-for="attractionOption in ITAttractionQ?.options" :key="attractionOption.id" :label="attractionOption.label" :value="attractionOption.id"></el-option>
 					</el-select>
 				</el-form-item>
-				<el-form-item label="Bạn quan tâm lĩnh vực nào của CNTT?">
-					<el-select v-model="form.areaOfInterest" placeholder="Lĩnh vực quan tâm" multiple>
-						<el-option v-for="interestOption in interestOptions" :key="interestOption.value" :label="interestOption.label" :value="interestOption.value"></el-option>
+				<el-form-item :label="specificAreaQ?.label">
+					<el-select v-model="form.SpecificArea" placeholder="Lĩnh vực quan tâm" multiple>
+						<el-option v-for="interestOption in specificAreaQ?.options" :key="interestOption.id" :label="interestOption.label" :value="interestOption.id"></el-option>
 					</el-select>
 				</el-form-item>
-				<el-form-item label="Mục tiêu sắp tới của bạn là gì?">
-					<el-select v-model="form.shortTermGoals" placeholder="Mục tiêu ngắn hạn" multiple>
-						<el-option v-for="shortTermOption in shortTermOptions" :key="shortTermOption.value" :label="shortTermOption.label" :value="shortTermOption.value"></el-option>
-					</el-select>
-				</el-form-item>
-				<el-form-item label="Mục tiêu trong tương lai">
+				<!-- <el-form-item label="Mục tiêu trong tương lai">
 					<el-select v-model="form.longTermGoals" placeholder="Mục tiêu dài hạn" multiple>
 						<el-option v-for="longTermOption in longTermOptions" :key="longTermOption.value" :label="longTermOption.label" :value="longTermOption.value"></el-option>
 					</el-select>
-				</el-form-item>
+				</el-form-item> -->
 			</el-card>
 
 			<!-- Experience and Skills -->
@@ -111,28 +111,35 @@
 </template>
 
 <script>
+import { SurveyService } from '@/services'
+
 export default {
   data() {
     return {
       form: {
-        ageGroup: '',
-        educationLevel: '',
-        employmentStatus: '',
-        attraction: [],
-        areaOfInterest: [],
-        shortTermGoals: [],
-        longTermGoals: [],
+        AgeGroup: '',
+        EducationLevel: '',
+        EmploymentStatus: '',
+        ITAttraction: '',
+        SpecificArea: '',
         priorExperience: '',
-        technicalSkills: [],
+        technicalSkills: '',
         trainingCertifications: '',
         learningMethod: '',
         learningTime: '',
         preference: '',
-        challenges: [],
-        concerns: [],
+        challenges: '',
+        concerns: '',
         additionalComments: '',
 				learningPlace: '',
+				Goal: '',
       },
+			ageGroupQ: {},
+			educationLevelQ: {},
+			employmentStatusQ: {},
+			ITAttractionQ: {},
+			specificAreaQ: {},
+			goalQ: {},
       ageOptions: [
         { label: 'Under 18', value: 'Under 18' },
         { label: '18-24', value: '18-24' },
@@ -239,14 +246,67 @@ export default {
 				{ label: 'Online Platform', value: '6' },
 				{ label: 'Self-study', value: '7' },
 				{ label: 'Other', value: '99' },
-			]
+			],
+			data: [],
     };
   },
+	mounted() {
+		this.getQuestions()
+	},
   methods: {
-    submitForm() {
-      console.log(this.form);
-      // Here you can send the form data to your backend for further processing
-    }
+    async submitForm() {
+			const body = []
+			for (const [key, value] of Object.entries(this.form)) {
+				if (value && value.length) {
+					let question = this.data.find((item) => item?.content == key);
+					if (question) {
+						let answers = []
+						if (typeof value === 'object') {
+							for (const val of value) {
+								answers.push(val)
+							}
+						} else {
+							answers.push(value)
+						}
+						body.push({
+							question_id: question.id,
+							option_id: answers
+						})
+					}
+				}
+			}
+			const { data } = await SurveyService.postSurvey(body);
+			console.log(data)
+    },
+		async getQuestions() {
+			const { data } = await SurveyService.getQuestions();
+			this.data = [...data]
+			data.forEach((item) => {
+				switch(item?.content) {
+					case 'Goal':
+						this.goalQ = {...item}
+						break
+					case 'AgeGroup': 
+						this.ageGroupQ = {...item}
+						break
+					case 'EducationLevel':
+						this.educationLevelQ = {...item}
+						break
+					case 'EmploymentStatus':
+						this.employmentStatusQ = {...item}
+						break
+					case 'ITAttraction':
+						this.ITAttractionQ = {...item}
+						break
+					case 'SpecificArea':
+						this.specificAreaQ = {...item}
+						break
+					default:
+						console.log('none')
+						break
+				}
+			})
+		}
   }
 };
 </script>
