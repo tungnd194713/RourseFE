@@ -5,7 +5,7 @@
       <div class="fs-28 fw-bold">TheRoute</div>
     </div>
     <div v-if="!$store.getters.accessToken" class="buttons">
-      <el-button type="primary" @click="handleLogin">Login</el-button>
+      <el-button type="primary" @click="showLoginModal">Login</el-button>
       <el-button type="primary" @click="handleRegister">Register</el-button>
     </div>
     <div v-else class="buttons">
@@ -16,21 +16,27 @@
 			</div>
 			<div></div>
     </div>
+		<login-modal ref="loginModal"></login-modal>
   </div>
 </template>
 
 <script>
+import LoginModal from "../common/LoginModal.vue";
+
 import {
   ACTION_USER_LOGOUT
 } from '@/stores/auth_users/actions'
 
 export default {
+	components: {
+    LoginModal
+  },
   methods: {
-    handleLogin() {
-      // Handle login functionality
-    },
     handleRegister() {
       // Handle register functionality
+    },
+		showLoginModal() {
+      this.$refs.loginModal.visible = true;
     },
 		handleLogout() {
 			this.$store.dispatch(ACTION_USER_LOGOUT).then(res => {

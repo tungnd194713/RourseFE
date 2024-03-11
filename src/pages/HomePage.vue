@@ -1,6 +1,16 @@
 <!-- CourseList.vue -->
 <template>
   <div class="course-list">
+		<div class="banner-container">
+			<div class="banner">
+				<img src="https://dlcorp.com.vn/wp-content/uploads/2021/09/Ba%CC%81ch-Khoa-600x301.png" alt="">
+			</div>
+			<div class="banner-content-box">
+				<h1 class="fw-bold">Gợi ý lộ trình</h1>
+				<p>Có vẻ bạn chưa xác định lộ trình cụ thể, hãy tham gia khảo sát để chúng tôi giúp bạn xây dựng lộ trình</p>
+				<el-button type="primary">Tham gia khảo sát</el-button>
+			</div>
+		</div>
     <div class="roadmap-header">
       <div class="roadmap-title">
         <h1>The Route</h1>
@@ -20,17 +30,57 @@
 				</div>
 			</div>
 		</div>
+		<div class="category-container">
+			<swiper
+				:options="swiperOptions"
+				@swiper="onSwiper"
+				@slideChange="onSlideChange"
+			>
+				<template #wrapper-start><span>Wrapper start</span></template>
+				<swiper-slide v-for="(item, index) in cardItems" :key="index" @click="redirectRoadmap(item.id)">
+					<div class="card">
+						<img :src="item.image" alt="Card Image" class="card-image">
+						<div>{{ item.title }}</div>
+					</div>
+				</swiper-slide>
+				<div class="swiper-button-prev" slot="button-prev"></div>
+				<div class="swiper-button-next" slot="button-next"></div>
+				<div class="swiper-pagination"  slot="pagination"></div>
+				<!-- Add more swiper-slide components as needed -->
+			</swiper>
+		</div>
   </div>
 </template>
 
 <script>
 import { RoadMapService } from '@/services'
+import { Swiper, SwiperSlide, directive } from 'vue-awesome-swiper'
+import 'swiper/css/swiper.css'
 
 export default {
+	components: {
+    Swiper,
+    SwiperSlide,
+  },
+  directives: {
+    swiper: directive
+  },
+
   data() {
     return {
       searchingCareer: '',
-			cardItems: []
+			cardItems: [],
+			swiperOptions: {
+				slidesPerView: 3,
+				loop: true,
+				pagination: {
+					el: '.swiper-pagination'
+				},
+				navigation: {
+					nextEl: '.swiper-button-next',
+					prevEl: '.swiper-button-prev'
+				}
+			}
     };
   },
 
@@ -39,6 +89,12 @@ export default {
   },
 
   methods: {
+		onSwiper(swiper) {
+			console.log(swiper);
+		},
+		onSlideChange() {
+			console.log('slide change');
+		},
     async getCategories() {
       const { data } = await RoadMapService.fetchCategories();
       this.cardItems = [...data]
@@ -52,6 +108,18 @@ export default {
 
 
 <style lang="scss">
+.swiper-slide {
+  text-align: center;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
 .el-collapse-item__header {
   font-weight: bold;
 }
@@ -80,6 +148,30 @@ export default {
 }
 </style>
 <style lang="scss" scoped>
+.banner-container {
+	position: relative;
+	width: 100%;
+	height: 30rem;
+	.banner {
+		position: relative;
+		width: 100%;
+		height: 100%;
+	}
+	img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+	.banner-content-box {
+		position: absolute;
+		left: 5rem;
+		top: 7rem;
+		background: white;
+		padding: 1rem 2rem;
+		max-width: 30rem;
+		box-shadow: 0 2px 4px rgba(0,0,0,.2), 0 4px 12px rgba(0,0,0,.2);
+	}
+}
 .roadmap-header {
   padding: 1rem;
   margin-bottom: 1rem;
@@ -121,8 +213,8 @@ export default {
 }
 
 .course-list {
-  width: 100vh;
   margin: 0 auto;
+	padding: 0 20rem;
 }
 
 .page-title {
