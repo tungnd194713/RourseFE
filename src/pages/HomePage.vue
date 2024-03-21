@@ -1,6 +1,6 @@
 <!-- CourseList.vue -->
 <template>
-  <div class="course-list">
+  <div>
 		<div class="banner-container">
 			<div class="banner">
 				<img src="https://dlcorp.com.vn/wp-content/uploads/2021/09/Ba%CC%81ch-Khoa-600x301.png" alt="">
@@ -19,18 +19,11 @@
 				This site is an effort to create roadmaps, guides and other educational content to help guide people in picking up a path and guide their learnings.
 			</div>
     </div>
-    <div class="search-bar">
+    <!-- <div class="search-bar">
 			<el-input v-model="searchingCareer" placeholder="Find your desired career category" />
-		</div>
+		</div> -->
 		<div class="category-container">
-			<div class="card-grid">
-				<div v-for="(item, index) in cardItems" :key="index" class="card" @click="redirectRoadmap(item.id)">
-					<img :src="item.image" alt="Card Image" class="card-image">
-					<div>{{ item.title }}</div>
-				</div>
-			</div>
-		</div>
-		<div class="category-container">
+			<h2 class="fw-bold">Top career fields</h2>
 			<swiper
 				:options="swiperOptions"
 				@swiper="onSwiper"
@@ -45,7 +38,7 @@
 				</swiper-slide>
 				<div class="swiper-button-prev" slot="button-prev"></div>
 				<div class="swiper-button-next" slot="button-next"></div>
-				<div class="swiper-pagination"  slot="pagination"></div>
+				<!-- <div class="swiper-pagination"  slot="pagination"></div> -->
 				<!-- Add more swiper-slide components as needed -->
 			</swiper>
 		</div>
@@ -214,7 +207,6 @@ export default {
 
 .course-list {
   margin: 0 auto;
-	padding: 0 20rem;
 }
 
 .page-title {

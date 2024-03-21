@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import LoginModal from "../common/LoginModal.vue";
+import LoginModal from "./LoginModal.vue";
 
 import {
   ACTION_USER_LOGOUT
@@ -54,12 +54,14 @@ export default {
 <style scoped>
 /* Sidebar styles go here */
 .sidebar {
-  height: 100%;
   background-color: #304156;
   color: #fff;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+	position: fixed;
+	z-index: 99;
+	width: 100%;
 }
 
 .logo {
