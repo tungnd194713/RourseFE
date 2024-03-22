@@ -15,6 +15,18 @@
 				<el-menu-item index="2-2" @click="$router.push({name: 'MajorList'})">Chuyên ngành</el-menu-item>
 				<el-menu-item index="2-3" @click="$router.push({name: 'CollegeList'})">Đại học</el-menu-item> -->
 			</el-submenu>
+			<el-submenu index="4">
+				<template slot="title">Người học</template>
+				<!-- <el-menu-item index="2-1" @click="$router.push({name: 'CertificateList'})">Bằng cấp</el-menu-item>
+				<el-menu-item index="2-2" @click="$router.push({name: 'MajorList'})">Chuyên ngành</el-menu-item>
+				<el-menu-item index="2-3" @click="$router.push({name: 'CollegeList'})">Đại học</el-menu-item> -->
+			</el-submenu>
+			<el-submenu index="5">
+				<template slot="title">Nhà tuyển dụng</template>
+				<!-- <el-menu-item index="2-1" @click="$router.push({name: 'CertificateList'})">Bằng cấp</el-menu-item>
+				<el-menu-item index="2-2" @click="$router.push({name: 'MajorList'})">Chuyên ngành</el-menu-item>
+				<el-menu-item index="2-3" @click="$router.push({name: 'CollegeList'})">Đại học</el-menu-item> -->
+			</el-submenu>
 		</el-menu>
 	</el-aside>
 </template>

@@ -1,41 +1,26 @@
 <template>
 	<div>
 		<div class="px-4 py-4">
-			<h2>Quy đổi - Tên chứng chỉ</h2>
+			<h2>Quy đổi - {{ certificateName }}</h2>
 			<h4>Chứng chỉ này sẽ tương đương với các kiến thức sau đây:</h4>
 			<el-button class="mb-4" @click="dialogVisible = true">Thêm bản ghi</el-button>
 			<el-button class="mb-4">Lưu thay đổi</el-button>
 			<div class="table-container">
 				<el-table
 					class="table"
-					border
+					empty-text="Không có dữ liệu"
 					:data="tableData"
 					style="width: 100%">
 					<el-table-column
-						label="No"
-						width="50">
+						label="Tên">
 						<template slot-scope="scope">
-							<span style="margin-left: 10px">{{ scope.row.index }}</span>
+							<span style="margin-left: 10px">{{ scope.row.subject.name }}</span>
 						</template>
 					</el-table-column>
 					<el-table-column
-						label="Tên"
-						width="400">
+						label="Cấp độ">
 						<template slot-scope="scope">
-							<span style="margin-left: 10px">{{ scope.row.date }}</span>
-						</template>
-					</el-table-column>
-					<el-table-column
-						label="Cấp độ"
-						width="199">
-						<template slot-scope="scope">
-							<el-popover trigger="hover" placement="top">
-								<p>Name: {{ scope.row.name }}</p>
-								<p>Addr: {{ scope.row.address }}</p>
-								<div slot="reference" class="name-wrapper">
-									<el-tag size="medium">{{ scope.row.name }}</el-tag>
-								</div>
-							</el-popover>
+							<span style="margin-left: 10px">{{ scope.row.level }}</span>
 						</template>
 					</el-table-column>
 					<el-table-column
@@ -48,7 +33,7 @@
 							<el-button
 								size="mini"
 								type="danger"
-								@click="handleDelete(scope.$index, scope.row)">Xóa</el-button>
+								@click="deleteCollection(scope.row.subject.id)">Xóa</el-button>
 						</template>
 					</el-table-column>
 				</el-table>
@@ -66,22 +51,38 @@
       :before-close="handleClose"
     >
       <el-form ref="certificateModel" :model="certificateModel" label-width="120px">
-        <el-form-item label="Tên chứng chỉ" required>
-          <el-input v-model="certificateModel.name" placeholder="Nhập tên chứng chỉ"></el-input>
+        <el-form-item label="Kỹ năng" required>
+          <el-select v-model="skillModel" filterable placeholder="Chọn kỹ năng tương ứng">
+						<el-option
+							v-for="item in skillArray"
+							:key="item.id"
+							:label="item.name"
+							:value="item.id">
+						</el-option>
+					</el-select>
         </el-form-item>
-        <el-form-item label="Link chứng chỉ" required>
-          <el-input v-model="certificateModel.link" placeholder="Nhập link chứng chỉ"></el-input>
+        <el-form-item label="Mức độ" required>
+          <el-select v-model="levelModel" filterable placeholder="Chọn cấp độ tương ứng">
+						<el-option
+							v-for="item in levelArray"
+							:key="item"
+							:label="item"
+							:value="item">
+						</el-option>
+					</el-select>
         </el-form-item>
       </el-form>
 
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">Hủy</el-button>
-        <el-button type="primary" @click="addAccount">Thêm</el-button>
+        <el-button type="primary" @click="addCollection">Thêm</el-button>
       </span>
     </el-dialog>
 	</div>	
 </template>
 <script>
+import { SubjectService } from '@/services'
+
 export default {
 	data() {
 		return {
@@ -106,8 +107,18 @@ export default {
 			certificateModel: {
         name: '',
         link: '',
-      }
+      },
+			certificateName: 'Tên chứng chỉ',
+			currentSkillIds: [],
+			skillArray: [],
+			skillModel: '',
+			levelArray: ['Beginner', 'Intermediate', 'Advanced'],
+			levelModel: '',
 		}
+	},
+	async created() {
+		await this.getCertificateSubjects()
+		await this.getAllSubject()
 	},
 	methods: {
 		handleEdit(index, row) {
@@ -115,8 +126,62 @@ export default {
 		},
 		handleDelete(index, row) {
 			console.log(index, row);
+		},
+		async getCertificateSubjects() {
+			try {
+				const { data } = await SubjectService.getCertificateSubjects(this.$route.params.id);
+				this.tableData = data.subjects
+				this.certificateName = data.name
+				this.currentSkillIds = data.subjects.map(item => item?.subject?.name);
+				// this.total = data.meta.total
+			} catch (e) {
+				this.$notify({
+          title: 'Error',
+          message: e.statusText
+        });
+			}
+		},
+		async getAllSubject() {
+			try {
+				const { data } = await SubjectService.getAllSubject(this.currentSkillIds);
+				this.skillArray = data
+			} catch (e) {
+				this.$notify({
+          title: 'Error',
+          message: e.statusText
+        });
+			}
+		},
+		async addCollection() {
+			try {
+				const body = {
+					subjectId: this.skillModel,
+					level: this.levelModel,
+				}
+				await SubjectService.addSubjectToCertificate(this.$route.params.id, body);
+				await this.getCertificateSubjects();
+				await this.getAllSubject();
+				this.dialogVisible = false
+			} catch (e) {
+				this.$notify({
+          title: 'Error',
+          message: e.statusText
+        });
+			}
+		},
+		async deleteCollection(subject_id) {
+			try {
+				await SubjectService.deleteSubjectFromCertificate(this.$route.params.id, subject_id);
+				await this.getCertificateSubjects();
+				await this.getAllSubject();
+			} catch (e) {
+				this.$notify({
+          title: 'Error',
+          message: e.statusText
+        });
+			}
 		}
-	}
+	},
 }
 </script>
 <style scoped lang="scss">

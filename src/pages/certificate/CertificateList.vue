@@ -12,23 +12,10 @@
 					style="width: 100%">
 					<el-table-column
 						label="Tên chứng chỉ"
-						width="400">
+						width="600">
 						<template slot-scope="scope">
 							<i class="el-icon-time"></i>
-							<span style="margin-left: 10px">{{ scope.row.date }}</span>
-						</template>
-					</el-table-column>
-					<el-table-column
-						label="Số kỹ năng tương đương"
-						width="200">
-						<template slot-scope="scope">
-							<el-popover trigger="hover" placement="top">
-								<p>Name: {{ scope.row.name }}</p>
-								<p>Addr: {{ scope.row.address }}</p>
-								<div slot="reference" class="name-wrapper">
-									<el-tag size="medium">{{ scope.row.name }}</el-tag>
-								</div>
-							</el-popover>
+							<span style="margin-left: 10px">{{ scope.row.name }}</span>
 						</template>
 					</el-table-column>
 					<el-table-column
@@ -41,7 +28,7 @@
 							<el-button
 								size="mini"
 								type="primary"
-								@click="$router.push({path: '/certificates/subject'})">Xem quy đổi</el-button>
+								@click="toSubject(scope.row.id)">Xem quy đổi</el-button>
 							<el-button
 								size="mini"
 								type="danger"
@@ -52,7 +39,10 @@
 				<el-pagination
 					background
 					layout="prev, pager, next"
-					:total="1000">
+					@current-change="getCertificates"
+					:current-page.sync="current_page"
+					:page-size="10"
+					:total="total">
 				</el-pagination>
 			</div>
 		</div>
@@ -66,9 +56,9 @@
         <el-form-item label="Tên chứng chỉ" required>
           <el-input v-model="certificateModel.name" placeholder="Nhập tên chứng chỉ"></el-input>
         </el-form-item>
-        <el-form-item label="Link chứng chỉ" required>
+        <!-- <el-form-item label="Link chứng chỉ" required>
           <el-input v-model="certificateModel.link" placeholder="Nhập link chứng chỉ"></el-input>
-        </el-form-item>
+        </el-form-item> -->
       </el-form>
 
       <span slot="footer" class="dialog-footer">
@@ -79,32 +69,24 @@
 	</div>	
 </template>
 <script>
+import { SubjectService } from '@/services'
+
 export default {
 	data() {
 		return {
-			tableData: [{
-				date: '2016-05-03',
-				name: 'Tom',
-				address: 'No. 189, Grove St, Los Angeles'
-			}, {
-				date: '2016-05-02',
-				name: 'Tom',
-				address: 'No. 189, Grove St, Los Angeles'
-			}, {
-				date: '2016-05-04',
-				name: 'Tom',
-				address: 'No. 189, Grove St, Los Angeles'
-			}, {
-				date: '2016-05-01',
-				name: 'Tom',
-				address: 'No. 189, Grove St, Los Angeles'
-			}],
+			tableData: [],
 			dialogVisible: false,
 			certificateModel: {
         name: '',
         link: '',
-      }
+      },
+			total: 0,
+			current_page: 1,
+			per_page: 10,
 		}
+	},
+	created() {
+		this.getCertificates(this.current_page);
 	},
 	methods: {
 		handleEdit(index, row) {
@@ -112,6 +94,21 @@ export default {
 		},
 		handleDelete(index, row) {
 			console.log(index, row);
+		},
+		toSubject(item) {
+			this.$router.push({ name: 'CertificateSubject', params: { id: item } })
+		},
+		async getCertificates() {
+			try {
+				const { data } = await SubjectService.getCertificates(this.current_page);
+				this.tableData = data.data
+				this.total = data.meta.total
+			} catch (e) {
+				this.$notify({
+          title: 'Error',
+          message: e.statusText
+        });
+			}
 		}
 	}
 }

@@ -33,7 +33,7 @@ export default [
 					name: 'CertificateList'
 				},
 				{
-					path: '/certificates/subjects',
+					path: '/certificates/:id/subjects',
 					component: CertificateSubject,
 					name: 'CertificateSubject'
 				},
