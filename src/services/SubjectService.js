@@ -2,8 +2,8 @@ import ApiService from "./ApiService";
 
 const SubjectService = {
 	getCertificates(current_page = 1, per_page = 10) {
-    return ApiService.get(`/technical/certificates?current_page=${current_page}&per_page=${per_page}`);
-  },
+		return ApiService.get(`/technical/certificates?current_page=${current_page}&per_page=${per_page}`);
+	},
 	getCertificateSubjects(id, current_page = 1, per_page = 10) {
 		return ApiService.get(`/technical/certificates/${id}/subjects?current_page=${current_page}&per_page=${per_page}`)
 	},
@@ -15,7 +15,19 @@ const SubjectService = {
 	},
 	deleteSubjectFromCertificate(certificate_id, subject_id) {
 		return ApiService.delete(`/technical/certificates/${certificate_id}/subjects/${subject_id}`)
-	}
+	},
+	getMajors(current_page = 1, per_page = 10) {
+		return ApiService.get(`/technical/majors?current_page=${current_page}&per_page=${per_page}`);
+	},
+	getMajorSubjects(id, current_page = 1, per_page = 10) {
+		return ApiService.get(`/technical/majors/${id}/subjects?current_page=${current_page}&per_page=${per_page}`)
+	},
+	addSubjectToMajor(certificate_id, body) {
+		return ApiService.post(`/technical/majors/${certificate_id}/subjects`, body)
+	},
+	deleteSubjectFromMajor(certificate_id, subject_id) {
+		return ApiService.delete(`/technical/majors/${certificate_id}/subjects/${subject_id}`)
+	},
 }
 
 export default SubjectService;

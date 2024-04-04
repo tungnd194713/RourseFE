@@ -45,39 +45,39 @@
 			</div>
 		</div>
 		<el-dialog
-      title="Thêm / Sửa chứng chỉ"
-      :visible.sync="dialogVisible"
-      width="30%"
-      :before-close="handleClose"
-    >
-      <el-form ref="certificateModel" :model="certificateModel" label-width="120px">
-        <el-form-item label="Kỹ năng" required>
-          <el-select v-model="skillModel" filterable placeholder="Chọn kỹ năng tương ứng">
-						<el-option
-							v-for="item in skillArray"
-							:key="item.id"
-							:label="item.name"
-							:value="item.id">
-						</el-option>
-					</el-select>
-        </el-form-item>
-        <el-form-item label="Mức độ" required>
-          <el-select v-model="levelModel" filterable placeholder="Chọn cấp độ tương ứng">
-						<el-option
-							v-for="item in levelArray"
-							:key="item"
-							:label="item"
-							:value="item">
-						</el-option>
-					</el-select>
-        </el-form-item>
-      </el-form>
+			title="Thêm / Sửa chứng chỉ"
+			:visible.sync="dialogVisible"
+			width="30%"
+			:before-close="handleClose"
+			>
+			<el-form ref="certificateModel" :model="certificateModel" label-width="120px">
+				<el-form-item label="Kỹ năng" required>
+				<el-select v-model="skillModel" filterable placeholder="Chọn kỹ năng tương ứng">
+								<el-option
+									v-for="item in skillArray"
+									:key="item.id"
+									:label="item.name"
+									:value="item.id">
+								</el-option>
+							</el-select>
+				</el-form-item>
+				<el-form-item label="Mức độ" required>
+				<el-select v-model="levelModel" filterable placeholder="Chọn cấp độ tương ứng">
+								<el-option
+									v-for="item in levelArray"
+									:key="item"
+									:label="item"
+									:value="item">
+								</el-option>
+							</el-select>
+				</el-form-item>
+			</el-form>
 
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">Hủy</el-button>
-        <el-button type="primary" @click="addCollection">Thêm</el-button>
-      </span>
-    </el-dialog>
+			<span slot="footer" class="dialog-footer">
+				<el-button @click="dialogVisible = false">Hủy</el-button>
+				<el-button type="primary" @click="addCollection">Thêm</el-button>
+			</span>
+		</el-dialog>
 	</div>	
 </template>
 <script>

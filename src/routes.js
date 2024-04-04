@@ -43,7 +43,7 @@ export default [
 					name: 'MajorList'
 				},
 				{
-					path: '/majors/subjects',
+					path: '/majors/:id/subjects',
 					component: MajorSubject,
 					name: 'MajorSubject'
 				},
