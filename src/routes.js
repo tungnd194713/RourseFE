@@ -17,6 +17,8 @@ import CertificateSubject from './pages/certificate/CertificateSubject'
 import MajorList from './pages/major/MajorList'
 import MajorSubject from './pages/major/MajorSubject'
 import CollegeList from './pages/college/CollegeList'
+import CourseCreate from './pages/course/CourseCreate'
+import ListCourse from './pages/course/ListCourse'
 
 export default [
     {
@@ -51,6 +53,16 @@ export default [
 					path: '/colleges',
 					component: CollegeList,
 					name: 'CollegeList'
+				},
+				{
+					path: '/courses/create',
+					component: CourseCreate,
+					name: 'CourseCreate'
+				},
+				{
+					path: '/courses/list',
+					component: ListCourse,
+					name: 'ListCourse'
 				},
 				{
 					path: '/roadmaps',
