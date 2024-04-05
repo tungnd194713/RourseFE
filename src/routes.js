@@ -19,6 +19,7 @@ import MajorSubject from './pages/major/MajorSubject'
 import CollegeList from './pages/college/CollegeList'
 import CourseCreate from './pages/course/CourseCreate'
 import ListCourse from './pages/course/ListCourse'
+import CourseDetail from './pages/course/CourseDetail'
 
 export default [
     {
@@ -63,6 +64,11 @@ export default [
 					path: '/courses/list',
 					component: ListCourse,
 					name: 'ListCourse'
+				},
+				{
+					path: '/courses/:id',
+					component: CourseDetail,
+					name: 'CourseDetail'
 				},
 				{
 					path: '/roadmaps',

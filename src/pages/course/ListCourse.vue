@@ -10,10 +10,12 @@
 						</div>
 					</div>
 					<div class="course-details">
-						<h3>{{ course.name }}</h3>
+						<h3>
+							<router-link :to="{name: 'CourseDetail', params: {id: course.id}}">{{ course.title || 'This is course name' }}</router-link>
+						</h3>
 						<p>{{ course.description }}</p>
 						<div class="tag-list">
-							<el-tag v-for="(tag, tagIndex) in course.tags" :key="tagIndex">{{ tag.name }} - {{ tag.level }}</el-tag>
+							<el-tag v-for="(tag, tagIndex) in course.skill_tags" :key="tagIndex">{{ tag?.skill?.name }} - {{ tag.level }}</el-tag>
 						</div>
 					</div>
 				</div>
@@ -23,6 +25,7 @@
 </template>
 
 <script>
+import { CourseService } from '@/services'
 export default {
   data() {
     return {
@@ -32,6 +35,7 @@ export default {
   created() {
     // Fetch the list of courses from the server or use any other method to populate the courses array
     // For demonstration, let's populate some dummy data
+		this.getCourses()
     this.courses = [
       {
         name: 'Course 1',
@@ -47,7 +51,21 @@ export default {
       },
       // Add more courses as needed
     ];
-  }
+  },
+	methods: {
+		async getCourses() {
+			try {
+				const { data } = await CourseService.getCourses({});
+				this.courses = data.results
+			} catch (e) {
+				this.$notify({
+          title: 'Error',
+          message: e.statusText
+        });
+			}
+
+		}
+	}
 };
 </script>
 

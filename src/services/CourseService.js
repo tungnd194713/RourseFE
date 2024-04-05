@@ -21,7 +21,16 @@ const CourseService = {
   },
 	createCourse(body) {
 		return ApiService.post('/course', body);
-	}
+	},
+	getCourses(body) {
+		return ApiService.post('/course/list', body);
+	},
+	addModuleToCourse(courseId, body) {
+		return ApiService.post(`/course/${courseId}/add-module`, body);
+	},
+	findCourseById(courseId) {
+		return ApiService.post(`/course/${courseId}`);
+	},
 }
 
 export default CourseService
