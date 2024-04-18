@@ -25,6 +25,12 @@ const RoadMapService = {
   completeMilestone(milestone_id) {
     return ApiService.post(`/roadmap/milestone/${milestone_id}/complete`);
   },
+  getEducationRequests() {
+    return ApiService.post(`/roadmap/education-requests`);
+  },
+  getEducationRoadmap(jobEducationId) {
+    return ApiService.get(`/roadmap/education-requests/` +jobEducationId);
+  },
 }
 
 export default RoadMapService

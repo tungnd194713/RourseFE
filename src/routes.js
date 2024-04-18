@@ -17,6 +17,9 @@ import CertificateSubject from './pages/certificate/CertificateSubject'
 import MajorList from './pages/major/MajorList'
 import MajorSubject from './pages/major/MajorSubject'
 import CollegeList from './pages/college/CollegeList'
+import EducationRecruitment from './pages/recruitment/EducationRecruitment'
+import EducationRoadmap from './pages/recruitment/EducationRoadmap'
+import EducationCourse from './pages/recruitment/EducationCourse'
 
 export default [
     {
@@ -51,6 +54,21 @@ export default [
 					path: '/colleges',
 					component: CollegeList,
 					name: 'CollegeList'
+				},
+				{
+					path: '/recruitment/educations',
+					component: EducationRecruitment,
+					name: 'EducationRecruitment'
+				},
+				{
+					path: '/recruitment/educations/:jobEducationId',
+					component: EducationRoadmap,
+					name: 'EducationRoadmap'
+				},
+				{
+					path: '/recruitment/educations/:jobEducationId/courses/:courseId',
+					component: EducationCourse,
+					name: 'EducationCourse'
 				},
 				{
 					path: '/roadmaps',

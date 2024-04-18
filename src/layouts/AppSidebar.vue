@@ -22,10 +22,10 @@
 				<el-menu-item index="2-3" @click="$router.push({name: 'CollegeList'})">Đại học</el-menu-item> -->
 			</el-submenu>
 			<el-submenu index="5">
-				<template slot="title">Nhà tuyển dụng</template>
-				<!-- <el-menu-item index="2-1" @click="$router.push({name: 'CertificateList'})">Bằng cấp</el-menu-item>
-				<el-menu-item index="2-2" @click="$router.push({name: 'MajorList'})">Chuyên ngành</el-menu-item>
-				<el-menu-item index="2-3" @click="$router.push({name: 'CollegeList'})">Đại học</el-menu-item> -->
+				<template slot="title">Tuyển dụng</template>
+				<el-menu-item index="5-1" @click="$router.push({name: 'EducationRecruitment'})">Đăng kí đào tạo</el-menu-item>
+				<!-- <el-menu-item index="5-2" @click="$router.push({name: 'MajorList'})">Chuyên ngành</el-menu-item>
+				<el-menu-item index="5-3" @click="$router.push({name: 'CollegeList'})">Đại học</el-menu-item> -->
 			</el-submenu>
 		</el-menu>
 	</el-aside>
