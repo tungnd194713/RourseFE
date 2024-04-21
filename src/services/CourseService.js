@@ -1,6 +1,9 @@
 import ApiService from '@/services/ApiService'
 
 const CourseService = {
+  findCourses(body, page) {
+    return ApiService.post('/course/list?page=' + page, body)
+  },
   getCourse(moduleId) {
     return ApiService.get('/course/module/' + moduleId)
   },

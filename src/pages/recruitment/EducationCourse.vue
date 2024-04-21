@@ -1,7 +1,19 @@
 <template>
 	<div>
 		<div class="px-4 py-4">
-			<h2>Lộ trình học - {{ companyName || 'Tên công ty' }} - {{ jobTitle || 'Vị trí công việc' }} - {{ courseName || 'Tên khóa học' }}</h2>
+			<div class="d-flex justify-content-between">
+                <h2>Lộ trình học - {{ companyName || 'Tên công ty' }} - {{ jobTitle || 'Vị trí công việc' }} - {{ this.courseInfo.title || 'Tên khóa học' }}</h2>
+                <el-button>Sửa thông tin</el-button>
+            </div>
+            <h4>Chi phí: {{ this.courseInfo.point_cost }} point</h4>
+            <h4>Mô tả: </h4>
+            <div style="margin-left: 20px; margin-bottom: 20px; font-size: 20px">{{ this.courseInfo.description }}</div>
+            <h4>Tags kĩ năng: </h4>
+            <div style="margin-left: 20px; margin-bottom: 20px; font-size: 20px">
+                <el-button type="primary" v-for="tag in this.courseInfo.skill_tags" :key="tag._id" class="my-2 skill-tag-btn">
+                    {{ tag.skill.name }} - {{ tag.level }}
+                </el-button>
+            </div>
 			<h4>Danh sách module:</h4>
 			<div class="table-container">
 				<el-table
@@ -83,6 +95,8 @@
 </template>
 <script>
 import jobEducationStatus from '@/constants/jobEducationStatus'
+import { RoadMapService } from '@/services'
+
 export default {
 	data() {
 		return {
@@ -97,16 +111,28 @@ export default {
                 link: '',
             },
             jobEducationStatus,
+            courseInfo: {},
 		}
 	},
+    created() {
+        this.getCourseDetail()
+    },
 	methods: {
 		handleEdit(index, row) {
 			console.log(index, row);
 		},
 		handleDelete(index, row) {
 			console.log(index, row);
-		}
-	}
+		},
+        async getCourseDetail() {
+            const { data } = await RoadMapService.getCourseDetail(this.$route.params.jobEducationId, this.$route.params.courseId);
+            if (data) {
+                this.courseInfo = data;
+                this.tableData = this.courseInfo.modules
+                console.log(this.courseInfo)
+            }
+        }
+	},
 }
 </script>
 <style scoped lang="scss">

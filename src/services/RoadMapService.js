@@ -29,7 +29,16 @@ const RoadMapService = {
     return ApiService.post(`/roadmap/education-requests`);
   },
   getEducationRoadmap(jobEducationId) {
-    return ApiService.get(`/roadmap/education-requests/` +jobEducationId);
+    return ApiService.get(`/roadmap/education-requests/` + jobEducationId);
+  },
+  getCourseDetail(jobEducationId, courseId) {
+    return ApiService.get(`/roadmap/education-requests/` + jobEducationId + '/courses/' + courseId);
+  },
+  addExistingEducationCourse(jobEducationId, courseId) {
+    return ApiService.post(`/roadmap/education-requests/` + jobEducationId + '/courses/' + courseId);
+  },
+  removeCourseFromRoadmap(jobEducationId, courseId) {
+    return ApiService.delete(`/roadmap/education-requests/` + jobEducationId + '/courses/' + courseId);
   },
 }
 
