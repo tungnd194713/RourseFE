@@ -11,8 +11,8 @@
 			</el-submenu>
 			<el-submenu index="3">
 				<template slot="title">Học liệu</template>
-				<!-- <el-menu-item index="2-1" @click="$router.push({name: 'CertificateList'})">Bằng cấp</el-menu-item>
-				<el-menu-item index="2-2" @click="$router.push({name: 'MajorList'})">Chuyên ngành</el-menu-item>
+				<el-menu-item index="2-1" @click="$router.push({name: 'ListCourse'})">Danh sách khóa học</el-menu-item>
+				<!-- <el-menu-item index="2-2" @click="$router.push({name: 'MajorList'})">Chuyên ngành</el-menu-item>
 				<el-menu-item index="2-3" @click="$router.push({name: 'CollegeList'})">Đại học</el-menu-item> -->
 			</el-submenu>
 			<el-submenu index="4">
