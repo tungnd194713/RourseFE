@@ -3,7 +3,7 @@
 		<div class="px-4 py-4">
 			<div class="d-flex justify-content-between">
                 <h2>Lộ trình học - {{ companyName || 'Tên công ty' }} - {{ jobTitle || 'Vị trí công việc' }} - {{ this.courseInfo.title || 'Tên khóa học' }}</h2>
-                <el-button>Sửa thông tin</el-button>
+                <el-button @click="secondDialog = true">Sửa thông tin</el-button>
             </div>
             <h4>Chi phí: {{ this.courseInfo.point_cost }} point</h4>
             <h4>Mô tả: </h4>
@@ -53,7 +53,7 @@
 						<template slot-scope="scope">
 							<el-button
 								size="mini"
-								@click="handleEdit(scope.$index, scope.row)">Xem chi tiết</el-button>
+								@click="$router.push({ name: 'EducationModuleDetail', params: { ...$route.params, moduleId: scope.row.id || scope.row._id } })">Xem chi tiết</el-button>
 							<el-button
 								size="mini"
 								type="primary"
@@ -91,11 +91,50 @@
         <el-button type="primary" @click="addAccount">Thêm</el-button>
       </span>
     </el-dialog>
+    <el-dialog title="Tạo khóa học mới" :visible.sync="secondDialog" width="80%">
+			<div class="form-container">
+				<el-form ref="courseForm" :model="courseInfo" label-width="300px">
+					<el-form-item label="Tiêu đề khóa học" class="form-item" prop="title">
+						<el-input v-model="courseInfo.title" placeholder="Nhập tiêu đề khóa học"></el-input>
+					</el-form-item>
+					<el-form-item label="Mô tả khóa học" class="form-item" prop="description">
+						<el-input type="textarea" v-model="courseInfo.description" placeholder="Nhập mô tả"></el-input>
+					</el-form-item>
+					<el-form-item label="Thời gian hoàn thành dự kiến (tiếng)" class="form-item" prop="description">
+						<el-input type="number" v-model="courseInfo.estimated_time"></el-input>
+					</el-form-item>
+					<el-form-item label="Thumbnail Image" class="form-item" prop="thumbnail">
+						<el-upload class="upload-demo" drag action="https://jsonplaceholder.typicode.com/posts/" :before-upload="beforeUpload" :auto-upload="false" :file-list="fileList" :on-remove="handleRemove" :limit="1" list-type="picture">
+							<i class="el-icon-upload"></i>
+							<div class="el-upload__text">Drop file here or <em>click to upload</em></div>
+						</el-upload>
+						<div v-if="courseInfo.thumbnail" class="thumbnail-preview">
+							<img :src="courseInfo.thumbnail" alt="Thumbnail Preview" />
+						</div>
+					</el-form-item>
+					<el-form-item label="Skill Tags" class="form-item" prop="tags">
+						<div v-for="(tag, index) in courseInfo.skill_tags" :key="index" class="tag-level-group">
+							<el-select v-model="tag.skill.name" placeholder="Select tag" class="tag-select">
+								<el-option v-for="tagItem in subjectList" :key="tagItem.id" :label="tagItem.name" :value="tagItem.id"></el-option>
+							</el-select>
+							<el-select v-model="tag.level" placeholder="Select level" class="level-select">
+								<el-option v-for="level in levels" :key="level + Date.now()" :label="level" :value="level"></el-option>
+							</el-select>
+							<el-button type="danger" icon="el-icon-close" @click="removeTag(index)" class="remove-tag-btn"></el-button>
+						</div>
+						<el-button type="primary" icon="el-icon-plus" @click="addTag" class="add-tag-btn">Thêm tag</el-button>
+					</el-form-item>
+					<el-form-item class="form-item">
+						<el-button type="primary" class="submit-btn" @click="updateCourse">Cập nhật khóa học</el-button>
+					</el-form-item>
+				</el-form>
+			</div>
+		</el-dialog>
 	</div>	
 </template>
 <script>
 import jobEducationStatus from '@/constants/jobEducationStatus'
-import { RoadMapService } from '@/services'
+import { CourseService, RoadMapService } from '@/services'
 
 export default {
 	data() {
@@ -112,6 +151,7 @@ export default {
             },
             jobEducationStatus,
             courseInfo: {},
+            secondDialog: false,
 		}
 	},
     created() {
@@ -142,7 +182,48 @@ export default {
         });
 				this.getCourseDetail();
 			}
-		}
+		},
+        async updateCourse() {
+			// Validate the form
+			this.$refs.courseForm.validate(async (valid) => {
+				if (valid) {
+					try {
+						const formData = new FormData();
+						formData.append('title', this.courseInfo.title);
+						formData.append('description', this.courseInfo.description);
+						formData.append('estimated_time', this.courseInfo.estimated_time);
+						formData.append('point_cost', this.courseInfo.point_cost);
+						formData.append('thumbnail', 'https://careers.techvify.com.vn/wp-content/uploads/2022/07/vuejs-la-gi-2.jpg');
+						formData.append(`tags`, JSON.stringify(this.courseInfo.skill_tags.map((item) => {
+                            return {
+                                skill: item.skill.id || item.skill._id,
+                                level: item.level
+                            }
+                        })));
+
+						const response = await CourseService.updateCourse(this.$route.params.courseId, formData)
+						if (response.status === 200) {
+							this.secondDialog = false;
+							this.$notify({
+								title: 'Success',
+								message: 'Đã cập nhật khóa học'
+							});
+							await this.getCourseDetail()
+						}
+					} catch (e) {
+                        console.log(e)
+						this.$notify({
+							title: 'Error',
+							message: e.statusText
+						});
+					}
+					// this.resetForm()
+				} else {
+					console.log('Form validation failed.');
+					return false;
+				}
+			});
+		},
 	},
 	
 }

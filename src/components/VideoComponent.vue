@@ -23,13 +23,18 @@ export default {
     }
   },
   mounted() {
-    const self = this
-    this.player = videojs(this.$refs.videoPlayer, this.options, () => {
-      this.player.log('onPlayerReady', this);
-      this.player.on('loadedmetadata', function() {
-        self.$emit('getVideoDuration', self.player.duration());
+    this.videoPlay()
+  },
+  methods: {
+    videoPlay() {
+      const self = this
+      this.player = videojs(this.$refs.videoPlayer, this.options, () => {
+        this.player.log('onPlayerReady', this);
+        this.player.on('loadedmetadata', function() {
+          self.$emit('getVideoDuration', self.player.duration());
+        });
       });
-    });
+    },
   },
   beforeDestroy() {
     if (this.player) {

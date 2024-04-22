@@ -45,7 +45,7 @@
                     <el-table-column
 						label="Số lượng khóa học">
 						<template slot-scope="scope">
-                            <span>{{ scope.row.course_count || 0 }}</span>
+                            <span>{{ scope.row.courses.length || 0 }}</span>
 						</template>
 					</el-table-column>
                     <el-table-column
@@ -61,16 +61,22 @@
 						</template>
 					</el-table-column>
 					<el-table-column
-                        width="200"
+                        width="250"
 						label="">
 						<template slot-scope="scope">
 							<el-button
 								size="mini"
 								@click="$router.push({ name: 'EducationRoadmap', params: { jobEducationId: scope.row._id } })">Xem chi tiết</el-button>
 							<el-button
+                                v-if="scope.row.status === 1"
 								size="mini"
 								type="primary"
-								@click="handleDelete(scope.$index, scope.row)">Gửi</el-button>
+								@click="checkRoadmap(scope.row._id || scope.row.id)">Gửi</el-button>
+                            <el-button
+                                v-if="scope.row.status === 2"
+								size="mini"
+								type="primary"
+								@click="unsendRoadmap(scope.row._id || scope.row.id)">Hoàn tác</el-button>
 						</template>
 					</el-table-column>
 				</el-table>
@@ -146,6 +152,28 @@
                 <el-button @click="dialogVisible = false">OK</el-button>
             </span>
         </el-dialog>
+        <el-dialog
+            title="Gửi khóa học"
+            :visible.sync="checkDialog"
+            width="30%"
+            :before-close="handleClose"
+        >
+            <div v-if="tagsFulfilled">
+                Bạn có chắc muốn gửi cho nhà tuyển dụng?
+            </div>
+            <div v-else>
+                Roadmap chưa sở hữu đủ các kỹ năng cần thiết!
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <div v-if="tagsFulfilled">
+                    <el-button type="primary" @click="sendRoadmap">Xác nhận</el-button>
+                    <el-button @click="checkDialog = false">Hủy</el-button>
+                </div>
+                <div v-else>
+                    <el-button type="primary" @click="$router.push({ name: 'EducationRoadmap', params: { jobEducationId: checkingRoadmap } })">Tìm hiểu thêm</el-button>
+                </div> 
+            </span>
+        </el-dialog>
 	</div>	
 </template>
 <script>
@@ -172,6 +200,9 @@ export default {
             },
 			dialogVisible: false,
             jobEducationStatus,
+            tagsFulfilled: false,
+            checkDialog: false,
+            checkingRoadmap: 0,
 		}
 	},
     created() {
@@ -195,6 +226,42 @@ export default {
             this.requirement.intermediateSkills = requirements.filter((item) => item.type === 'Skill' && item.level === 'Intermediate').map(obj => obj.skills);
             this.requirement.advancedSkills = requirements.filter((item) => item.type === 'Skill' && item.level === 'Advanced').map(obj => obj.skills);
             this.dialogVisible = true;
+        },
+        async checkRoadmap(jobEducationId) {
+            const data = await RoadMapService.checkRoadmap(jobEducationId)
+            try {
+                if (data.status === 200) {
+                    if (data.data) {
+                        this.tagsFulfilled = true;
+                    } else {
+                        this.tagsFulfilled = false;
+                    }
+                    this.checkingRoadmap = jobEducationId;
+                    this.checkDialog = true
+                }
+            } catch (e) {
+                console.log(e)
+            }
+        },
+        async sendRoadmap() {
+            const data = await RoadMapService.sendRoadmap(this.checkingRoadmap)
+            if (data.status === 200) {
+                this.$notify({
+                    title: 'Success',
+                    message: 'Đã gửi nhà tuyển dụng'
+                });
+                this.getEducationRequests()
+            }
+        },
+        async unsendRoadmap(jobEducationId) {
+            const data = await RoadMapService.sendRoadmap(jobEducationId)
+            if (data.status === 200) {
+                this.$notify({
+                    title: 'Success',
+                    message: 'Đã hoàn tác'
+                });
+                this.getEducationRequests()
+            }
         }
 	}
 }

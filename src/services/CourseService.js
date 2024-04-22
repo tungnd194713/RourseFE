@@ -4,6 +4,9 @@ const CourseService = {
   findCourses(body, page) {
     return ApiService.post('/course/list?page=' + page, body)
   },
+  updateCourse(courseId, body) {
+    return ApiService.update('/course/' + courseId, body)
+  },
   getCourse(moduleId) {
     return ApiService.get('/course/module/' + moduleId)
   },
