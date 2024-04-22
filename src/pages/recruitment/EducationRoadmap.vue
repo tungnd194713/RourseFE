@@ -79,7 +79,7 @@
 			</div>
             <div class="action-buttons">
                 <el-button type="primary" @click="dialogVisible = true">Thêm khóa học có sẵn</el-button>
-                <el-button type="success">Tạo khóa học mới</el-button>
+                <el-button type="success" @click="openCreateCourseDialog()">Tạo khóa học mới</el-button>
             </div>
 		</div>
 		<el-dialog title="Danh sách khóa học" :visible.sync="dialogVisible" width="80%" :before-close="handleClose">
@@ -127,7 +127,46 @@
 				</el-pagination>
             </div>
         </el-dialog>
-	</div>	
+		<el-dialog title="Tạo khóa học mới" :visible.sync="secondDialog" width="80%">
+			<div class="form-container">
+				<el-form ref="courseForm" :model="course" label-width="300px">
+					<el-form-item label="Tiêu đề khóa học" class="form-item" prop="title">
+						<el-input v-model="course.title" placeholder="Nhập tiêu đề khóa học"></el-input>
+					</el-form-item>
+					<el-form-item label="Mô tả khóa học" class="form-item" prop="description">
+						<el-input type="textarea" v-model="course.description" placeholder="Nhập mô tả"></el-input>
+					</el-form-item>
+					<el-form-item label="Thời gian hoàn thành dự kiến (tiếng)" class="form-item" prop="description">
+						<el-input type="number" v-model="course.estimated_time"></el-input>
+					</el-form-item>
+					<el-form-item label="Thumbnail Image" class="form-item" prop="thumbnail">
+						<el-upload class="upload-demo" drag action="https://jsonplaceholder.typicode.com/posts/" :before-upload="beforeUpload" :auto-upload="false" :file-list="fileList" :on-remove="handleRemove" :limit="1" list-type="picture">
+							<i class="el-icon-upload"></i>
+							<div class="el-upload__text">Drop file here or <em>click to upload</em></div>
+						</el-upload>
+						<div v-if="course.thumbnail" class="thumbnail-preview">
+							<img :src="course.thumbnail" alt="Thumbnail Preview" />
+						</div>
+					</el-form-item>
+					<el-form-item label="Skill Tags" class="form-item" prop="tags">
+						<div v-for="(tag, index) in course.tags" :key="index" class="tag-level-group">
+							<el-select v-model="tag.skill" placeholder="Select tag" class="tag-select">
+								<el-option v-for="tagItem in subjectList" :key="tagItem.id" :label="tagItem.name" :value="tagItem.id"></el-option>
+							</el-select>
+							<el-select v-model="tag.level" placeholder="Select level" class="level-select">
+								<el-option v-for="level in levels" :key="level + Date.now()" :label="level" :value="level"></el-option>
+							</el-select>
+							<el-button type="danger" icon="el-icon-close" @click="removeTag(index)" class="remove-tag-btn"></el-button>
+						</div>
+						<el-button type="primary" icon="el-icon-plus" @click="addTag" class="add-tag-btn">Add Tag</el-button>
+					</el-form-item>
+					<el-form-item class="form-item">
+						<el-button type="primary" class="submit-btn" @click="submitForm">Create Course</el-button>
+					</el-form-item>
+				</el-form>
+			</div>
+		</el-dialog>
+	</div>
 </template>
 <script>
 import jobEducationStatus from '@/constants/jobEducationStatus'
@@ -150,8 +189,17 @@ export default {
                 point_cost: 100,
                 thumbnail: 'abcxyz.jgp'
             }],
+			course: {
+				title: '',
+				description: '',
+				thumbnail: 'https://careers.techvify.com.vn/wp-content/uploads/2022/07/vuejs-la-gi-2.jpg',
+				tags: [],
+				estimated_time: 0,
+			},
+			fileList: [],
             tags: [],
 			dialogVisible: false,
+			secondDialog: false,
 			certificateModel: {
                 name: '',
                 link: '',
@@ -166,6 +214,11 @@ export default {
             courseTotalPages: 1,
             courseTotalResults: 1,
             addedCourseIds: [],
+		}
+	},
+	computed: {
+		availableTags() {
+		return this.allTags.filter(tag => !this.course.tags.some(t => t.skill === tag.id));
 		}
 	},
 	created() {
@@ -231,6 +284,16 @@ export default {
                 }
             }
         },
+		openCreateCourseDialog() {
+			this.secondDialog = true;
+			this.course = {
+				title: '',
+				description: '',
+				thumbnail: 'https://careers.techvify.com.vn/wp-content/uploads/2022/07/vuejs-la-gi-2.jpg',
+				tags: [],
+				estimated_time: 0,
+			}
+		},
         courseAdded(courseId) {
             return this.addedCourseIds.includes(courseId);
         },
@@ -263,15 +326,84 @@ export default {
                 if (profileLevel == 'Intermediate') return 0;
                 if (profileLevel == 'Beginner') return 1;
             }
-        }
+        },
+		beforeUpload(file) {
+			// Clear previous thumbnails
+			this.course.thumbnail = null;
 
+			// Validate file type
+			const isJPGorPNG = file.type === 'image/jpeg' || file.type === 'image/png';
+			if (!isJPGorPNG) {
+				this.$message.error('Only JPG or PNG files are allowed');
+				return false;
+			}
+
+			// Set thumbnail in the course object
+			this.course.thumbnail = 'https://careers.techvify.com.vn/wp-content/uploads/2022/07/vuejs-la-gi-2.jpg';
+
+			return true; // Continue with the upload
+		},
+
+		handleRemove() {
+			// Clear thumbnail when removed
+			this.course.thumbnail = null;
+		},
+		addTag() {
+			this.course.tags.push({ skill: '', level: '' });
+		},
+		removeTag(index) {
+			this.course.tags.splice(index, 1);
+		},
+		async submitForm() {
+			// Validate the form
+			this.$refs.courseForm.validate(async (valid) => {
+				if (valid) {
+					try {
+						const formData = new FormData();
+						formData.append('title', this.course.title);
+						formData.append('description', this.course.description);
+						formData.append('estimated_time', this.course.estimated_time);
+						formData.append('thumbnail', 'https://careers.techvify.com.vn/wp-content/uploads/2022/07/vuejs-la-gi-2.jpg');
+						formData.append(`tags`, JSON.stringify(this.course.tags));
+
+						const response = await RoadMapService.createEducationCourse(this.$route.params.jobEducationId, formData)
+						if (response.status === 200) {
+							this.secondDialog = false;
+							this.$notify({
+								title: 'Success',
+								message: 'Đã thêm khóa học'
+							});
+							await this.getEducationRequests()
+						}
+					} catch (e) {
+						this.$notify({
+							title: 'Error',
+							message: e.statusText
+						});
+					}
+					// this.resetForm()
+				} else {
+					console.log('Form validation failed.');
+					return false;
+				}
+			});
+		},
+		resetForm() {
+			// Reset form fields
+			this.course.title = '';
+			this.course.description = '';
+			this.course.thumbnail = '';
+			this.course.tags = [];
+			this.tagInput = '';
+			// Reset form validation
+			this.$refs.courseForm.resetFields();
+			// Clear uploaded file list
+			this.fileList = [];
+		}
 	}
 }
 </script>
 <style scoped lang="scss">
-.table-container {
-	
-}
 .table {
 	margin-bottom: 20px;
 }
@@ -280,6 +412,42 @@ export default {
 }
 .skill-tag-btn:first-of-type {
     margin-left: 10px;
+}
+.form-title {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.form-item {
+  margin-bottom: 20px;
+}
+
+.tag-level-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.tag-select, .level-select {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.add-tag-btn {
+  margin-top: 10px;
+}
+
+.remove-tag-btn {
+  margin-left: 10px;
+}
+
+.thumbnail-preview {
+  margin-top: 10px;
+}
+
+.thumbnail-preview img {
+  max-width: 100%;
+  max-height: 200px;
 }
 </style>
 <style lang="scss">

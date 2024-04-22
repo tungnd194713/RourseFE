@@ -56,7 +56,9 @@ export default {
     addQuiz() {
       this.quizzes.push({
         question: '',
-        options: ['', '', '', ''],
+				options: ['', '', '', ''],
+				correctAnswer: null, // Correct answer will be represented by the index of the correct option (0, 1, 2, or 3)
+				videoTime: 0, // Default video time is set to 0 seconds
       });
     },
     removeQuiz(index) {

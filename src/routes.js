@@ -20,6 +20,7 @@ import CollegeList from './pages/college/CollegeList'
 import EducationRecruitment from './pages/recruitment/EducationRecruitment'
 import EducationRoadmap from './pages/recruitment/EducationRoadmap'
 import EducationCourse from './pages/recruitment/EducationCourse'
+import EducationCreateModule from './pages/recruitment/EducationCreateModule'
 import CourseCreate from './pages/course/CourseCreate'
 import ListCourse from './pages/course/ListCourse'
 import CourseDetail from './pages/course/CourseDetail'
@@ -72,6 +73,11 @@ export default [
 					path: '/recruitment/educations/:jobEducationId/courses/:courseId',
 					component: EducationCourse,
 					name: 'EducationCourse'
+				},
+				{
+					path: '/recruitment/educations/:jobEducationId/courses/:courseId/modules/create',
+					component: EducationCreateModule,
+					name: 'EducationCreateModule'
 				},
 				{
 					path: '/courses/create',

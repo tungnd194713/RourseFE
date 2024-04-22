@@ -57,7 +57,7 @@
 							<el-button
 								size="mini"
 								type="primary"
-								@click="handleDelete(scope.$index, scope.row)">Xóa</el-button>
+								@click="removeEducationModuleFromCourse(scope.row.id || scope.row._id)">Xóa</el-button>
 						</template>
 					</el-table-column>
 				</el-table>
@@ -68,7 +68,7 @@
 				</el-pagination> -->
 			</div>
             <div class="action-buttons">
-                <el-button type="success">Thêm module</el-button>
+                <el-button type="success" @click="$router.push({ name: 'EducationCreateModule', params: { ...$route.params } })">Thêm module</el-button>
             </div>
 		</div>
 		<el-dialog
@@ -124,15 +124,27 @@ export default {
 		handleDelete(index, row) {
 			console.log(index, row);
 		},
-        async getCourseDetail() {
-            const { data } = await RoadMapService.getCourseDetail(this.$route.params.jobEducationId, this.$route.params.courseId);
-            if (data) {
-                this.courseInfo = data;
-                this.tableData = this.courseInfo.modules
-                console.log(this.courseInfo)
-            }
-        }
+		async getCourseDetail() {
+				const { data } = await RoadMapService.getCourseDetail(this.$route.params.jobEducationId, this.$route.params.courseId);
+				if (data) {
+						this.courseInfo = data;
+						this.tableData = this.courseInfo.modules
+						this.companyName = data.company.company_name
+            this.jobTitle = data.job.title
+				}
+		},
+		async removeEducationModuleFromCourse(moduleId) {
+			const { data } = await RoadMapService.removeEducationModuleFromCourse(this.$route.params.jobEducationId, this.$route.params.courseId, moduleId);
+			if (data) {
+				this.$notify({
+          title: 'Success',
+          message: 'Đã xóa module khỏi khóa học'
+        });
+				this.getCourseDetail();
+			}
+		}
 	},
+	
 }
 </script>
 <style scoped lang="scss">
