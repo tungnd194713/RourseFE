@@ -57,7 +57,7 @@
                     <el-table-column
 						label="Trạng thái">
 						<template slot-scope="scope">
-                            <span>{{ jobEducationStatus[scope.row.status - 1] }}</span>
+                            <div :class="{ 'change-request-text': scope.row.status === 4 }" @click="openChangeRequestDialog(scope.row)">{{ jobEducationStatus[scope.row.status - 1] }}</div>
 						</template>
 					</el-table-column>
 					<el-table-column
@@ -68,7 +68,7 @@
 								size="mini"
 								@click="$router.push({ name: 'EducationRoadmap', params: { jobEducationId: scope.row._id } })">Xem chi tiết</el-button>
 							<el-button
-                                v-if="scope.row.status === 1"
+                                v-if="scope.row.status === 1 || scope.row.status === 4"
 								size="mini"
 								type="primary"
 								@click="checkRoadmap(scope.row._id || scope.row.id)">Gửi</el-button>
@@ -174,6 +174,21 @@
                 </div> 
             </span>
         </el-dialog>
+        <el-dialog
+            title="Yêu cầu thay đổi"
+            :visible.sync="changeRequestDialog"
+            width="30%"
+            :before-close="handleClose"
+        >
+            <ul v-if="changeRequest && changeRequest.length">
+                <li v-for="(item, index) in changeRequest" :key="index">
+                    {{ item.content }}
+                </li>
+            </ul>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="changeRequestDialog = false">OK</el-button>
+            </span>
+        </el-dialog>
 	</div>	
 </template>
 <script>
@@ -203,6 +218,8 @@ export default {
             tagsFulfilled: false,
             checkDialog: false,
             checkingRoadmap: 0,
+            changeRequest: [],
+            changeRequestDialog: false,
 		}
 	},
     created() {
@@ -234,7 +251,7 @@ export default {
                     if (data.data) {
                         this.tagsFulfilled = true;
                     } else {
-                        this.tagsFulfilled = false;
+                        this.tagsFulfilled = true;
                     }
                     this.checkingRoadmap = jobEducationId;
                     this.checkDialog = true
@@ -251,6 +268,7 @@ export default {
                     message: 'Đã gửi nhà tuyển dụng'
                 });
                 this.getEducationRequests()
+                this.checkDialog = false
             }
         },
         async unsendRoadmap(jobEducationId) {
@@ -262,6 +280,12 @@ export default {
                 });
                 this.getEducationRequests()
             }
+        },
+        openChangeRequestDialog(item) {
+            if (item.status === 4) {
+                this.changeRequest = [...item.change_requests];
+                this.changeRequestDialog = true
+            }
         }
 	}
 }
@@ -269,6 +293,11 @@ export default {
 <style scoped lang="scss">
 .table-container {
 	
+}
+.change-request-text {
+    text-decoration: underline;
+    color: blue;
+    cursor: pointer
 }
 .table {
 	margin-bottom: 20px;
