@@ -1,7 +1,7 @@
 <template>
 	<!-- Sidebar -->
 	<el-aside width="200px" style="background-color: #f0f2f5">
-		<el-menu default-active="1" class="el-menu-vertical-demo">
+		<el-menu v-if="$store.getters?.authUser?.role === 'admin'" default-active="1" class="el-menu-vertical-demo">
 			<el-menu-item index="1">Dashboard</el-menu-item>
 			<el-submenu index="2">
 				<template slot="title">Kỹ thuật</template>
@@ -28,12 +28,17 @@
 				<el-menu-item index="5-3" @click="$router.push({name: 'CollegeList'})">Đại học</el-menu-item> -->
 			</el-submenu>
 		</el-menu>
+		<el-menu v-if="$store.getters?.authUser?.role === 'mentor'" default-active="1" class="el-menu-vertical-demo">
+			<el-menu-item index="1">Ca làm việc</el-menu-item>
+			<el-menu-item index="2">Khóa học phụ trách</el-menu-item>
+			<el-menu-item index="3">Hồ sơ</el-menu-item>
+		</el-menu>
 	</el-aside>
 </template>
 
 <script>
   export default {
-    // Add your component logic here
+    
   }
 </script>
 

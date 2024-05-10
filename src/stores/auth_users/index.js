@@ -19,7 +19,7 @@ const getters = {
     return state.authUser
   },
   authUser(state) {
-    return (state.authUser && state.authUser.id) ? state.authUser : JSON.parse(localStorage.getItem('userInfo'));
+    return (state.authUser && state.authUser.id) ? state.authUser : JSON.parse(localStorage.getItem('user'));
   },
 	accessToken(state) {
 		return state.accessToken ? state.accessToken : localStorage.getItem('accessToken')

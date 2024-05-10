@@ -3,7 +3,6 @@ import CreateModule from './components/CreateModule'
 import CreateCourse from './components/CreateCourse'
 import InstructorDashboard from './components/InstructorDashboard'
 import RegisterForm from './components/RegisterForm'
-import LoginForm from './components/LoginForm'
 // import CourseList from './components/CourseList'
 import HomePage from './pages/HomePage'
 import AppLayout from './layouts/AppLayout'
@@ -25,131 +24,135 @@ import EducationModuleDetail from './pages/recruitment/EducationModuleDetail'
 import CourseCreate from './pages/course/CourseCreate'
 import ListCourse from './pages/course/ListCourse'
 import CourseDetail from './pages/course/CourseDetail'
+import LoginPage from './pages/LoginPage'
 
 export default [
     {
-      path: '/',
-      component: AppLayout,
-			children: [
-				{
-					path: '',
-					component: HomePage,
+		path: '/',
+		component: AppLayout,
+		children: [
+			{
+				path: '',
+				component: HomePage,
+			},
+			{
+				path: '/certificates',
+				component: CertificateList,
+				name: 'CertificateList'
+			},
+			{
+				path: '/certificates/:id/subjects',
+				component: CertificateSubject,
+				name: 'CertificateSubject'
+			},
+			{
+				path: '/majors',
+				component: MajorList,
+				name: 'MajorList'
+			},
+			{
+				path: '/majors/:id/subjects',
+				component: MajorSubject,
+				name: 'MajorSubject'
+			},
+			{
+				path: '/colleges',
+				component: CollegeList,
+				name: 'CollegeList'
+			},
+			{
+				path: '/recruitment/educations',
+				component: EducationRecruitment,
+				name: 'EducationRecruitment'
+			},
+			{
+				path: '/recruitment/educations/:jobEducationId',
+				component: EducationRoadmap,
+				name: 'EducationRoadmap'
+			},
+			{
+				path: '/recruitment/educations/:jobEducationId/courses/:courseId',
+				component: EducationCourse,
+				name: 'EducationCourse'
+			},
+			{
+				path: '/recruitment/educations/:jobEducationId/courses/:courseId/modules/create',
+				component: EducationCreateModule,
+				name: 'EducationCreateModule'
+			},
+			{
+				path: '/recruitment/educations/:jobEducationId/courses/:courseId/modules/:moduleId',
+				component: EducationModuleDetail,
+				name: 'EducationModuleDetail'
+			},
+			{
+				path: '/courses/create',
+				component: CourseCreate,
+				name: 'CourseCreate'
+			},
+			{
+				path: '/courses/list',
+				component: ListCourse,
+				name: 'ListCourse'
+			},
+			{
+				path: '/courses/:id',
+				component: CourseDetail,
+				name: 'CourseDetail'
+			},
+			{
+				path: '/roadmaps',
+				component: RoadmapDetail,
+			},
+			{
+				path: '/applied-roadmaps',
+				component: AppliedRoadmapDetail,
+			},
+			{
+				path: '/roadmaps/1',
+				component: AppliedCourseList,
+			},
+			{
+				path: '/create-module',
+				component: CreateModule,
+				meta: {
+					requiresAuth: true,
 				},
-				{
-					path: '/certificates',
-					component: CertificateList,
-					name: 'CertificateList'
+			},
+			{
+				path: '/create-course',
+				component: CreateCourse,
+				meta: {
+					requiresAuth: true,
 				},
-				{
-					path: '/certificates/:id/subjects',
-					component: CertificateSubject,
-					name: 'CertificateSubject'
+			},
+			{
+				path: '/instructor-dashboard',
+				component: InstructorDashboard,
+				meta: {
+					requiresAuth: true,
 				},
-				{
-					path: '/majors',
-					component: MajorList,
-					name: 'MajorList'
+			},
+			{
+				path: '/survey',
+				component: SurveyPage,
+			},
+			{
+				path: '/survey-result',
+				component: SurveyResult,
+			},
+			{
+				path: '/modules/:id',
+				component: VideoPlayer,
+				name: 'VideoPlayer',
+				meta: {
+					requiresAuth: true,
 				},
-				{
-					path: '/majors/:id/subjects',
-					component: MajorSubject,
-					name: 'MajorSubject'
-				},
-				{
-					path: '/colleges',
-					component: CollegeList,
-					name: 'CollegeList'
-				},
-				{
-					path: '/recruitment/educations',
-					component: EducationRecruitment,
-					name: 'EducationRecruitment'
-				},
-				{
-					path: '/recruitment/educations/:jobEducationId',
-					component: EducationRoadmap,
-					name: 'EducationRoadmap'
-				},
-				{
-					path: '/recruitment/educations/:jobEducationId/courses/:courseId',
-					component: EducationCourse,
-					name: 'EducationCourse'
-				},
-				{
-					path: '/recruitment/educations/:jobEducationId/courses/:courseId/modules/create',
-					component: EducationCreateModule,
-					name: 'EducationCreateModule'
-				},
-				{
-					path: '/recruitment/educations/:jobEducationId/courses/:courseId/modules/:moduleId',
-					component: EducationModuleDetail,
-					name: 'EducationModuleDetail'
-				},
-				{
-					path: '/courses/create',
-					component: CourseCreate,
-					name: 'CourseCreate'
-				},
-				{
-					path: '/courses/list',
-					component: ListCourse,
-					name: 'ListCourse'
-				},
-				{
-					path: '/courses/:id',
-					component: CourseDetail,
-					name: 'CourseDetail'
-				},
-				{
-					path: '/roadmaps',
-					component: RoadmapDetail,
-				},
-				{
-					path: '/applied-roadmaps',
-					component: AppliedRoadmapDetail,
-				},
-				{
-					path: '/roadmaps/1',
-					component: AppliedCourseList,
-				},
-				{
-					path: '/create-module',
-					component: CreateModule,
-					meta: {
-						requiresAuth: true,
-					},
-				},
-				{
-					path: '/create-course',
-					component: CreateCourse,
-					meta: {
-						requiresAuth: true,
-					},
-				},
-				{
-					path: '/instructor-dashboard',
-					component: InstructorDashboard,
-					meta: {
-						requiresAuth: true,
-					},
-				},
-				{
-					path: '/survey',
-					component: SurveyPage,
-				},
-				{
-					path: '/survey-result',
-					component: SurveyResult,
-				},
-				{
-					path: '/modules/:id',
-					component: VideoPlayer,
-					name: 'VideoPlayer',
-					meta: {
-						requiresAuth: true,
-					},
-				},
-			]
+			},
+		],
+		meta: {
+			requiresAuth: true,
+		},
     },
     {
       path: '/register',
@@ -157,6 +160,6 @@ export default [
     },
     {
       path: '/login',
-      component: LoginForm,
+      component: LoginPage,
     },
   ]
