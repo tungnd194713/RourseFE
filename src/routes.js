@@ -6,6 +6,7 @@ import RegisterForm from './components/RegisterForm'
 // import CourseList from './components/CourseList'
 import HomePage from './pages/HomePage'
 import AppLayout from './layouts/AppLayout'
+import MentorAppLayout from './layouts/MentorAppLayout'
 import SurveyPage from './pages/SurveyPage'
 import SurveyResult from './pages/SurveyResult'
 import AppliedCourseList from './components/AppliedCourseList'
@@ -25,9 +26,10 @@ import CourseCreate from './pages/course/CourseCreate'
 import ListCourse from './pages/course/ListCourse'
 import CourseDetail from './pages/course/CourseDetail'
 import LoginPage from './pages/LoginPage'
+import MentorProfile from './pages/mentor/MentorProfile'
 
 export default [
-    {
+	{
 		path: '/',
 		component: AppLayout,
 		children: [
@@ -153,13 +155,28 @@ export default [
 		meta: {
 			requiresAuth: true,
 		},
-    },
-    {
-      path: '/register',
-      component: RegisterForm,
-    },
-    {
-      path: '/login',
-      component: LoginPage,
-    },
-  ]
+	},
+	{
+		path: '/',
+		component: MentorAppLayout,
+		children: [
+			{
+				path: '/mentor/profile',
+				component: MentorProfile,
+				name: 'MentorProfile'
+			},
+		],
+		meta: {
+			requiresAuth: true,
+			role: 'mentor',
+		},
+	},
+	{
+		path: '/register',
+		component: RegisterForm,
+	},
+	{
+		path: '/login',
+		component: LoginPage,
+	},
+]

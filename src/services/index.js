@@ -4,6 +4,7 @@ import UserService from './UserService'
 import RoadMapService from './RoadMapService'
 import SurveyService from './SurveyService'
 import SubjectService from './SubjectService'
+import MentorService from './MentorService'
 
 export {
   ApiService,
@@ -12,4 +13,5 @@ export {
   RoadMapService,
 	SurveyService,
 	SubjectService,
+	MentorService,
 }
