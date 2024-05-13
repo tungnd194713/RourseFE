@@ -52,11 +52,10 @@
 							<el-button type="primary" @click="addSubject">Thêm</el-button>
 						</el-form-item>
 						<div>
-							<el-button :type="'success'" v-for="tag in this.form.specialized_fields" :key="tag._id" class="my-2 skill-tag-btn py-2 px-2" style="cursor: unset">
+							<el-button :type="'success'" v-for="tag in this.form.specialized_fields" :key="tag._id" class="my-2 skill-tag-btn py-2 px-2" style="cursor: unset; margin-right: 10px; margin-left: 0">
 								{{ convertSubject(tag.subject) }} - {{ convertLevel(tag.level) }}
 								<img src="@/assets/cross-circle.svg" alt="" width="20" style="cursor: pointer" @click="removeSubject(tag.subject)">
 							</el-button>
-							
             </div>
 						<el-form-item>
 							<el-button type="primary" @click="saveProfile">Lưu</el-button>
@@ -170,7 +169,7 @@ export default {
 			this.level = ''
 		},
 		removeSubject(id) {
-			const sindex = this.form.specialized_fields.find((item) => item.subject === id);
+			const sindex = this.form.specialized_fields.findIndex((item) => item.subject === id);
 			if (sindex !== -1) {
 				this.form.specialized_fields.splice(sindex, 1)
 			}

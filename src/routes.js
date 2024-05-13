@@ -27,6 +27,8 @@ import ListCourse from './pages/course/ListCourse'
 import CourseDetail from './pages/course/CourseDetail'
 import LoginPage from './pages/LoginPage'
 import MentorProfile from './pages/mentor/MentorProfile'
+import MentorShiftList from './pages/mentor/MentorShiftList'
+import MentorCourseDetail from './pages/mentor/MentorCourseDetail'
 
 export default [
 	{
@@ -164,6 +166,16 @@ export default [
 				path: '/mentor/profile',
 				component: MentorProfile,
 				name: 'MentorProfile'
+			},
+			{
+				path: '/mentor/shift-list',
+				component: MentorShiftList,
+				name: 'MentorShiftList'
+			},
+			{
+				path: '/mentor/course/:courseId',
+				component: MentorCourseDetail,
+				name: 'MentorCourseDetail'
 			},
 		],
 		meta: {

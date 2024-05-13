@@ -30,7 +30,7 @@
 		</el-menu>
 		<el-menu v-if="$store.getters?.authUser?.role === 'mentor'" default-active="1" class="el-menu-vertical-demo">
 			<el-menu-item index="1">Ca làm việc</el-menu-item>
-			<el-menu-item index="2">Khóa học phụ trách</el-menu-item>
+			<el-menu-item index="2" @click="$router.push({name: 'MentorShiftList'})">Khóa học phụ trách</el-menu-item>
 			<el-menu-item index="3" @click="$router.push({name: 'MentorProfile'})">Hồ sơ</el-menu-item>
 		</el-menu>
 	</el-aside>
