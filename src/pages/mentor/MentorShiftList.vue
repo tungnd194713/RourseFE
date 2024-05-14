@@ -19,78 +19,78 @@
 			</div>
 			<div>
 				<div class="table-container">
-				<el-table
-					class="table"
-					border
-					:data="tableData"
-					empty-text="Không có dữ liệu"
-					style="width: 100%">
+					<el-table
+						class="table"
+						border
+						:data="tableData"
+						empty-text="Không có dữ liệu"
+						style="width: 100%">
+							<el-table-column
+							width="50"
+							label="No.">
+							<template slot-scope="scope">
+								<span>{{ scope.$index + 1 }}</span>
+							</template>
+						</el-table-column>
 						<el-table-column
-						width="50"
-						label="No.">
-						<template slot-scope="scope">
-							<span>{{ scope.$index + 1 }}</span>
-						</template>
-					</el-table-column>
-					<el-table-column
-						width="200"
-						label="Tên người học">
-						<template slot-scope="scope">
-							<span>{{ scope.row.user ? scope.row.user.name : '' }}</span>
-						</template>
-					</el-table-column>
-					<el-table-column
-						width="200"
-						label="Khóa học">
-						<template slot-scope="scope">
-							<span>{{ scope.row.course ? scope.row.course.title : '' }}</span>
-						</template>
-					</el-table-column>
+							width="200"
+							label="Khóa học">
+							<template slot-scope="scope">
+								<span>{{ scope.row.course ? scope.row.course.title : '' }}</span>
+							</template>
+						</el-table-column>
 						<el-table-column
-						label="Thời gian hỗ trợ">
-						<template slot-scope="scope">
-							<div v-for="(data, index) in getShiftTime(scope.row.shift_days)" :key="index">{{ data }}</div>
-						</template>
-					</el-table-column>
-					<el-table-column
-						label="Thời gian bắt đầu">
-						<template slot-scope="scope">
-							<div>{{ scope.row.status === 2 || scope.row.status === 3 ? scope.row.date_start.split('T')[0] : 'Chưa bắt đầu' }}</div>
-						</template>
-					</el-table-column>
-					<el-table-column
-						label="Trạng thái">
-						<template slot-scope="scope">
-							<span>{{ mentorShiftStatus[scope.row.status - 1] }}</span>
-						</template>
-					</el-table-column>
-					<el-table-column
-						width="150"
-						label="">
-						<template slot-scope="scope">
-							<el-dropdown split-button type="primary">
-								Action
-								<el-dropdown-menu slot="dropdown">
-									<el-dropdown-item>
-										<div @click="$router.push({ name: 'MentorCourseDetail', params: { courseId: scope.row.course._id || scope.row.course.id } })">Chi tiết khóa học</div>
-									</el-dropdown-item>
-									<el-dropdown-item v-if="scope.row.status === 1">
-										<div @click="acceptShift(scope.row.id || scope.row._id)">Chấp nhận hỗ trợ</div>
-									</el-dropdown-item>
-									<el-dropdown-item v-if="scope.row.status === 1">
-										<div @click="rejectShift(scope.row.id || scope.row._id)">Từ chối hỗ trợ</div>
-									</el-dropdown-item>
-								</el-dropdown-menu>
-							</el-dropdown>
-						</template>
-					</el-table-column>
-				</el-table>
-				<el-pagination
-					background
-					layout="prev, pager, next"
-					:total="1000">
-				</el-pagination>
-			</div>
+							width="200"
+							label="Tên người học">
+							<template slot-scope="scope">
+								<span>{{ scope.row.user ? scope.row.user.name : '' }}</span>
+							</template>
+						</el-table-column>
+						<el-table-column
+							label="Thời gian hỗ trợ">
+							<template slot-scope="scope">
+								<div v-for="(data, index) in getShiftTime(scope.row.shift_days)" :key="index">{{ data }}</div>
+							</template>
+						</el-table-column>
+						<el-table-column
+							label="Thời gian bắt đầu">
+							<template slot-scope="scope">
+								<div>{{ scope.row.status === 2 || scope.row.status === 3 ? scope.row.date_start.split('T')[0] : 'Chưa bắt đầu' }}</div>
+							</template>
+						</el-table-column>
+						<el-table-column
+							label="Trạng thái">
+							<template slot-scope="scope">
+								<span>{{ mentorShiftStatus[scope.row.status - 1] }}</span>
+							</template>
+						</el-table-column>
+						<el-table-column
+							width="150"
+							label="">
+							<template slot-scope="scope">
+								<el-dropdown split-button type="primary">
+									Action
+									<el-dropdown-menu slot="dropdown">
+										<el-dropdown-item>
+											<div @click="$router.push({ name: 'MentorCourseDetail', params: { courseId: scope.row.course._id || scope.row.course.id } })">Chi tiết khóa học</div>
+										</el-dropdown-item>
+										<el-dropdown-item v-if="scope.row.status === 1">
+											<div @click="acceptShift(scope.row.id || scope.row._id)">Chấp nhận hỗ trợ</div>
+										</el-dropdown-item>
+										<el-dropdown-item v-if="scope.row.status === 1">
+											<div @click="rejectShift(scope.row.id || scope.row._id)">Từ chối hỗ trợ</div>
+										</el-dropdown-item>
+									</el-dropdown-menu>
+								</el-dropdown>
+							</template>
+						</el-table-column>
+					</el-table>
+					<el-pagination
+						background
+						layout="prev, pager, next"
+						:total="1000">
+					</el-pagination>
+				</div>
 			</div>
 		</div>
 	</div>

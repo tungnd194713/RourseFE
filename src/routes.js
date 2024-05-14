@@ -29,6 +29,8 @@ import LoginPage from './pages/LoginPage'
 import MentorProfile from './pages/mentor/MentorProfile'
 import MentorShiftList from './pages/mentor/MentorShiftList'
 import MentorCourseDetail from './pages/mentor/MentorCourseDetail'
+import MentorDashboard from './pages/mentor/MentorDashboard'
+import MentorRatingList from './pages/mentor/MentorRatingList'
 
 export default [
 	{
@@ -163,6 +165,11 @@ export default [
 		component: MentorAppLayout,
 		children: [
 			{
+				path: '/mentor/dashboard',
+				component: MentorDashboard,
+				name: 'MentorDashboard'
+			},
+			{
 				path: '/mentor/profile',
 				component: MentorProfile,
 				name: 'MentorProfile'
@@ -176,6 +183,11 @@ export default [
 				path: '/mentor/course/:courseId',
 				component: MentorCourseDetail,
 				name: 'MentorCourseDetail'
+			},
+			{
+				path: '/mentor/rating-list',
+				component: MentorRatingList,
+				name: 'MentorRatingList'
 			},
 		],
 		meta: {

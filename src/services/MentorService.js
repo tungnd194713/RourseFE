@@ -19,6 +19,15 @@ const MentorService = {
 	showCourse(courseId) {
     return ApiService.get('/mentors/show-course/' + courseId)
   },
+	updateShift(shift) {
+    return ApiService.post('/mentors/update-shift/', shift)
+	},
+	deleteShift(weekday) {
+    return ApiService.delete('/mentors/delete-shift/' + weekday)
+	},
+	getRatingList(body) {
+    return ApiService.post('/mentors/ratings/list/', body)
+	},
 }
 
 export default MentorService
