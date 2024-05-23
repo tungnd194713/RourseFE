@@ -34,6 +34,10 @@
 			<el-menu-item index="3" @click="$router.push({name: 'MentorProfile'})">Hồ sơ</el-menu-item>
 			<el-menu-item index="4" @click="$router.push({name: 'MentorRatingList'})">Đánh giá mentor</el-menu-item>
 		</el-menu>
+		<el-menu v-else-if="$store.getters?.authUser?.role === 'instructor'" default-active="1" class="el-menu-vertical-demo">
+			<el-menu-item index="1" @click="$router.push({name: 'InstructorDashboard'})">Khóa học được giao</el-menu-item>
+			<el-menu-item index="2" @click="$router.push({name: 'InstructorProfile'})">Hồ sơ</el-menu-item>
+		</el-menu>
 	</el-aside>
 </template>
 

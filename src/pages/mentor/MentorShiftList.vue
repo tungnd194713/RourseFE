@@ -65,6 +65,12 @@
 							</template>
 						</el-table-column>
 						<el-table-column
+							label="Ngày gửi yêu cầu">
+							<template slot-scope="scope">
+								<span>{{ scope.row.created_at.split('T')[0] }}</span>
+							</template>
+						</el-table-column>
+						<el-table-column
 							width="150"
 							label="">
 							<template slot-scope="scope">

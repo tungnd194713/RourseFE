@@ -3,6 +3,7 @@ import App from './App.vue'
 import ElementUI from 'element-ui';
 import { ApiService } from '@/services';
 import 'element-ui/lib/theme-chalk/index.css';
+import locale from 'element-ui/lib/locale/lang/vi'
 import routers from './routes'
 import VueRouter from 'vue-router'
 import authMiddleware from './authMiddleware';
@@ -10,7 +11,7 @@ import "bootstrap/dist/css/bootstrap.min.css"
 import "bootstrap"
 import store from '@/stores'
 
-Vue.use(ElementUI);
+Vue.use(ElementUI, {locale});
 
 ApiService.init()
 ApiService.setHeader()

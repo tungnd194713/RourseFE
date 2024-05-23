@@ -77,21 +77,13 @@
       width="30%"
       :before-close="handleClose"
     >
-      <el-form ref="certificateModel" :model="certificateModel" label-width="120px">
-        <el-form-item label="Tên chứng chỉ" required>
-          <el-input v-model="certificateModel.name" placeholder="Nhập tên chứng chỉ"></el-input>
-        </el-form-item>
-        <el-form-item label="Link chứng chỉ" required>
-          <el-input v-model="certificateModel.link" placeholder="Nhập link chứng chỉ"></el-input>
-        </el-form-item>
-      </el-form>
 
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">Hủy</el-button>
         <el-button type="primary" @click="addAccount">Thêm</el-button>
       </span>
     </el-dialog>
-    <el-dialog title="Tạo khóa học mới" :visible.sync="secondDialog" width="80%">
+    <el-dialog title="Cập nhật khóa học" :visible.sync="secondDialog" width="80%">
 			<div class="form-container">
 				<el-form ref="courseForm" :model="courseInfo" label-width="300px">
 					<el-form-item label="Tiêu đề khóa học" class="form-item" prop="title">

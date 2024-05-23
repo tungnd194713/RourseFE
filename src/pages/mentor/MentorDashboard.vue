@@ -66,7 +66,7 @@
 							<el-table
 								class="table"
 								border
-								:data="todayShifts"
+								:data="allShifts"
 								empty-text="Không có dữ liệu"
 								style="width: 100%">
 									<el-table-column
@@ -93,25 +93,25 @@
 								<el-table-column
 									label="Ngày trong tuần">
 									<template slot-scope="scope">
-										<div>{{ convertDayOfWeekEnglishToVietnamese(scope.row.day_of_week) }}</div>
+										<div>{{ convertDayOfWeekEnglishToVietnamese(Object.keys(scope.row.shift_days)[0]) }}</div>
 									</template>
 								</el-table-column>
 								<el-table-column
 									label="Giờ bắt đầu">
 									<template slot-scope="scope">
-										<div>{{ scope.row.shift_days ? decimalToHourMinute(scope.row.shift_days[scope.row.day_of_week].start_hour) : null }}</div>
+										<div>{{ scope.row.shift_days ? decimalToHourMinute(scope.row.shift_days[Object.keys(scope.row.shift_days)[0]].start_hour) : null }}</div>
 									</template>
 								</el-table-column>
 								<el-table-column
 									label="Giờ kết thúc">
 									<template slot-scope="scope">
-										<div>{{ scope.row.shift_days ? decimalToHourMinute(scope.row.shift_days[scope.row.day_of_week].end_hour) : null }}</div>
+										<div>{{ scope.row.shift_days ? decimalToHourMinute(scope.row.shift_days[Object.keys(scope.row.shift_days)[0]].end_hour) : null }}</div>
 									</template>
 								</el-table-column>
 								<el-table-column
 									label="Trạng thái hiện tại">
 									<template slot-scope="scope">
-										<div>{{ weekStatus(scope.row.day_of_week, scope.row.shift_days[scope.row.day_of_week]) }}</div>
+										<div>{{ weekStatus(Object.keys(scope.row.shift_days)[0], scope.row.shift_days[Object.keys(scope.row.shift_days)[0]]) }}</div>
 									</template>
 								</el-table-column>
 								<el-table-column
@@ -321,8 +321,8 @@ export default {
 		},
 		compareMentorShiftsByDay(shiftA, shiftB) {
 			const daysOfWeek = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
-			const dayAIndex = daysOfWeek.indexOf(shiftA.shift_days.day_of_week.toLowerCase());
-			const dayBIndex = daysOfWeek.indexOf(shiftB.shift_days.day_of_week.toLowerCase());
+			const dayAIndex = daysOfWeek.indexOf(Object.keys(shiftA.shift_days)[0].toLowerCase());
+			const dayBIndex = daysOfWeek.indexOf(Object.keys(shiftB.shift_days)[0].toLowerCase());
 			return dayAIndex - dayBIndex;
 		},
 		async getAllShift() {

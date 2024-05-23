@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="px-4 py-4">
-			<h2>Lộ trình học - {{ companyName || 'Tên công ty' }} - {{ jobTitle || 'Vị trí công việc' }} - {{ this.courseInfo.title || 'Tên khóa học' }}</h2>
+			<h2><router-link :to="{name: 'InstructorCourse', params: {...$router.params}}">{{ this.courseInfo.title || 'Tên khóa học' }}</router-link> - Thêm module</h2>
       <div class="d-flex justify-content-between">
 				<h3 class="mx-3">Tạo module: </h3>
 				<el-button type="primary" @click="createModule">Lưu</el-button>
@@ -145,7 +145,7 @@ export default {
     }
   },
 	created() {
-		this.getCourseDetail()
+		this.getInstructorCourseById()
 	},
   methods: {
     submitVideo() {
@@ -157,13 +157,10 @@ export default {
     getVideoDuration(value) {
       this.videoDuration = value
     },
-		async getCourseDetail() {
-				const { data } = await RoadMapService.getCourseDetail(this.$route.params.jobEducationId, this.$route.params.courseId);
+		async getInstructorCourseById() {
+				const { data } = await RoadMapService.getInstructorCourseById(this.$route.params.instructorCourseId);
 				if (data) {
-						this.courseInfo = data;
-						this.tableData = this.courseInfo.modules
-						this.companyName = data.company.company_name
-            this.jobTitle = data.job.title
+                    this.courseInfo = data.course;
 				}
 		},
 		async createModule() {
@@ -193,7 +190,7 @@ export default {
 
 						const response = await RoadMapService.createEducationModule(this.$route.params.courseId, formData)
 						if (response.status === 200) {
-							this.$router.push({ name: 'EducationCourse', params: { ...this.$route.params } })
+							this.$router.push({ name: 'InstructorCourse', params: { ...this.$route.params } })
 							this.$notify({
 								title: 'Success',
 								message: 'Đã tạo module'

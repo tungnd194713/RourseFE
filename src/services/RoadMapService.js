@@ -49,8 +49,8 @@ const RoadMapService = {
   removeCourseFromRoadmap(jobEducationId, courseId) {
     return ApiService.delete(`/roadmap/education-requests/` + jobEducationId + '/courses/' + courseId);
   },
-	createEducationModule(jobEducationId, courseId, body) {
-    return ApiService.post(`/roadmap/education-requests/` + jobEducationId + '/courses/' + courseId + '/modules/create', body);
+	createEducationModule(courseId, body) {
+    return ApiService.post(`/roadmap/instructor-courses/courses/` + courseId + '/modules/create', body);
   },
 	removeEducationModuleFromCourse(jobEducationId, courseId, moduleId) {
     return ApiService.delete(`/roadmap/education-requests/` + jobEducationId + '/courses/' + courseId + '/modules/' + moduleId);
@@ -60,6 +60,48 @@ const RoadMapService = {
   },
   updateEducationModule(jobEducationId, courseId, moduleId, body) {
     return ApiService.update(`/roadmap/education-requests/` + jobEducationId + '/courses/' + courseId + '/modules/' + moduleId, body);
+  },
+  getListInstructor(body) {
+    return ApiService.post('/roadmap/education-requests/instructor-list', body);
+  },
+  getListInstructorCourse(body) {
+    return ApiService.post(`/roadmap/education-requests/instructor-courses/list`, body);
+  },
+  getInstructorCourseById(instructorCourseId) {
+    return ApiService.get(`/roadmap/instructor-courses/${instructorCourseId}`);
+  },
+  signAsComplete(instructorCourseId) {
+    return ApiService.get(`/roadmap/instructor-courses/${instructorCourseId}/sign-as-complete`);
+  },
+  goToFix(instructorCourseId) {
+    return ApiService.get(`/roadmap/instructor-courses/${instructorCourseId}/go-to-fix`);
+  },
+  getListInstructorByEducation(jobEducationId, body) {
+    return ApiService.post(`/roadmap/education-requests/${jobEducationId}/instructor-courses/`, body);
+  },
+  createInstructorCourse(jobEducationId, body) {
+    return ApiService.post(`/roadmap/education-requests/${jobEducationId}/instructor-courses/create`, body);
+  },
+  createNewTestToCourse(courseId, body) {
+    return ApiService.post(`/roadmap/instructor-courses/courses/${courseId}/tests/create`, body);
+  },
+  updateTestById(testId, body) {
+    return ApiService.update(`/roadmap/instructor-courses/tests/${testId}`, body);
+  },
+  getTestById(testId) {
+    return ApiService.get(`/roadmap/instructor-courses/tests/${testId}`);
+  },
+  deleteTestById(testId) {
+    return ApiService.delete(`/roadmap/instructor-courses/tests/${testId}`);
+  },
+  createNewQuestionToTest(testId, body) {
+    return ApiService.post(`/roadmap/instructor-courses/tests/${testId}/questions/create`, body);
+  },
+  updateQuestionById(questionId, body) {
+    return ApiService.update(`/roadmap/instructor-courses/questions/${questionId}`, body);
+  },
+  deleteQuestionById(questionId) {
+    return ApiService.delete(`/roadmap/instructor-courses/questions/${questionId}`);
   },
 }
 

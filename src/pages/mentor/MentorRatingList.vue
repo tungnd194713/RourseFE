@@ -4,7 +4,7 @@
 			<h2 class="title">Danh sách đánh giá mentor</h2>
 			<div class="average-rating">
 				<h3>Đánh giá trung bình:</h3>
-				<el-rate v-model="averageRating" :disabled="true" allow-half show-text></el-rate>
+				<el-rate v-model="averageRating" :disabled="true" allow-half></el-rate>
 			</div>
 			<div class="average-rating rating-count d-flex">
 				<h3 class="mx-0 my-0">Số lượt đánh giá:</h3>
@@ -22,9 +22,9 @@
 						{{ scope.row.course.title }}
 					</template>
 				</el-table-column>
-				<el-table-column prop="rating_star" label="Rating" width="100">
+				<el-table-column prop="rating_star" label="Rating" width="200">
 					<template slot-scope="scope">
-						<el-rate :value="scope.row.rating_star" disabled allow-half show-text></el-rate>
+						<el-rate :value="scope.row.rating_star" disabled></el-rate>
 					</template>
 				</el-table-column>
 				<el-table-column prop="rating_content" label="Content">
@@ -33,8 +33,8 @@
 					</template>
 				</el-table-column>
 				<el-table-column prop="createdAt" label="Ngày đánh giá" width="150">
-					<template slot-scope="scope">
-						{{ formatDate(scope.row.createdAt) }}
+					<template slot-scope="">
+						{{ formatDate(Date.now()) }}
 					</template>
 				</el-table-column>
 			</el-table>

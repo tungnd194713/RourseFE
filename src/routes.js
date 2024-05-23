@@ -1,7 +1,6 @@
 import VideoPlayer from './components/VideoPlayer'
 import CreateModule from './components/CreateModule'
 import CreateCourse from './components/CreateCourse'
-import InstructorDashboard from './components/InstructorDashboard'
 import RegisterForm from './components/RegisterForm'
 // import CourseList from './components/CourseList'
 import HomePage from './pages/HomePage'
@@ -31,6 +30,13 @@ import MentorShiftList from './pages/mentor/MentorShiftList'
 import MentorCourseDetail from './pages/mentor/MentorCourseDetail'
 import MentorDashboard from './pages/mentor/MentorDashboard'
 import MentorRatingList from './pages/mentor/MentorRatingList'
+import InstructorDashboard from './pages/instructor/InstructorDashboard'
+import InstructorProfile from './pages/instructor/InstructorProfile'
+import InstructorCourse from './pages/instructor/InstructorCourse'
+import InstructorCreateModule from './pages/instructor/InstructorCreateModule'
+import InstructorExamDetail from './pages/instructor/InstructorExamDetail'
+import InstructorTestPreview from './pages/instructor/InstructorTestPreview'
+// import InstructorModuleDetail from './pages/instructor/InstructorModuleDetail'
 
 export default [
 	{
@@ -133,13 +139,6 @@ export default [
 				},
 			},
 			{
-				path: '/instructor-dashboard',
-				component: InstructorDashboard,
-				meta: {
-					requiresAuth: true,
-				},
-			},
-			{
 				path: '/survey',
 				component: SurveyPage,
 			},
@@ -188,6 +187,46 @@ export default [
 				path: '/mentor/rating-list',
 				component: MentorRatingList,
 				name: 'MentorRatingList'
+			},
+		],
+		meta: {
+			requiresAuth: true,
+			role: 'mentor',
+		},
+	},
+	{
+		path: '/',
+		component: AppLayout,
+		children: [
+			{
+				path: '/instructors/dashboard',
+				component: InstructorDashboard,
+				name: 'InstructorDashboard'
+			},
+			{
+				path: '/instructors/instructor-courses/:instructorCourseId',
+				component: InstructorCourse,
+				name: 'InstructorCourse'
+			},
+			{
+				path: '/instructors/instructor-courses/:instructorCourseId/courses/:courseId/modules/create',
+				component: InstructorCreateModule,
+				name: 'InstructorCreateModule'
+			},
+			{
+				path: '/instructors/instructor-courses/:instructorCourseId/courses/:courseId/test/:testId',
+				component: InstructorExamDetail,
+				name: 'InstructorExamDetail'
+			},
+			{
+				path: '/instructors/instructor-courses/test/:testId/preview',
+				component: InstructorTestPreview,
+				name: 'InstructorTestPreview'
+			},
+			{
+				path: '/instructors/profile',
+				component: InstructorProfile,
+				name: 'InstructorProfile'
 			},
 		],
 		meta: {
