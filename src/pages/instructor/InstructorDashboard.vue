@@ -110,14 +110,14 @@
                                 <el-table-column
 									label="Trạng thái">
 									<template slot-scope="scope">
-										<div>{{ scope.row.status }}</div>
+										<div>{{ instructorCourseStatus[scope.row.status] }}</div>
 									</template>
 								</el-table-column>
 								<el-table-column
 									width="350"
 									label="">
 									<template slot-scope="scope">
-										<el-button type="warning" @click="goToFixInstructorCourse(scope.row._id || scope.row.id)">Sửa khóa học</el-button>
+										<el-button v-if="scope.row.status === 1" type="warning" @click="goToFixInstructorCourse(scope.row._id || scope.row.id)">Sửa khóa học</el-button>
 										<el-button @click="$router.push({ name: 'InstructorCourse', params: { instructorCourseId: scope.row._id || scope.row.id } })">Xem chi tiết</el-button>
 									</template>
 								</el-table-column>
@@ -201,6 +201,7 @@
 </template>
 <script>
 import { RoadMapService } from '@/services'
+import instructorCourseStatus from '@/constants/instructorCourseStatus'
 
 export default {
 	data() {
@@ -210,6 +211,7 @@ export default {
             inProgressCourses: [],
             completedCourses: [],
             newCourses: [],
+			instructorCourseStatus,
 		}
 	},
 	

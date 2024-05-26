@@ -70,6 +70,9 @@ const RoadMapService = {
   getInstructorCourseById(instructorCourseId) {
     return ApiService.get(`/roadmap/instructor-courses/${instructorCourseId}`);
   },
+  updateInstructorCourseStatus(instructorCourseId, body) {
+    return ApiService.update(`/roadmap/instructor-courses/${instructorCourseId}/update-status`, body);
+  },
   signAsComplete(instructorCourseId) {
     return ApiService.get(`/roadmap/instructor-courses/${instructorCourseId}/sign-as-complete`);
   },

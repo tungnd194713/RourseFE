@@ -1,8 +1,18 @@
 <template>
 	<div>
 		<div class="px-4 py-4">
-			<div class="d-flex justify-content-between">
-                <h2>Lộ trình học - {{ companyName || 'Tên công ty' }} - {{ jobTitle || 'Vị trí công việc' }} - {{ this.courseInfo.title || 'Tên khóa học' }}</h2>
+			<div class="d-flex justify-content-between mb-4">
+				<el-breadcrumb separator-class="el-icon-arrow-right">
+					<el-breadcrumb-item style="font-size: 32px" :to="{ name: 'EducationRecruitment' }">
+						Lộ trình học
+					</el-breadcrumb-item>
+					<el-breadcrumb-item style="font-size: 32px" :to="{ name: 'EducationRoadmap', params: { ...$route.params } }">
+						{{ jobTitle || 'Vị trí công việc' }}
+					</el-breadcrumb-item>
+					<el-breadcrumb-item style="font-size: 32px">
+						{{ this.courseInfo.title || 'Tên khóa học' }}
+					</el-breadcrumb-item>
+				</el-breadcrumb>
                 <el-button @click="secondDialog = true">Sửa thông tin</el-button>
             </div>
             <h4>Chi phí: {{ this.courseInfo.point_cost }} point</h4>

@@ -1,14 +1,22 @@
 <template>
 	<div>
 		<div class="px-4 py-4">
-			<h2>Lộ trình học - {{ companyName || 'Tên công ty' }} - {{ jobTitle || 'Vị trí công việc' }}</h2>
+			<el-breadcrumb separator-class="el-icon-arrow-right" class="mb-4">
+				<el-breadcrumb-item style="font-size: 32px" :to="{ name: 'EducationRecruitment' }">
+					Lộ trình học
+				</el-breadcrumb-item>
+				<el-breadcrumb-item style="font-size: 32px">
+					{{ jobTitle || 'Vị trí công việc' }}
+				</el-breadcrumb-item>
+			</el-breadcrumb>
+			<!-- <h2>Lộ trình học - {{ companyName || 'Tên công ty' }} - {{ jobTitle || 'Vị trí công việc' }}</h2> -->
             <h4>Tags kỹ năng: <el-button type="primary">Xem yêu cầu gốc</el-button></h4>
             <div>
 				<el-dropdown v-for="tag in tags" :key="tag._id" style="margin-left: 0; margin-right: 10px">
-					<el-button :type="tag.isMatched ? 'success' : 'info'" class="my-2">
+					<el-button :type="tagButtonColor(tag)" class="my-2">
 						{{ tag.skill }} - {{ tag.level }}
 					</el-button>
-					<el-dropdown-menu v-if="!tag.isMatched" slot="dropdown">
+					<el-dropdown-menu v-if="!tag.isMatched && !tag.isHalfMatched" slot="dropdown">
 						<el-dropdown-item>
 							<div @click="openCreateModalBySkill(tag)">Tạo mới khóa học</div>
 						</el-dropdown-item>
@@ -95,7 +103,7 @@
 						</el-pagination> -->
 					</div>
 				</el-tab-pane>
-				<el-tab-pane label="Tất cả khóa học" name="instructorCourses">
+				<el-tab-pane label="Khóa học đang thực hiện" name="instructorCourses">
 					<div class="table-container">
 						<el-table
 							class="table"
@@ -135,26 +143,43 @@
 							<el-table-column
 								label="Thời gian hoàn thành yêu cầu">
 								<template slot-scope="scope">
-									<span style="margin-left: 10px">{{ scope.row.instructorCourse ? scope.row.instructorCourse.deadline : '' }}</span>
+									<span style="margin-left: 10px">{{ scope.row.instructorCourse ? scope.row.instructorCourse.deadline.split('T')[0] : '' }}</span>
 								</template>
 							</el-table-column>
 							<el-table-column
 								label="Trạng thái">
 								<template slot-scope="scope">
-									<span style="margin-left: 10px">{{ scope.row.instructorCourse ? scope.row.instructorCourse.status : 'Đã duyệt' }}</span>
+									<span style="margin-left: 10px">{{ scope.row.instructorCourse ? instructorCourseStatus[scope.row.instructorCourse.status] : 'Đã duyệt' }}</span>
 								</template>
 							</el-table-column>
 							<el-table-column
 								width="200"
 								label="">
 								<template slot-scope="scope">
-									<el-button
-										size="mini"
-										@click="$router.push({ name: 'EducationCourse',  params: { jobEducationId: $route.params.jobEducationId, courseId: scope.row.id || scope.row._id } })">Xem chi tiết</el-button>
-									<el-button
-										size="mini"
-										type="primary"
-										@click="removeCourseFromRoadmap(scope.row.id || scope.row._id)">Xóa</el-button>
+									<el-dropdown>
+										<el-button type="primary">
+											Action
+											<i class="el-icon-arrow-down el-icon--right"></i>
+										</el-button>
+										<el-dropdown-menu slot="dropdown">
+											<el-dropdown-item v-if="scope.row.instructorCourse.status === 2">
+												<div @click="addExistingEducationCourse(scope.row.id || scope.row._id)">Thêm vào lộ trình</div>
+											</el-dropdown-item>
+											<el-dropdown-item>
+												<div @click="$router.push({ name: 'EducationCourse',  params: { jobEducationId: $route.params.jobEducationId, courseId: scope.row.id || scope.row._id } })">Xem chi tiết</div>
+											</el-dropdown-item>
+											<el-dropdown-item v-if="scope.row.instructorCourse.status === 1">
+												<div @click="approveCourse(scope.row.instructorCourse.id || scope.row.instructorCourse._id)">Duyệt khóa học</div>
+											</el-dropdown-item>
+											<el-dropdown-item v-if="scope.row.instructorCourse.status === 1">
+												<div @click="rejectCourse(scope.row.instructorCourse.id || scope.row.instructorCourse._id)">Từ chối duyệt</div>
+											</el-dropdown-item>
+											<el-dropdown-item v-if="scope.row.instructorCourse.status === 2">
+												<div @click="undoApprove(scope.row.instructorCourse.id || scope.row.instructorCourse._id)">Hủy duyệt</div>
+											</el-dropdown-item>
+										</el-dropdown-menu>
+									</el-dropdown>
+									
 								</template>
 							</el-table-column>
 						</el-table>
@@ -282,6 +307,7 @@
 </template>
 <script>
 import jobEducationStatus from '@/constants/jobEducationStatus'
+import instructorCourseStatus from '@/constants/instructorCourseStatus'
 import { RoadMapService, CourseService, SubjectService } from '@/services'
 
 export default {
@@ -323,6 +349,7 @@ export default {
                 link: '',
             },
             jobEducationStatus,
+			instructorCourseStatus,
             subjectList: [],
             courseList: [],
             skillId: '',
@@ -393,16 +420,8 @@ export default {
 		},
         async getEducationRequests() {
             const { data } = await RoadMapService.getEducationRoadmap(this.$route.params.jobEducationId)
-            this.tableData = [...data.allCourses].filter((item) => {
-				if (!item.instructorCourse) {
-					return item;
-				} else {
-					if (item.instructorCourse.is_done) {
-						return item;
-					}
-				}
-			})
-			this.instructorData = [...data.allCourses]
+            this.tableData = [...data.allCourses].filter((item) => data.courses.includes(item.id))
+			this.instructorData = [...data.allCourses].filter((item) => !data.courses.includes(item.id))
             this.addedCourseIds = this.tableData.map((item) => item.id || item._id);
             this.companyName = data.company.company_name
             this.jobTitle = data.job.title
@@ -451,6 +470,36 @@ export default {
                 }
             }
         },
+		async approveCourse(instructorCourseId) {
+			const { data } = await RoadMapService.updateInstructorCourseStatus(instructorCourseId, { status: 2 });
+			if (data) {
+				this.$notify({
+					title: 'Success',
+					message: 'Đã phê duyệt khóa học, sẵn sàng thêm vào lộ trình'
+				});
+				await this.getEducationRequests()
+			}
+		},
+		async rejectCourse(instructorCourseId) {
+			const { data } = await RoadMapService.updateInstructorCourseStatus(instructorCourseId, { status: 3 });
+			if (data) {
+				this.$notify({
+					title: 'Success',
+					message: 'Đã từ chối khóa học'
+				});
+				await this.getEducationRequests()
+			}
+		},
+		async undoApprove(instructorCourseId) {
+			const { data } = await RoadMapService.updateInstructorCourseStatus(instructorCourseId, { status: 1 });
+			if (data) {
+				this.$notify({
+					title: 'Success',
+					message: 'Đã hủy duyệt khóa học'
+				});
+				await this.getEducationRequests()
+			}
+		},
 		openCreateCourseDialog() {
 			this.secondDialog = true;
 			this.course = {
@@ -466,6 +515,15 @@ export default {
         },
         checkSkillMatched() {
             this.tags.forEach((tag) => {
+				let isHalfChecked = false;
+				this.instructorData.forEach((course) => {
+                    if (!isHalfChecked) {
+                        if(course.skill_tags.find((item) => this.skillLevelCompare(tag.level, item.level) && (item.skill._id === tag._id || item.skill.id === tag._id || item.skill.id === tag.id))) {
+                            tag.isHalfMatched = true;
+                            isHalfChecked = true
+                        }
+                    }
+                })
                 let isChecked = false;
                 this.tableData.forEach((course) => {
                     if (!isChecked) {
@@ -477,6 +535,11 @@ export default {
                 })
             })
         },
+		tagButtonColor(tag) {
+			if (tag.isMatched) return 'success';
+			if (tag.isHalfMatched) return 'warning';
+			return 'info';
+		},
         skillLevelCompare(requirementLevel, profileLevel) {
             if (requirementLevel == 'Advanced') {
                 if (profileLevel == 'Advanced') return 1;

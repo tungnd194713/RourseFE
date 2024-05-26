@@ -1,9 +1,22 @@
 <template>
   <div>
     <div class="px-4 py-4">
-			<h2>Lộ trình học - {{ companyName || 'Tên công ty' }} - {{ jobTitle || 'Vị trí công việc' }} - {{ this.courseInfo.title || 'Tên khóa học' }}</h2>
+      <el-breadcrumb separator-class="el-icon-arrow-right" class="mb-4">
+        <el-breadcrumb-item style="font-size: 32px" :to="{ name: 'EducationRecruitment' }">
+          Lộ trình học
+        </el-breadcrumb-item>
+        <el-breadcrumb-item style="font-size: 32px" :to="{ name: 'EducationRoadmap', params: { ...$route.params } }">
+          {{ jobTitle || 'Vị trí công việc' }}
+        </el-breadcrumb-item>
+        <el-breadcrumb-item style="font-size: 32px" :to="{ name: 'EducationCourse', params: { ...$route.params } }">
+          {{ this.courseInfo.title || 'Tên khóa học' }}
+        </el-breadcrumb-item>
+        <el-breadcrumb-item style="font-size: 32px">
+          Chi tiết module
+        </el-breadcrumb-item>
+      </el-breadcrumb>
       <div class="d-flex justify-content-between">
-				<h3 class="mx-3">Chi tiết module: </h3>
+				<h3 class="mx-3">Module: </h3>
 				<el-button type="primary" @click="updateModule">Lưu</el-button>
       </div>
       <div>
