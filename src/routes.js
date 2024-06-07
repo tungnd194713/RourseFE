@@ -37,6 +37,10 @@ import InstructorCreateModule from './pages/instructor/InstructorCreateModule'
 import InstructorExamDetail from './pages/instructor/InstructorExamDetail'
 import InstructorTestPreview from './pages/instructor/InstructorTestPreview'
 // import InstructorModuleDetail from './pages/instructor/InstructorModuleDetail'
+import CompanyList from './pages/users_management/CompanyList'
+import InstructorList from './pages/users_management/InstructorList'
+import JobSeekerList from './pages/users_management/JobSeekerList'
+import MentorList from './pages/users_management/MentorList'
 
 export default [
 	{
@@ -96,6 +100,26 @@ export default [
 				path: '/recruitment/educations/:jobEducationId/courses/:courseId/modules/:moduleId',
 				component: EducationModuleDetail,
 				name: 'EducationModuleDetail'
+			},
+			{
+				path: '/management/users/list',
+				component: JobSeekerList,
+				name: 'JobSeekerList'
+			},
+			{
+				path: '/management/companies/list',
+				component: CompanyList,
+				name: 'CompanyList'
+			},
+			{
+				path: '/management/mentors/list',
+				component: MentorList,
+				name: 'MentorList'
+			},
+			{
+				path: '/management/instructors/list',
+				component: InstructorList,
+				name: 'InstructorList'
 			},
 			{
 				path: '/courses/create',

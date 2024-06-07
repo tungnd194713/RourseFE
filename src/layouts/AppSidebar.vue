@@ -27,6 +27,18 @@
 				<!-- <el-menu-item index="5-2" @click="$router.push({name: 'MajorList'})">Chuyên ngành</el-menu-item>
 				<el-menu-item index="5-3" @click="$router.push({name: 'CollegeList'})">Đại học</el-menu-item> -->
 			</el-submenu>
+			<el-submenu index="6">
+				<template slot="title">Quản lí người dùng</template>
+				<el-menu-item index="6-1" @click="$router.push({name: 'JobSeekerList'})">Người tìm việc</el-menu-item>
+				<el-menu-item index="6-2" @click="$router.push({name: 'CompanyList'})">Doanh nghiệp</el-menu-item>
+				<el-menu-item index="6-3" @click="$router.push({name: 'MentorList'})">Mentor</el-menu-item>
+				<el-menu-item index="6-4" @click="$router.push({name: 'InstructorList'})">Instructor</el-menu-item>
+			</el-submenu>
+			<el-submenu index="7">
+				<template slot="title">Quản lí thanh toán</template>
+				<el-menu-item index="7-1" @click="$router.push({name: ''})">Học bổng</el-menu-item>
+				<el-menu-item index="7-2" @click="$router.push({name: ''})">Khóa học</el-menu-item>
+			</el-submenu>
 		</el-menu>
 		<el-menu v-if="$store.getters?.authUser?.role === 'mentor'" default-active="1" class="el-menu-vertical-demo">
 			<el-menu-item index="1" @click="$router.push({name: 'MentorDashboard'})">Ca làm việc</el-menu-item>
