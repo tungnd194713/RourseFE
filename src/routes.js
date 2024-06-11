@@ -21,6 +21,7 @@ import EducationRoadmap from './pages/recruitment/EducationRoadmap'
 import EducationCourse from './pages/recruitment/EducationCourse'
 import EducationCreateModule from './pages/recruitment/EducationCreateModule'
 import EducationModuleDetail from './pages/recruitment/EducationModuleDetail'
+import PublishedEducations from './pages/recruitment/PublishedEducations'
 import CourseCreate from './pages/course/CourseCreate'
 import ListCourse from './pages/course/ListCourse'
 import CourseDetail from './pages/course/CourseDetail'
@@ -80,6 +81,11 @@ export default [
 				path: '/recruitment/educations',
 				component: EducationRecruitment,
 				name: 'EducationRecruitment'
+			},
+			{
+				path: '/recruitment/published-educations',
+				component: PublishedEducations,
+				name: 'PublishedEducations'
 			},
 			{
 				path: '/recruitment/educations/:jobEducationId',
@@ -181,6 +187,7 @@ export default [
 		],
 		meta: {
 			requiresAuth: true,
+			role: 'admin',
 		},
 	},
 	{
@@ -255,7 +262,7 @@ export default [
 		],
 		meta: {
 			requiresAuth: true,
-			role: 'mentor',
+			role: 'instructor',
 		},
 	},
 	{

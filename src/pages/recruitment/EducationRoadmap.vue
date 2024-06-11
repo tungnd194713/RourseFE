@@ -265,7 +265,7 @@
 							<img :src="course.thumbnail" alt="Thumbnail Preview" />
 						</div>
 					</el-form-item> -->
-					<el-form-item label="Môn học" class="form-item" prop="tags">
+					<el-form-item label="Mục tiêu kỹ năng" class="form-item" prop="tags">
 						<div v-for="(tag, index) in course.tags" :key="index" class="tag-level-group">
 							<el-select v-model="tag.skill" placeholder="Select tag" class="tag-select">
 								<el-option v-for="tagItem in subjectList" :key="tagItem.id" :label="tagItem.name" :value="tagItem.id"></el-option>

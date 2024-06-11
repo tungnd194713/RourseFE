@@ -28,7 +28,7 @@
 								</el-table-column>
 								<el-table-column
 									width="200"
-									label="Môn học">
+									label="Mục tiêu kỹ năng">
 									<template slot-scope="scope">
 										<div v-for="(tag, index) in scope.row.course.skill_tags" :key="index">
                                             <span>{{ tag.skill.name }} - {{ tag.level }}</span>
@@ -88,7 +88,7 @@
 								</el-table-column>
 								<el-table-column
 									width="200"
-									label="Môn học">
+									label="Mục tiêu kỹ năng">
 									<template slot-scope="scope">
 										<div v-for="(tag, index) in scope.row.course.skill_tags" :key="index">
                                             <span>{{ tag.skill.name }} - {{ tag.level }}</span>
@@ -148,7 +148,7 @@
 								</el-table-column>
 								<el-table-column
 									width="200"
-									label="Môn học">
+									label="Mục tiêu kỹ năng">
 									<template slot-scope="scope">
 										<div v-for="(tag, index) in scope.row.course.skill_tags" :key="index">
                                             <span>{{ tag.skill.name }} - {{ tag.level }}</span>

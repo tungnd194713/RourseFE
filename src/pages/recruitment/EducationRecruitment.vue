@@ -311,4 +311,7 @@ export default {
 .cell {
     word-break: keep-all !important;
 }
+thead {
+	color: #909399 !important;
+}
 </style>

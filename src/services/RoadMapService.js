@@ -25,6 +25,9 @@ const RoadMapService = {
   completeMilestone(milestone_id) {
     return ApiService.post(`/roadmap/milestone/${milestone_id}/complete`);
   },
+	getPublishedEducations() {
+    return ApiService.post(`/roadmap/educations`);
+  },
   getEducationRequests() {
     return ApiService.post(`/roadmap/education-requests`);
   },
