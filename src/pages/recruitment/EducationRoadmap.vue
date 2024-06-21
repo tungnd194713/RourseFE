@@ -137,13 +137,13 @@
 							<el-table-column
 								label="Instructor phụ trách">
 								<template slot-scope="scope">
-									<span style="margin-left: 10px">{{ scope.row.instructorCourse ? scope.row.instructorCourse.instructor.instructor_name : 'Some instructor' }}</span>
+									<span style="margin-left: 10px">{{ scope.row.instructorCourse.instructor ? scope.row.instructorCourse.instructor.instructor_name : 'Admin' }}</span>
 								</template>
 							</el-table-column>
 							<el-table-column
 								label="Thời gian hoàn thành yêu cầu">
 								<template slot-scope="scope">
-									<span style="margin-left: 10px">{{ scope.row.instructorCourse ? scope.row.instructorCourse.deadline.split('T')[0] : '' }}</span>
+									<span style="margin-left: 10px">{{ scope.row.instructorCourse.deadline ? scope.row.instructorCourse.deadline.split('T')[0] : '' }}</span>
 								</template>
 							</el-table-column>
 							<el-table-column
@@ -277,19 +277,22 @@
 						</div>
 						<el-button type="primary" icon="el-icon-plus" @click="addTag" class="add-tag-btn">Thêm tag</el-button>
 					</el-form-item>
-					<el-form-item label="Instructor" class="form-item" prop="instructor">
+					<el-form-item label="Giao nhiệm vụ" class="form-item" prop="instructorCourse">
+						<el-switch v-model="course.isInstructor"></el-switch>
+					</el-form-item>
+					<el-form-item v-if="course.isInstructor" label="Instructor" class="form-item" prop="instructor">
 						<el-select style="margin-right: 20px" v-model="course.instructor" placeholder="Chọn instructor">
 							<el-option v-for="instructor in instructorList" :key="instructor.id" :label="instructor.user.name" :value="instructor.id"> </el-option>
 						</el-select>
 					</el-form-item>
-					<el-form-item label="Deadline" class="form-item" prop="deadline">
+					<el-form-item v-if="course.isInstructor" label="Deadline" class="form-item" prop="deadline">
 						<el-date-picker
 							v-model="course.deadline"
 							type="date"
 							placeholder="Chọn ngày yêu cầu hoàn thành">
 						</el-date-picker>
 					</el-form-item>
-					<el-form-item label="Yêu cầu khóa học" class="form-item" prop="requirement">
+					<el-form-item v-if="course.isInstructor" label="Yêu cầu khóa học" class="form-item" prop="requirement">
 						<el-input
 							type="textarea"
 							:rows="4"
@@ -338,7 +341,8 @@ export default {
 				point_cost: 0,
 				instructor: '',
 				deadline: '',
-				requirement: ''
+				requirement: '',
+				isInstructor: false,
 			},
 			fileList: [],
             tags: [],
@@ -596,6 +600,7 @@ export default {
 						formData.append('description', this.course.description);
 						formData.append('estimated_time', this.course.estimated_time);
 						formData.append('point_cost', this.course.point_cost);
+						formData.append('isInstructor', this.course.isInstructor);
 						formData.append('instructor', this.course.instructor);
 						formData.append('deadline', this.course.deadline);
 						formData.append('requirement', this.course.requirement);

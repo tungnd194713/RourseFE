@@ -11,6 +11,7 @@ import SurveyResult from './pages/SurveyResult'
 import AppliedCourseList from './components/AppliedCourseList'
 import RoadmapDetail from './components/roadmap/RoadmapDetail'
 import AppliedRoadmapDetail from './components/roadmap/AppliedRoadmapDetail'
+import SubjectList from './pages/subject/SubjectList'
 import CertificateList from './pages/certificate/CertificateList'
 import CertificateSubject from './pages/certificate/CertificateSubject'
 import MajorList from './pages/major/MajorList'
@@ -35,6 +36,8 @@ import InstructorDashboard from './pages/instructor/InstructorDashboard'
 import InstructorProfile from './pages/instructor/InstructorProfile'
 import InstructorCourse from './pages/instructor/InstructorCourse'
 import InstructorCreateModule from './pages/instructor/InstructorCreateModule'
+import ExamDetail from './pages/recruitment/ExamDetail'
+import TestPreview from './pages/recruitment/TestPreview'
 import InstructorExamDetail from './pages/instructor/InstructorExamDetail'
 import InstructorTestPreview from './pages/instructor/InstructorTestPreview'
 // import InstructorModuleDetail from './pages/instructor/InstructorModuleDetail'
@@ -42,6 +45,7 @@ import CompanyList from './pages/users_management/CompanyList'
 import InstructorList from './pages/users_management/InstructorList'
 import JobSeekerList from './pages/users_management/JobSeekerList'
 import MentorList from './pages/users_management/MentorList'
+import CourseTransactionList from './pages/transactions/CourseTransactionList'
 
 export default [
 	{
@@ -51,6 +55,11 @@ export default [
 			{
 				path: '',
 				component: HomePage,
+			},
+			{
+				path: '/subjects',
+				component: SubjectList,
+				name: 'SubjectList'
 			},
 			{
 				path: '/certificates',
@@ -98,6 +107,21 @@ export default [
 				name: 'EducationCourse'
 			},
 			{
+				path: '/recruitment/educations/:jobEducationId/courses/:courseId/tests/:testId',
+				component: ExamDetail,
+				name: 'ExamDetail'
+			},
+			{
+				path: '/recruitment/educations/tests/:testId/preview',
+				component: TestPreview,
+				name: 'TestPreview'
+			},
+			{
+				path: '/recruitment/educations/:jobEducationId/courses/:courseId',
+				component: EducationCourse,
+				name: 'EducationCourse'
+			},
+			{
 				path: '/recruitment/educations/:jobEducationId/courses/:courseId/modules/create',
 				component: EducationCreateModule,
 				name: 'EducationCreateModule'
@@ -126,6 +150,11 @@ export default [
 				path: '/management/instructors/list',
 				component: InstructorList,
 				name: 'InstructorList'
+			},
+			{
+				path: '/course-transactions/list',
+				component: CourseTransactionList,
+				name: 'CourseTransactionList'
 			},
 			{
 				path: '/courses/create',
@@ -245,12 +274,12 @@ export default [
 				name: 'InstructorCreateModule'
 			},
 			{
-				path: '/instructors/instructor-courses/:instructorCourseId/courses/:courseId/test/:testId',
+				path: '/instructors/instructor-courses/:instructorCourseId/courses/:courseId/tests/:testId',
 				component: InstructorExamDetail,
 				name: 'InstructorExamDetail'
 			},
 			{
-				path: '/instructors/instructor-courses/test/:testId/preview',
+				path: '/instructors/instructor-courses/tests/:testId/preview',
 				component: InstructorTestPreview,
 				name: 'InstructorTestPreview'
 			},

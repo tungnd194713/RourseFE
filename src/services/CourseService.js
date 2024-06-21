@@ -37,6 +37,9 @@ const CourseService = {
 	findCourseById(courseId) {
 		return ApiService.post(`/course/${courseId}`);
 	},
+	getCourseTransactions(data) {
+		return ApiService.post(`/course/transactions/list`, data);
+	},
 }
 
 export default CourseService

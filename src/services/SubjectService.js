@@ -10,6 +10,12 @@ const SubjectService = {
 	getAllSubject(body) {
 		return ApiService.post(`/technical/subjects`, body)
 	},
+	getSubjectList(current_page = 1, per_page = 10, body = {name: ''}) {
+		return ApiService.post(`/technical/subjects/list?current_page=${current_page}&per_page=${per_page}`, body)
+	},
+	addSubject(body) {
+		return ApiService.post(`/technical/subjects/create`, body)
+	},
 	addSubjectToCertificate(certificate_id, body) {
 		return ApiService.post(`/technical/certificates/${certificate_id}/subjects`, body)
 	},

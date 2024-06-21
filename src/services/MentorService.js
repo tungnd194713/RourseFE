@@ -28,6 +28,20 @@ const MentorService = {
 	getRatingList(body) {
     return ApiService.post('/mentors/ratings/list/', body)
 	},
+
+	getMentors(body, query) {
+		let queryString = '?'
+		if (query.sortBy) {
+			queryString += `&sortBy=${query.sortBy}`
+		}
+		if (query.limit) {
+			queryString += `&limit=${query.limit}`
+		}
+		if (query.page) {
+			queryString += `&page=${query.page}`
+		}
+		return ApiService.post('/mentors/list' + queryString, body)
+	}
 }
 
 export default MentorService

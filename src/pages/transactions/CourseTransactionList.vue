@@ -4,15 +4,36 @@
       <el-col :span="24">
         <el-card>
           <div slot="header" class="clearfix">
-            <h2>Danh sách người tìm việc</h2>
+            <h2>Lịch sử thanh toán</h2>
           </div>
 
           <el-row :gutter="20" class="filters">
             <el-col :span="6">
-              <el-input v-model="filters.name" placeholder="Tìm theo tên"></el-input>
+              <el-input v-model="filters.userName" placeholder="Tìm theo tên học viên"></el-input>
             </el-col>
             <el-col :span="6">
-              <el-input v-model="filters.email" placeholder="Tìm theo email"></el-input>
+              <el-input v-model="filters.courseName" placeholder="Tìm theo tên khóa học"></el-input>
+            </el-col>
+						<el-col :span="6">
+							<el-select 
+								v-model="filters.scholarship_paid"
+								class="full-width">
+								<el-option 
+									value="all"
+									key="all"
+									label="Tất cả">
+								</el-option>
+								<el-option 
+									value="true" 
+									key="true"
+									label="Đã thanh toán">
+								</el-option>
+								<el-option 
+									value="false" 
+									key="false"
+									label="Chưa thanh toán">
+								</el-option>
+							</el-select>
             </el-col>
             <el-col :span="6">
               <el-button type="primary" @click="applyFilters">Tìm</el-button>
@@ -20,37 +41,37 @@
             </el-col>
           </el-row>
 
-          <el-table :data="filteredUsers" style="width: 100%;">
+          <el-table :data="transactionData" style="width: 100%;">
             <el-table-column width="50" label="No.">
               <template slot-scope="scope">
                 <span style="margin-left: 10px;">{{ scope.$index + 1 }}</span>
               </template>
             </el-table-column>
-            <el-table-column prop="name" label="Tên người dùng" width="180"></el-table-column>
-            <el-table-column prop="email" label="Email"></el-table-column>
-            <el-table-column prop="phone_number" label="Số điện thoại"></el-table-column>
-            <el-table-column prop="point_owned" label="Point">
+            <el-table-column prop="userName" label="Tên học viên" width="180"></el-table-column>
+            <el-table-column prop="courseName" label="Khóa học"></el-table-column>
+            <el-table-column prop="position" label="Vị trí"></el-table-column>
+            <el-table-column prop="scholarship" label="Học bổng">
               <template slot-scope="scope">
-                <span style="margin-right: 10px;">{{ scope.row.point_owned || 0 }}</span>
-                <span @click="openEditPointDialog(scope.row)"><i class="el-icon-circle-plus" style="cursor: pointer; scale: 1.5; color: rgb(64, 158, 255);"></i></span>
+                <span style="margin-right: 10px;"><span style="color: #409EFF">{{ scope.row.scholarship }}%</span> | {{ scope.row.companyName }}</span>
               </template>
             </el-table-column>
-            <el-table-column prop="birthday" label="Ngày sinh">
+						<el-table-column label="Chi phí (point)">
+              <template slot-scope="scope">
+                <span style="margin-right: 4px; text-decoration: line-through; color: #a1a1a1">{{ scope.row.course_point }}</span>
+                <span class="fw-bold">{{ scope.row.paid_point }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="unlocked_at" label="Ngày mở khóa">
 							<template slot-scope="scope">
-                <span style="margin-right: 10px;">{{ scope.row.birthday ? scope.row.birthday.split('T')[0] : '' }}</span>
+                <span style="margin-right: 10px;">{{ scope.row.unlocked_at ? scope.row.unlocked_at.split('T')[0] : '' }}</span>
               </template>
 						</el-table-column>
-            <el-table-column prop="address" label="Địa chỉ"></el-table-column>
             <el-table-column label="Trạng thái" width="150">
               <template slot-scope="scope">
-                <el-select :value="scope.row.status" placeholder="Chọn trạng thái" @change="confirmStatusChange(scope.row, $event)">
-                  <el-option label="Active" value="active"></el-option>
-                  <el-option label="Inactive" value="inactive"></el-option>
-                  <el-option label="Suspended" value="suspended"></el-option>
-                </el-select>
+                <span :style="{ color: scope.row.scholarship_paid ? '#67C23A' : '#E6A23C' }">{{ scope.row.scholarship_paid ? 'Đã thanh toán' : 'Chưa thanh toán' }}</span>
               </template>
             </el-table-column>
-            <el-table-column fixed="right" label="Hành động" width="180">
+            <!-- <el-table-column fixed="right" label="Hành động" width="180">
               <template slot-scope="scope">
                 <el-dropdown split-button type="primary">
                   Action
@@ -58,22 +79,13 @@
                     <el-dropdown-item>
                       <div @click="openEditUserDialog(scope.row)">Sửa thông tin</div>
                     </el-dropdown-item>
-                    <!-- <el-dropdown-item>
-                                            <div>Xem hồ sơ người dùng</div>
-                                        </el-dropdown-item> -->
-                    <!-- <el-dropdown-item>
-                                            <div>Danh sách công việc đã tuyển</div>
-                                        </el-dropdown-item>
-                                        <el-dropdown-item>
-                                            <div>Danh sách khóa học đã học</div>
-                                        </el-dropdown-item> -->
                     <el-dropdown-item>
                       <div @click="deleteUser(scope.row.id)">Xóa người dùng</div>
                     </el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
               </template>
-            </el-table-column>
+            </el-table-column> -->
           </el-table>
         </el-card>
       </el-col>
@@ -138,18 +150,16 @@
 </template>
 
 <script>
-import { UserService } from '@/services'
+import { CourseService, UserService } from '@/services'
 
   export default {
     data() {
       return {
-        users: [
-          { id: 1, name: "John Doe", email: "john@example.com", status: "active" },
-          { id: 2, name: "Jane Smith", email: "jane@example.com", status: "inactive" },
-        ],
+        transactionData: [],
         filters: {
-          name: "",
-          email: "",
+          userName: "",
+          courseName: "",
+					scholarship_paid: 'all'
         },
         userDialogVisible: false,
         pointDialogVisible: false,
@@ -180,22 +190,15 @@ import { UserService } from '@/services'
 				}
       };
     },
-    computed: {
-      filteredUsers() {
-        return this.users.filter((user) => {
-          return (this.filters.name ? user.name.toLowerCase().includes(this.filters.name.toLowerCase()) : true) && (this.filters.email ? user.email.toLowerCase().includes(this.filters.email.toLowerCase()) : true);
-        });
-      },
-    },
 		created() {
-			this.getUsers()
+			this.getTransactions()
 		},
     methods: {
-			async getUsers() {
+			async getTransactions() {
 				try {
-					const { data } = await UserService.getUsers(this.query);
+					const { data } = await CourseService.getCourseTransactions(this.filters);
 					if (data) {
-						this.users = data.results;
+						this.transactionData = data.results
 					}
 				} catch (e) {
 					this.$notify({
@@ -261,11 +264,13 @@ import { UserService } from '@/services'
       },
       applyFilters() {
         // This method will trigger the computed property `filteredUsers` to recalculate
+				this.getTransactions()
       },
       resetFilters() {
         this.filters = {
-          name: "",
-          email: "",
+          userName: "",
+          courseName: "",
+					scholarship_paid: 'all'
         };
         // This method will trigger the computed property `filteredUsers` to recalculate
       },

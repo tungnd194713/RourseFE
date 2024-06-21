@@ -24,75 +24,148 @@
                     {{ tag.skill.name }} - {{ tag.level }}
                 </el-button>
             </div>
-			<h4>Danh sách module:</h4>
-			<div class="table-container">
-				<el-table
-					class="table"
-					border
-					:data="tableData"
-					style="width: 100%">
-                    <el-table-column
-                        width="50"
-						label="No.">
-						<template slot-scope="scope">
-							<span style="margin-left: 10px">{{ scope.$index + 1 }}</span>
-						</template>
-					</el-table-column>
-					<el-table-column
-                        width="200"
-						label="Tiêu đề">
-						<template slot-scope="scope">
-							<span style="margin-left: 10px">{{ scope.row.name }}</span>
-						</template>
-					</el-table-column>
-                    <el-table-column
-						label="Mô tả">
-						<template slot-scope="scope">
-                            <span style="margin-left: 10px">{{ scope.row.description }}</span>
-						</template>
-					</el-table-column>
-                    <el-table-column
-						label="Độ dài video">
-						<template slot-scope="scope">
-                            <span style="margin-left: 10px">{{ scope.row.video_duration }}</span>
-						</template>
-					</el-table-column>
-					<el-table-column
-                        width="200"
-						label="">
-						<template slot-scope="scope">
-							<el-button
-								size="mini"
-								@click="$router.push({ name: 'EducationModuleDetail', params: { ...$route.params, moduleId: scope.row.id || scope.row._id } })">Xem chi tiết</el-button>
-							<el-button
-								size="mini"
-								type="primary"
-								@click="removeEducationModuleFromCourse(scope.row.id || scope.row._id)">Xóa</el-button>
-						</template>
-					</el-table-column>
-				</el-table>
-				<!-- <el-pagination
-					background
-					layout="prev, pager, next"
-					:total="1000">
-				</el-pagination> -->
-			</div>
-            <div class="action-buttons">
-                <el-button type="success" @click="$router.push({ name: 'EducationCreateModule', params: { ...$route.params } })">Thêm module</el-button>
-            </div>
+			<h4>Danh sách nội dung:</h4>
+			<el-tabs v-model="activeName">
+				<el-tab-pane label="Danh sách module" name="ModuleList">
+					<div class="table-container">
+						<el-table
+							class="table"
+							border
+							:data="tableData"
+							style="width: 100%">
+												<el-table-column
+														width="50"
+								label="No.">
+								<template slot-scope="scope">
+									<span style="margin-left: 10px">{{ scope.$index + 1 }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+														width="200"
+								label="Tiêu đề">
+								<template slot-scope="scope">
+									<span style="margin-left: 10px">{{ scope.row.name }}</span>
+								</template>
+							</el-table-column>
+												<el-table-column
+								label="Mô tả">
+								<template slot-scope="scope">
+																<span style="margin-left: 10px">{{ scope.row.description }}</span>
+								</template>
+							</el-table-column>
+												<el-table-column
+								label="Độ dài video">
+								<template slot-scope="scope">
+																<span style="margin-left: 10px">{{ scope.row.video_duration }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+														width="200"
+								label="">
+								<template slot-scope="scope">
+									<el-button
+										size="mini"
+										@click="$router.push({ name: 'EducationModuleDetail', params: { ...$route.params, moduleId: scope.row.id || scope.row._id } })">Xem chi tiết</el-button>
+									<el-button
+										size="mini"
+										type="primary"
+										@click="removeEducationModuleFromCourse(scope.row.id || scope.row._id)">Xóa</el-button>
+								</template>
+							</el-table-column>
+						</el-table>
+						<!-- <el-pagination
+							background
+							layout="prev, pager, next"
+							:total="1000">
+						</el-pagination> -->
+					</div>
+					<div class="action-buttons">
+							<el-button type="success" @click="$router.push({ name: 'EducationCreateModule', params: { ...$route.params } })">Thêm module</el-button>
+					</div>
+				</el-tab-pane>
+				<el-tab-pane label="Danh sách bài test" name="TestList">
+					<div class="table-container">
+						<el-table
+								class="table"
+								border
+								:data="testData"
+								style="width: 100%">
+								<el-table-column
+										width="50"
+										label="No.">
+										<template slot-scope="scope">
+												<span style="margin-left: 10px">{{ scope.$index + 1 }}</span>
+										</template>
+								</el-table-column>
+								<el-table-column
+										width="200"
+										label="Tên bài test">
+										<template slot-scope="scope">
+												<span style="margin-left: 10px">{{ scope.row.name }}</span>
+										</template>
+								</el-table-column>
+								<el-table-column
+										label="Thời gian làm bài">
+										<template slot-scope="scope">
+												<span style="margin-left: 10px">{{ scope.row.time }}</span>
+										</template>
+								</el-table-column>
+								<el-table-column
+										label="Ghi chú">
+										<template slot-scope="scope">
+												<span style="margin-left: 10px">{{ scope.row.note }}</span>
+										</template>
+								</el-table-column>
+								<el-table-column
+										label="Số câu hỏi">
+										<template slot-scope="scope">
+												<span style="margin-left: 10px">{{ scope.row.questions ? scope.row.questions.length : '0' }}</span>
+										</template>
+								</el-table-column>
+								<el-table-column
+										width="200"
+										label="">
+										<template slot-scope="scope">
+												<el-button
+														size="mini"
+														@click="$router.push({ name: 'ExamDetail', params: { ...$route.params, courseId: courseInfo.id, testId: scope.row.id || scope.row._id } })">Chỉnh sửa</el-button>
+												<el-button
+														size="mini"
+														type="primary"
+														@click="deleteTest(scope.row.id)">Xóa</el-button>
+										</template>
+								</el-table-column>
+						</el-table>
+						<!-- <el-pagination
+								background
+								layout="prev, pager, next"
+								:total="1000">
+						</el-pagination> -->
+				</div>
+				<div class="action-buttons">
+						<el-button type="success" @click="testDialogVisible = true">Thêm bài test</el-button>
+				</div>
+				<el-dialog title="Tạo bài test mới" :visible.sync="testDialogVisible">
+						<el-form :model="testForm" :rules="testRules" ref="testForm" label-width="200px">
+								<el-form-item label="Tên bài test">
+										<el-input v-model="testForm.name"></el-input>
+								</el-form-item>
+								<el-form-item label="Thời gian làm bài (phút)">
+										<el-input-number v-model="testForm.time" :min="1"></el-input-number>
+								</el-form-item>
+								<el-form-item label="Mô tả">
+										<el-input type="textarea" v-model="testForm.note"></el-input>
+								</el-form-item>
+						</el-form>
+						<div slot="footer" class="dialog-footer">
+								<el-button @click="testDialogVisible = false">Cancel</el-button>
+								<el-button type="primary" @click="saveTest">Save</el-button>
+						</div>
+				</el-dialog>
+				</el-tab-pane>
+			</el-tabs>
+			
 		</div>
-		<el-dialog
-      title="Thêm / Sửa chứng chỉ"
-      :visible.sync="dialogVisible"
-      width="30%"
-      :before-close="handleClose"
-    >
-
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">Hủy</el-button>
-        <el-button type="primary" @click="addAccount">Thêm</el-button>
-      </span>
-    </el-dialog>
     <el-dialog title="Cập nhật khóa học" :visible.sync="secondDialog" width="80%">
 			<div class="form-container">
 				<el-form ref="courseForm" :model="courseInfo" label-width="300px">
@@ -154,6 +227,23 @@ export default {
             jobEducationStatus,
             courseInfo: {},
             secondDialog: false,
+						activeName: 'ModuleList',
+            testDialogVisible: false,
+            testForm: {},
+            testRules: {
+                name: [
+                    { required: true, message: 'Test name is required', trigger: 'blur' },
+                    { min: 3, message: 'Test name must be at least 3 characters', trigger: 'blur' }
+                ],
+                time: [
+                    { required: true, message: 'Test time is required', trigger: 'blur' },
+                    { type: 'number', min: 1, message: 'Test time must be at least 1 minute', trigger: 'blur' }
+                ],
+                note: [
+                    { required: true, message: 'Test note is required', trigger: 'blur' },
+                    { min: 10, message: 'Test note must be at least 10 characters', trigger: 'blur' }
+                ]
+            },
 		}
 	},
     created() {
@@ -171,6 +261,7 @@ export default {
 				if (data) {
 						this.courseInfo = data;
 						this.tableData = this.courseInfo.modules
+						this.testData = this.courseInfo.tests
 						this.companyName = data.company.company_name
             this.jobTitle = data.job.title
 				}
@@ -226,6 +317,44 @@ export default {
 				}
 			});
 		},
+		async saveTest() {
+            this.$refs.testForm.validate(async (valid) => {
+                if (valid) {
+                    try {
+                        const { data } = await RoadMapService.createNewTestToCourse(this.courseInfo.id, this.testForm);
+                        if (data) {
+                            this.testDialogVisible = false
+                            this.$notify({
+                                title: 'Success',
+                                message: 'Đã tạo bài test!'
+                            });
+                            this.$router.push({name: 'InstructorExamDetail', params: { ...this.$route.params, testId: data }})
+                        }
+                    } catch (e) {
+                        this.$notify({
+                            title: 'Error',
+                            message: 'Something wrong!'
+                        });
+                    }
+                }
+            })
+        },
+        async deleteTest(testId) {
+            try {
+                const { data } = await RoadMapService.deleteTestById(testId);
+                if (data) {
+                    this.$notify({
+                        title: 'Success',
+                        message: 'Đã xóa bài test!'
+                    });
+                }
+            } catch (e) {
+                this.$notify({
+                    title: 'Error',
+                    message: 'Something wrong!'
+                });
+            }
+        }
 	},
 	
 }

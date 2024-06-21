@@ -140,9 +140,9 @@
                 <ul v-if="requirement.certificates.length">
                     <li v-for="(certificate, index) in requirement.certificates" :key="index">
                         Đạt được chứng chỉ
-                        <span v-for="(iitem, iindex) in certificate" :key="iindex">
-                            {{ iitem.name }}
-                            <span v-if="iindex !== certificate.length - 1">hoặc</span>
+                        <span v-for="(citem, cindex) in certificate.certificates" :key="cindex">
+                            {{ citem.name }}
+                            <span v-if="cindex !== certificate.certificates.length - 1">hoặc</span>
                         </span>
                         hoặc tương đương
                     </li>
@@ -243,6 +243,7 @@ export default {
             this.requirement.intermediateSkills = requirements.filter((item) => item.type === 'Skill' && item.level === 'Intermediate').map(obj => obj.skills);
             this.requirement.advancedSkills = requirements.filter((item) => item.type === 'Skill' && item.level === 'Advanced').map(obj => obj.skills);
             this.dialogVisible = true;
+					console.log(this.requirement.certificates)
         },
         async checkRoadmap(jobEducationId) {
             const data = await RoadMapService.checkRoadmap(jobEducationId)
