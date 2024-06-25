@@ -32,6 +32,9 @@ const UserService = {
 	updateUser(id, data) {
     return ApiService.update('/users/' + id, data)
   },
+  createUser(data) {
+    return ApiService.post('/users/', data)
+  }
 }
 
 export default UserService

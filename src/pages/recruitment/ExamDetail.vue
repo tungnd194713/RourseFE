@@ -62,7 +62,8 @@
                     </el-table-column>
                 </el-table>
             </el-table-draggable>
-            <el-button type="primary" @click="openQuestionDialog" style="margin-top: 20px;">Thêm câu hỏi</el-button>
+            <el-button type="primary" @click="openQuestionDialog" style="margin-top: 20px; margin-right: 12px">Thêm câu hỏi</el-button>
+            <el-button type="success" @click="seedQuestions" :disabled="seedLoading" v-loading.fullscreen.lock="seedLoading" style="margin-top: 20px;">Seed câu hỏi (OpenAI)</el-button>
           </el-card>
         </el-col>
       </el-row>
@@ -118,7 +119,7 @@
 </template>
 
 <script>
-import { RoadMapService } from '@/services'
+import { CourseService, RoadMapService } from '@/services'
 import ElTableDraggable from "element-ui-el-table-draggable";
 export default {
   components: {
@@ -146,6 +147,7 @@ export default {
       currentQuestionIndex: null,
       isEditing: false,
       isShuffled: false,
+      seedLoading: false,
     };
   },
   created() {
@@ -168,6 +170,21 @@ export default {
     }
   },
   methods: {
+    async seedQuestions() {
+      this.seedLoading = true;
+			const { data } = await CourseService.seedQuestionData({
+				courseId: this.$route.params.courseId,
+				testId: this.$route.params.testId,
+			})
+			if (data) {
+				this.$notify({
+					title: 'Success',
+					message: 'Đã seed modules!'
+				})
+				this.getTestById()
+			}
+			this.seedLoading = false;
+    },
     async getTestById() {
         const { data } = await RoadMapService.getTestById(this.$route.params.testId);
         if (data) {

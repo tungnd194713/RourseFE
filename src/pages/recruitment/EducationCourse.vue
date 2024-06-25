@@ -81,6 +81,7 @@
 					</div>
 					<div class="action-buttons">
 							<el-button type="success" @click="$router.push({ name: 'EducationCreateModule', params: { ...$route.params } })">Thêm module</el-button>
+							<el-button type="primary" @click="seedModule" :disabled="seedLoading" v-loading.fullscreen.lock="seedLoading">Seed module (OpenAI)</el-button>
 					</div>
 				</el-tab-pane>
 				<el-tab-pane label="Danh sách bài test" name="TestList">
@@ -244,6 +245,7 @@ export default {
                     { min: 10, message: 'Test note must be at least 10 characters', trigger: 'blur' }
                 ]
             },
+			seedLoading: false,
 		}
 	},
     created() {
@@ -255,6 +257,22 @@ export default {
 		},
 		handleDelete(index, row) {
 			console.log(index, row);
+		},
+		async seedModule() {
+			this.seedLoading = true;
+			const { data } = await CourseService.seedModuleData({
+				courseId: this.$route.params.courseId,
+				title: this.courseInfo.skill_tags[0].skill.name,
+				level: this.courseInfo.skill_tags[0].level,
+			})
+			if (data) {
+				this.$notify({
+					title: 'Success',
+					message: 'Đã seed modules!'
+				})
+				this.getCourseDetail()
+			}
+			this.seedLoading = false;
 		},
 		async getCourseDetail() {
 				const { data } = await RoadMapService.getCourseDetail(this.$route.params.jobEducationId, this.$route.params.courseId);
@@ -328,7 +346,7 @@ export default {
                                 title: 'Success',
                                 message: 'Đã tạo bài test!'
                             });
-                            this.$router.push({name: 'InstructorExamDetail', params: { ...this.$route.params, testId: data }})
+                            this.$router.push({name: 'ExamDetail', params: { ...this.$route.params, testId: data }})
                         }
                     } catch (e) {
                         this.$notify({

@@ -168,7 +168,7 @@
 											<el-dropdown-item>
 												<div @click="$router.push({ name: 'EducationCourse',  params: { jobEducationId: $route.params.jobEducationId, courseId: scope.row.id || scope.row._id } })">Xem chi tiết</div>
 											</el-dropdown-item>
-											<el-dropdown-item v-if="scope.row.instructorCourse.status === 1">
+											<el-dropdown-item v-if="(scope.row.instructorCourse.status === 1 || scope.row.instructorCourse.isAdmin) && scope.row.instructorCourse.status !== 2">
 												<div @click="approveCourse(scope.row.instructorCourse.id || scope.row.instructorCourse._id)">Duyệt khóa học</div>
 											</el-dropdown-item>
 											<el-dropdown-item v-if="scope.row.instructorCourse.status === 1">

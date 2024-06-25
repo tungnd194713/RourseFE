@@ -5,6 +5,7 @@
         <el-card>
           <div slot="header" class="clearfix">
             <h2>Danh sách mentor</h2>
+            <el-button style="float: right;" type="primary" @click="openAddMentorDialog">Thêm Mentor</el-button>
           </div>
 
           <el-row :gutter="20" class="filters">
@@ -32,7 +33,7 @@
             <el-table-column prop="totalWorkHours" label="Số giờ làm việc"></el-table-column>
             <el-table-column prop="avgRating" label="Đánh giá">
 							<template slot-scope="scope">
-                <span style="margin-right: 10px;">{{ scope.row.birthday ? scope.row.birthday.split('T')[0] : '' }}</span>
+                <span style="margin-right: 10px;">{{ scope.row.avgRating }}<i class="el-rate__icon el-icon-star-on" style="color: rgb(247, 186, 42);"></i></span>
               </template>
 						</el-table-column>
             <el-table-column label="Trạng thái" width="150">
@@ -74,26 +75,33 @@
     </el-row>
 
     <!-- Add/Edit User Dialog -->
-    <el-dialog :title="isEdit ? 'Edit User' : 'Add User'" :visible.sync="userDialogVisible">
-      <el-form :model="userForm" :rules="userFormRules" ref="userForm" label-width="120px">
-        <el-form-item label="Name" prop="name">
-          <el-input v-model="userForm.name"></el-input>
-        </el-form-item>
-        <el-form-item label="Email" prop="email">
-          <el-input v-model="userForm.email"></el-input>
-        </el-form-item>
-        <el-form-item label="Birthday" prop="birthday">
-          <el-date-picker v-model="userForm.birthday" type="date" placeholder="Pick a day"> </el-date-picker>
-        </el-form-item>
-        <el-form-item label="Phone Number" prop="phone_number">
-          <el-input v-model="userForm.phone_number"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="userDialogVisible = false">Cancel</el-button>
-        <el-button type="primary" @click="handleSaveUser">Save</el-button>
-      </div>
-    </el-dialog>
+    <!-- Add/Edit Mentor Dialog -->
+        <el-dialog :title="isEdit ? 'Edit Mentor' : 'Add Mentor'" :visible.sync="mentorDialogVisible">
+            <el-form :model="mentorForm" :rules="mentorFormRules" ref="mentorForm" label-width="150px">
+                <el-form-item label="Name" prop="name">
+                    <el-input v-model="mentorForm.name"></el-input>
+                </el-form-item>
+                <el-form-item label="Email" prop="email">
+                    <el-input v-model="mentorForm.email"></el-input>
+                </el-form-item>
+                <el-form-item label="Birthday" prop="birthday">
+                    <el-date-picker v-model="mentorForm.birthday" type="date" placeholder="Pick a day"> </el-date-picker>
+                </el-form-item>
+                <el-form-item label="Phone Number" prop="phone_number">
+                    <el-input v-model="mentorForm.phone_number"></el-input>
+                </el-form-item>
+                <el-form-item label="Password" prop="password">
+                    <el-input v-model="mentorForm.password"></el-input>
+                </el-form-item>
+                <!-- <el-form-item label="Password Confirm" prop="repassword">
+                    <el-input v-model="mentorForm.repassword"></el-input>
+                </el-form-item> -->
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="mentorDialogVisible = false">Cancel</el-button>
+                <el-button type="primary" @click="handleSaveMentor">Save</el-button>
+            </div>
+        </el-dialog>
 
     <!-- Status Change Confirmation Dialog -->
     <el-dialog title="Confirm Status Change" :visible.sync="statusDialogVisible">
@@ -121,21 +129,22 @@ import { UserService, MentorService } from '@/services'
           name: "",
           email: "",
         },
-        userDialogVisible: false,
+        mentorDialogVisible: false,
         isEdit: false,
-        userForm: {
-          id: null,
-          name: "",
-          email: "",
-          status: "",
+        mentorForm: {
+            name: "",
+            email: "",
+            password: '',
+            birthday: '',
+            phone_number: '',
+            // repassword: '',
         },
-        userFormRules: {
-          name: [{ required: true, message: "Please input the name", trigger: "blur" }],
-          email: [
-            { required: true, message: "Please input the email", trigger: "blur" },
-            { type: "email", message: "Please input a valid email", trigger: "blur" },
-          ],
-          status: [{ required: true, message: "Please select a status", trigger: "change" }],
+        mentorFormRules: {
+            name: [{ required: true, message: "Please input the name", trigger: "blur" }],
+            email: [
+                { required: true, message: "Please input the email", trigger: "blur" },
+                { type: "email", message: "Please input a valid email", trigger: "blur" },
+            ],
         },
         statusDialogVisible: false,
         selectedUser: null,
@@ -171,31 +180,51 @@ import { UserService, MentorService } from '@/services'
 					});
 				}
 			},
-      openAddUserDialog() {
-        this.isEdit = false;
-        this.userForm = { id: null, name: "", email: "", status: "" };
-        this.userDialogVisible = true;
+      openAddMentorDialog() {
+          this.isEdit = false;
+          this.mentorForm = {
+              name: "",
+              email: "",
+              password: '',
+              birthday: '',
+              phone_number: '',
+              // repassword: '',
+          };
+          this.mentorDialogVisible = true;
       },
       openEditUserDialog(user) {
         this.isEdit = true;
         this.userForm = { ...user };
         this.userDialogVisible = true;
       },
-      handleSaveUser() {
-        this.$refs.userForm.validate((valid) => {
-          if (valid) {
-            if (this.isEdit) {
-              const index = this.users.findIndex((user) => user.id === this.userForm.id);
-              if (index !== -1) {
-                this.users.splice(index, 1, { ...this.userForm });
+      handleSaveMentor() {
+          this.$refs.mentorForm.validate((valid) => {
+              if (valid) {
+                  if (this.isEdit) {
+                      const index = this.mentors.findIndex((mentor) => mentor.id === this.mentorForm.id);
+                      if (index !== -1) {
+                          this.mentors.splice(index, 1, { ...this.mentorForm });
+                      }
+                  } else {
+                      UserService.createUser({
+                          ...this.mentorForm,
+                          role: 'mentor',
+                      }).then((value) => {
+                          this.mentors.push(value);
+                          this.$notify({
+                              title: 'Success',
+                              message: 'Đã thêm Mentor'
+                          })
+                      }, (error) => {
+                          this.$notify({
+                              title: 'Error',
+                              message: error.statusText
+                          })
+                      })
+                  }
+                  this.mentorDialogVisible = false;
               }
-            } else {
-              this.userForm.id = Date.now();
-              this.users.push({ ...this.userForm });
-            }
-            this.userDialogVisible = false;
-          }
-        });
+          });
       },
       confirmStatusChange(user, newStatus) {
         this.originalStatus = user.status;

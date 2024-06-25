@@ -40,6 +40,12 @@ const CourseService = {
 	getCourseTransactions(data) {
 		return ApiService.post(`/course/transactions/list`, data);
 	},
+  seedModuleData(data) {
+		return ApiService.delete(`/course/seed-course-module`, data);
+	},
+  seedQuestionData(data) {
+		return ApiService.delete(`/course/seed-test-question`, data);
+	},
 }
 
 export default CourseService

@@ -29,7 +29,11 @@
                         </el-table-column>
                         <el-table-column prop="name" label="Name" width="180"></el-table-column>
                         <el-table-column prop="email" label="Email"></el-table-column>
-                        <el-table-column prop="birthday" label="Birthday"></el-table-column>
+                        <el-table-column prop="birthday" label="Birthday">
+                            <template slot-scope="scope">
+                                <span>{{ scope.row.birthday ? scope.row.birthday.split('T')[0] : '' }}</span>
+                            </template>
+                        </el-table-column>
                         <el-table-column prop="phone_number" label="Phone"></el-table-column>
                         <el-table-column label="Status" width="150">
                             <template slot-scope="scope">
@@ -72,7 +76,7 @@
 
         <!-- Add/Edit Instructor Dialog -->
         <el-dialog :title="isEdit ? 'Edit Instructor' : 'Add Instructor'" :visible.sync="instructorDialogVisible">
-            <el-form :model="instructorForm" :rules="instructorFormRules" ref="instructorForm" label-width="120px">
+            <el-form :model="instructorForm" :rules="instructorFormRules" ref="instructorForm" label-width="150px">
                 <el-form-item label="Name" prop="name">
                     <el-input v-model="instructorForm.name"></el-input>
                 </el-form-item>
@@ -85,6 +89,12 @@
                 <el-form-item label="Phone Number" prop="phone_number">
                     <el-input v-model="instructorForm.phone_number"></el-input>
                 </el-form-item>
+                <el-form-item label="Password" prop="password">
+                    <el-input v-model="instructorForm.password"></el-input>
+                </el-form-item>
+                <!-- <el-form-item label="Password Confirm" prop="repassword">
+                    <el-input v-model="instructorForm.repassword"></el-input>
+                </el-form-item> -->
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="instructorDialogVisible = false">Cancel</el-button>
@@ -104,6 +114,7 @@
 </template>
 
 <script>
+import { UserService } from '@/services';
     export default {
         data() {
             return {
@@ -118,10 +129,12 @@
                 instructorDialogVisible: false,
                 isEdit: false,
                 instructorForm: {
-                    id: null,
                     name: "",
                     email: "",
-                    status: "",
+                    password: '',
+                    birthday: '',
+                    phone_number: '',
+                    // repassword: '',
                 },
                 instructorFormRules: {
                     name: [{ required: true, message: "Please input the name", trigger: "blur" }],
@@ -129,11 +142,16 @@
                         { required: true, message: "Please input the email", trigger: "blur" },
                         { type: "email", message: "Please input a valid email", trigger: "blur" },
                     ],
-                    status: [{ required: true, message: "Please select a status", trigger: "change" }],
                 },
                 statusDialogVisible: false,
                 selectedInstructor: null,
                 newStatus: null,
+                query: {
+					role: 'instructor',
+					page: 1,
+					limit: 10,
+					sortBy: 'createdAt',
+				},
             };
         },
         computed: {
@@ -143,10 +161,33 @@
                 });
             },
         },
+        created() {
+            this.getUsers();
+        },
         methods: {
+            async getUsers() {
+				try {
+					const { data } = await UserService.getUsers(this.query);
+					if (data) {
+						this.instructors = data.results;
+					}
+				} catch (e) {
+					this.$notify({
+						title: 'Error',
+						message: e
+					});
+				}
+			},
             openAddInstructorDialog() {
                 this.isEdit = false;
-                this.instructorForm = { id: null, name: "", email: "", status: "" };
+                this.instructorForm = {
+                    name: "",
+                    email: "",
+                    password: '',
+                    birthday: '',
+                    phone_number: '',
+                    // repassword: '',
+                };
                 this.instructorDialogVisible = true;
             },
             openEditInstructorDialog(instructor) {
@@ -163,8 +204,21 @@
                                 this.instructors.splice(index, 1, { ...this.instructorForm });
                             }
                         } else {
-                            this.instructorForm.id = Date.now();
-                            this.instructors.push({ ...this.instructorForm });
+                            UserService.createUser({
+                                ...this.instructorForm,
+                                role: 'instructor',
+                            }).then((value) => {
+                                this.instructors.push(value);
+                                this.$notify({
+                                    title: 'Success',
+                                    message: 'Đã thêm Instructor'
+                                })
+                            }, (error) => {
+                                this.$notify({
+                                    title: 'Error',
+                                    message: error.statusText
+                                })
+                            })
                         }
                         this.instructorDialogVisible = false;
                     }
