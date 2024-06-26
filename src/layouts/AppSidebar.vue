@@ -5,7 +5,7 @@
 			<el-submenu index="5">
 				<template slot="title">Chương trình đào tạo</template>
 				<el-menu-item index="5-1" @click="$router.push({name: 'EducationRecruitment'})">Danh sách yêu cầu</el-menu-item>
-				<el-menu-item index="5-2" @click="$router.push({name: 'PublishedEducations'})">Danh sách chương trình</el-menu-item>
+				<!-- <el-menu-item index="5-2" @click="$router.push({name: 'PublishedEducations'})">Danh sách chương trình</el-menu-item> -->
 				<!-- <el-menu-item index="5-2" @click="$router.push({name: 'MajorList'})">Chuyên ngành</el-menu-item>
 				<el-menu-item index="5-3" @click="$router.push({name: 'CollegeList'})">Đại học</el-menu-item> -->
 			</el-submenu>

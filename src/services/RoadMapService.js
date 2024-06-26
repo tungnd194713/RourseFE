@@ -43,9 +43,9 @@ const RoadMapService = {
   getCourseDetail(jobEducationId, courseId) {
     return ApiService.get(`/roadmap/education-requests/` + jobEducationId + '/courses/' + courseId);
   },
-	createEducationCourse(jobEducationId, body) {
-    return ApiService.post(`/roadmap/education-requests/` + jobEducationId + '/courses/create', body);
-  },
+	// createEducationCourse(jobEducationId, body) {
+  //   return ApiService.post(`/roadmap/education-requests/` + jobEducationId + '/courses/create', body);
+  // },
   addExistingEducationCourse(jobEducationId, courseId) {
     return ApiService.post(`/roadmap/education-requests/` + jobEducationId + '/courses/' + courseId);
   },

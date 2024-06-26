@@ -88,71 +88,72 @@
 			</div>
 		</div>
         <el-dialog
-            title="Yêu cầu công việc"
-            :visible.sync="dialogVisible"
-            width="30%"
-            :before-close="handleClose"
-        >
-            <div>
-                <ul v-if="requirement.majorColleges.length">
-                    <li v-for="(major, index) in requirement.majorColleges" :key="index">
-                        Tốt nghiệp đại học
-                        <span v-if="major.colleges.length">
-                            <span v-for="(college, cindex) in major.colleges" :key="cindex">
-                                {{ college.name }}
-                                <span v-if="cindex !== major.colleges.length - 1" class="fw-bold">hoặc</span>
-                            </span>
-                        </span>
-                        chuyên ngành
-                        <span v-for="(iitem, iindex) in major.majors" :key="iindex">
-                            {{ iitem.name }}
-                            <span v-if="iindex !== major.majors.length - 1">hoặc</span>
-                        </span>
-                    </li>
-                </ul>
-                <ul v-if="requirement.beginnerSkills.length">
-                    <li v-for="(skill, index) in requirement.beginnerSkills" :key="index">
-                        Đã có kinh nghiệm
-                        <span v-for="(iitem, iindex) in skill" :key="iindex">
-                            {{ iitem.name }}
-                            <span v-if="iindex !== skill.length - 1">hoặc</span>
-                        </span>
-                    </li>
-                </ul>
-                <ul v-if="requirement.intermediateSkills.length">
-                    <li v-for="(skill, index) in requirement.intermediateSkills" :key="index">
-                        Hiểu rõ về
-                        <span v-for="(iitem, iindex) in skill" :key="iindex">
-                            {{ iitem.name }}
-                            <span v-if="iindex !== skill.length - 1">hoặc</span>
-                        </span>
-                    </li>
-                </ul>
-                <ul v-if="requirement.advancedSkills.length">
-                    <li v-for="(skill, index) in requirement.advancedSkills" :key="index">
-                        Thành thạo
-                        <span v-for="(iitem, iindex) in skill" :key="iindex">
-                            {{ iitem.name }}
-                            <span v-if="iindex !== skill.length - 1">hoặc</span>
-                        </span>
-                    </li>
-                </ul>
-                <ul v-if="requirement.certificates.length">
-                    <li v-for="(certificate, index) in requirement.certificates" :key="index">
-                        Đạt được chứng chỉ
-                        <span v-for="(citem, cindex) in certificate.certificates" :key="cindex">
-                            {{ citem.name }}
-                            <span v-if="cindex !== certificate.certificates.length - 1">hoặc</span>
-                        </span>
-                        hoặc tương đương
-                    </li>
-                </ul>
-                <span v-html="requirement.custom_requirement"></span>
-            </div>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible = false">OK</el-button>
-            </span>
-        </el-dialog>
+					title="Yêu cầu công việc"
+					:visible.sync="dialogVisible"
+					width="30%"
+					:before-close="handleClose"
+					class="custom-dialog"
+				>
+					<div class="dialog-content">
+						<ul v-if="requirement.majorColleges.length" class="requirement-list">
+							<li v-for="(major, index) in requirement.majorColleges" :key="index">
+								Tốt nghiệp đại học
+								<span v-if="major.colleges.length">
+									<span v-for="(college, cindex) in major.colleges" :key="cindex">
+										{{ college.name }}
+										<span v-if="cindex !== major.colleges.length - 1" class="fw-bold">hoặc</span>
+									</span>
+								</span>
+								chuyên ngành
+								<span v-for="(iitem, iindex) in major.majors" :key="iindex">
+									{{ iitem.name }}
+									<span v-if="iindex !== major.majors.length - 1">hoặc</span>
+								</span>
+							</li>
+						</ul>
+						<ul v-if="requirement.beginnerSkills.length" class="requirement-list">
+							<li v-for="(skill, index) in requirement.beginnerSkills" :key="index">
+								Đã có kinh nghiệm
+								<span v-for="(iitem, iindex) in skill" :key="iindex">
+									{{ iitem.name }}
+									<span v-if="iindex !== skill.length - 1">hoặc</span>
+								</span>
+							</li>
+						</ul>
+						<ul v-if="requirement.intermediateSkills.length" class="requirement-list">
+							<li v-for="(skill, index) in requirement.intermediateSkills" :key="index">
+								Hiểu rõ về
+								<span v-for="(iitem, iindex) in skill" :key="iindex">
+									{{ iitem.name }}
+									<span v-if="iindex !== skill.length - 1">hoặc</span>
+								</span>
+							</li>
+						</ul>
+						<ul v-if="requirement.advancedSkills.length" class="requirement-list">
+							<li v-for="(skill, index) in requirement.advancedSkills" :key="index">
+								Thành thạo
+								<span v-for="(iitem, iindex) in skill" :key="iindex">
+									{{ iitem.name }}
+									<span v-if="iindex !== skill.length - 1">hoặc</span>
+								</span>
+							</li>
+						</ul>
+						<ul v-if="requirement.certificates.length" class="requirement-list">
+							<li v-for="(certificate, index) in requirement.certificates" :key="index">
+								Đạt được chứng chỉ
+								<span v-for="(citem, cindex) in certificate.certificates" :key="cindex">
+									{{ citem.name }}
+									<span v-if="cindex !== certificate.certificates.length - 1">hoặc</span>
+								</span>
+								hoặc tương đương
+							</li>
+						</ul>
+						<span v-html="requirement.custom_requirement"></span>
+					</div>
+					<span slot="footer" class="dialog-footer">
+						<el-button @click="dialogVisible = false">OK</el-button>
+					</span>
+				</el-dialog>
         <el-dialog
             title="Gửi khóa học"
             :visible.sync="checkDialog"
@@ -245,7 +246,6 @@ export default {
             this.requirement.advancedSkills = requirements.filter((item) => item.type === 'Skill' && item.level === 'Advanced').map(obj => obj.skills);
             this.requirement.custom_requirement = custom_requirement
             this.dialogVisible = true;
-					console.log(this.requirement.certificates)
         },
         async checkRoadmap(jobEducationId) {
             const data = await RoadMapService.checkRoadmap(jobEducationId)
@@ -308,7 +308,6 @@ export default {
 .el-pagination {
 	float: right;
 }
-
 </style>
 <style lang="scss">
 .cell {
@@ -316,5 +315,64 @@ export default {
 }
 thead {
 	color: #909399 !important;
+}
+.custom-dialog {
+	.el-dialog__header {
+		background-color: #409eff;
+		color: white;
+		text-align: center;
+		border-bottom: none;
+		padding: 15px;
+		font-size: 18px;
+		border-radius: 10px 10px 0 0;
+	}
+
+	.el-dialog__body {
+		padding: 20px;
+		background-color: #f5f7fa;
+	}
+
+	.el-dialog__footer {
+		background-color: #f5f7fa;
+		border-top: none;
+		text-align: right;
+		padding: 10px 20px;
+	}
+
+	.dialog-content {
+		background-color: #ffffff;
+		padding: 15px;
+		border-radius: 5px;
+	}
+
+	.requirement-list {
+		list-style-type: none;
+		padding: 0;
+		margin: 0px 0;
+	}
+
+	.requirement-list li {
+		padding: 5px 0;
+		border-bottom: 1px solid #ebeef5;
+	}
+
+	.fw-bold {
+		font-weight: bold;
+		margin: 0 5px;
+	}
+
+	.dialog-footer {
+		text-align: right;
+	}
+
+	.dialog-footer .el-button {
+		background-color: #409eff;
+		color: white;
+		border: none;
+	}
+
+	.dialog-footer .el-button:hover {
+		background-color: #66b1ff;
+	}
 }
 </style>

@@ -10,7 +10,7 @@
 				</el-breadcrumb-item>
 			</el-breadcrumb>
 			<!-- <h2>Lộ trình học - {{ companyName || 'Tên công ty' }} - {{ jobTitle || 'Vị trí công việc' }}</h2> -->
-            <h4>Tags kỹ năng: <el-button type="primary">Xem yêu cầu gốc</el-button></h4>
+            <h4>Tags kỹ năng: <el-button type="primary" @click="showRequirement(reqs, custom_requirement)">Xem yêu cầu gốc</el-button></h4>
             <div>
 				<el-dropdown v-for="tag in tags" :key="tag._id" style="margin-left: 0; margin-right: 10px">
 					<el-button :type="tagButtonColor(tag)" class="my-2">
@@ -241,6 +241,73 @@
 				</el-pagination>
             </div>
         </el-dialog>
+				<el-dialog
+					title="Yêu cầu công việc"
+					:visible.sync="requirementVisible"
+					width="30%"
+					:before-close="handleClose"
+					class="custom-dialog"
+				>
+					<div class="dialog-content">
+						<ul v-if="prequirement.majorColleges.length" class="requirement-list">
+							<li v-for="(major, index) in prequirement.majorColleges" :key="index">
+								Tốt nghiệp đại học
+								<span v-if="major.colleges.length">
+									<span v-for="(college, cindex) in major.colleges" :key="cindex">
+										{{ college.name }}
+										<span v-if="cindex !== major.colleges.length - 1" class="fw-bold">hoặc</span>
+									</span>
+								</span>
+								chuyên ngành
+								<span v-for="(iitem, iindex) in major.majors" :key="iindex">
+									{{ iitem.name }}
+									<span v-if="iindex !== major.majors.length - 1">hoặc</span>
+								</span>
+							</li>
+						</ul>
+						<ul v-if="prequirement.beginnerSkills.length" class="requirement-list">
+							<li v-for="(skill, index) in prequirement.beginnerSkills" :key="index">
+								Đã có kinh nghiệm
+								<span v-for="(iitem, iindex) in skill" :key="iindex">
+									{{ iitem.name }}
+									<span v-if="iindex !== skill.length - 1">hoặc</span>
+								</span>
+							</li>
+						</ul>
+						<ul v-if="prequirement.intermediateSkills.length" class="requirement-list">
+							<li v-for="(skill, index) in prequirement.intermediateSkills" :key="index">
+								Hiểu rõ về
+								<span v-for="(iitem, iindex) in skill" :key="iindex">
+									{{ iitem.name }}
+									<span v-if="iindex !== skill.length - 1">hoặc</span>
+								</span>
+							</li>
+						</ul>
+						<ul v-if="prequirement.advancedSkills.length" class="requirement-list">
+							<li v-for="(skill, index) in prequirement.advancedSkills" :key="index">
+								Thành thạo
+								<span v-for="(iitem, iindex) in skill" :key="iindex">
+									{{ iitem.name }}
+									<span v-if="iindex !== skill.length - 1">hoặc</span>
+								</span>
+							</li>
+						</ul>
+						<ul v-if="prequirement.certificates.length" class="requirement-list">
+							<li v-for="(certificate, index) in prequirement.certificates" :key="index">
+								Đạt được chứng chỉ
+								<span v-for="(citem, cindex) in certificate.certificates" :key="cindex">
+									{{ citem.name }}
+									<span v-if="cindex !== certificate.certificates.length - 1">hoặc</span>
+								</span>
+								hoặc tương đương
+							</li>
+						</ul>
+						<span v-html="prequirement.custom_requirement"></span>
+					</div>
+					<span slot="footer" class="dialog-footer">
+						<el-button @click="requirementVisible = false">OK</el-button>
+					</span>
+				</el-dialog>
 		<el-dialog title="Tạo khóa học mới" :visible.sync="secondDialog" width="80%">
 			<div class="form-container">
 				<el-form ref="courseForm" :model="course" label-width="300px">
@@ -347,6 +414,7 @@ export default {
 			fileList: [],
             tags: [],
 			dialogVisible: false,
+			requirementVisible: false,
 			secondDialog: false,
 			certificateModel: {
                 name: '',
@@ -365,7 +433,16 @@ export default {
             addedCourseIds: [],
 			instructorList: [],
 			instructorData: [],
-			tableTab: 'completedCourses'
+			tableTab: 'completedCourses',
+			reqs: [],
+			prequirement: {
+				majorColleges: [],
+				certificates: [],
+				beginnerSkills: [],
+				intermediateSkills: [],
+				advancedSkills: [],
+			},
+			custom_requirement: '',
 		}
 	},
 	computed: {
@@ -391,7 +468,7 @@ export default {
 					point_cost: 0,
 					instructor: '',
 					deadline: '',
-					requirement: ''
+					requirement: '',
 				}
 			}
 		}
@@ -430,7 +507,18 @@ export default {
             this.companyName = data.company.company_name
             this.jobTitle = data.job.title
             this.tags = [...data.convertedRequirements]
+						this.reqs = data.requirements
+						this.custom_requirement = data.custom_requirement
             this.checkSkillMatched()
+        },
+				showRequirement(requirements, custom_requirement = null) {
+            this.prequirement.majorColleges = requirements.filter((item) => item.type === 'Major');
+            this.prequirement.certificates = requirements.filter((item) => item.type === 'Certificate');
+            this.prequirement.beginnerSkills = requirements.filter((item) => item.type === 'Skill' && item.level === 'Beginner').map(obj => obj.skills)
+            this.prequirement.intermediateSkills = requirements.filter((item) => item.type === 'Skill' && item.level === 'Intermediate').map(obj => obj.skills);
+            this.prequirement.advancedSkills = requirements.filter((item) => item.type === 'Skill' && item.level === 'Advanced').map(obj => obj.skills);
+            this.prequirement.custom_requirement = custom_requirement
+            this.requirementVisible = true;
         },
         async getSubjectData() {
             const { data } = await SubjectService.getAllSubject();
@@ -452,14 +540,22 @@ export default {
         },
         async addExistingEducationCourse(courseId) {
             if (!this.courseAdded(courseId)) {
-                const { data } = await RoadMapService.addExistingEducationCourse(this.$route.params.jobEducationId, courseId);
-                if (data) {
-                    this.$notify({
-                        title: 'Success',
-                        message: 'Đã thêm khóa học'
-                    });
-                    await this.getEducationRequests()
-                }
+                try {
+									const { data } = await RoadMapService.addExistingEducationCourse(this.$route.params.jobEducationId, courseId);
+									if (data) {
+											this.$notify({
+													title: 'Success',
+													message: 'Đã thêm khóa học'
+											});
+											await this.getEducationRequests()
+									}
+								} catch (e) {
+									const text = e.data?.message;
+									this.$notify({
+										title: 'Error',
+										message: text || e.statusText
+									});
+								}
             }
         },
         async removeCourseFromRoadmap(courseId) {

@@ -133,7 +133,7 @@
 												<el-button
 														size="mini"
 														type="primary"
-														@click="deleteTest(scope.row.id)">Xóa</el-button>
+														@click="deleteTest(scope.row.id || scope.row._id)">Xóa</el-button>
 										</template>
 								</el-table-column>
 						</el-table>
@@ -365,6 +365,7 @@ export default {
                         title: 'Success',
                         message: 'Đã xóa bài test!'
                     });
+										this.getCourseDetail();
                 }
             } catch (e) {
                 this.$notify({

@@ -29,8 +29,24 @@ const UserService = {
 		}
 		return ApiService.get(`/users${queryString}`);
 	},
+	getCompanies(query, body) {
+		let queryString = '?'
+		if (query.sortBy) {
+			queryString += `&sortBy=${query.sortBy}`
+		}
+		if (query.limit) {
+			queryString += `&limit=${query.limit}`
+		}
+		if (query.page) {
+			queryString += `&page=${query.page}`
+		}
+		return ApiService.post(`/companies/list${queryString}`, body);
+	},
 	updateUser(id, data) {
     return ApiService.update('/users/' + id, data)
+  },
+	updateCompany(id, data) {
+    return ApiService.update('/companies/update/' + id, data)
   },
   createUser(data) {
     return ApiService.post('/users/', data)
