@@ -21,7 +21,7 @@
                         </el-col>
                     </el-row>
 
-                    <el-table :data="filteredMentors" style="width: 100%;">
+                    <el-table :data="courses" style="width: 100%; margin-bottom: 16px">
                         <el-table-column width="50" label="No.">
                             <template slot-scope="scope">
                                 <span style="margin-left: 10px;">{{ scope.$index + 1 }}</span>
@@ -35,14 +35,19 @@
 														</div>
 													</template>
 												</el-table-column>
-												<el-table-column width="150" label="No.">
+                        <el-table-column width="150" label="Số modules">
                             <template slot-scope="scope">
-                                <span>{{ scope.row.modules.count }}</span>
+                                <span>{{ scope.row.modules.length }}</span>
                             </template>
                         </el-table-column>
-												<el-table-column label="Thời gian ước tính">
+                        <el-table-column width="150" label="Số tests">
                             <template slot-scope="scope">
-                                <span>{{ scope.row.estimated_time }} tiếng</span>
+                                <span>{{ scope.row.tests.length }}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="Thời gian ước tính">
+                            <template slot-scope="scope">
+                                <span>{{ scope.row.estimated_time ? scope.row.estimated_time + ' tiếng' : 'Chưa tính toán' }}</span>
                             </template>
                         </el-table-column>
 												<el-table-column label="Point">
@@ -52,10 +57,10 @@
                         </el-table-column>
 												<el-table-column label="Người phụ trách">
                             <template slot-scope="scope">
-                                <span>{{ scope.row.in_charge ? scope.row.in_charge.name : '' }}</span>
+                                <span>{{ scope.row.in_charge ? scope.row.in_charge.name : 'Admin' }}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="Trạng thái" width="150">
+                        <!-- <el-table-column label="Trạng thái" width="150">
                             <template slot-scope="scope">
                                 <el-select :value="scope.row.status" placeholder="Select Status" @change="confirmStatusChange(scope.row, $event)">
                                     <el-option label="Active" value="active"></el-option>
@@ -63,24 +68,17 @@
                                     <el-option label="Suspended" value="suspended"></el-option>
                                 </el-select>
                             </template>
-                        </el-table-column>
-                        <el-table-column fixed="right" label="Actions" width="180">
-                            <template slot-scope="scope">
-                                <el-button size="mini" type="primary" @click="openEditMentorDialog(scope.row)">Edit</el-button>
-                                <el-button size="mini" type="danger" @click="deleteMentor(scope.row.id)">Delete</el-button>
-                            </template>
+                        </el-table-column> -->
+                        <el-table-column fixed="right" label="Hành động" width="180">
                             <template slot-scope="scope">
                                 <el-dropdown split-button type="primary">
-                                    Action
+                                    Hành động
                                     <el-dropdown-menu slot="dropdown">
                                         <el-dropdown-item>
-                                            <div @click="openEditMentorDialog(scope.row)">Sửa thông tin</div>
+                                            <div @click="$router.push({ name: 'CourseDetail', params: { id: scope.row.id || scope.row._id } })">Xem chi tiết</div>
                                         </el-dropdown-item>
                                         <el-dropdown-item>
-                                            <div>Xem thông tin mentor</div>
-                                        </el-dropdown-item>
-                                        <el-dropdown-item>
-                                            <div>Danh sách khóa học hỗ trợ</div>
+                                            <div>Xóa khóa học</div>
                                         </el-dropdown-item>
                                         <el-dropdown-item>
                                             <div @click="deleteMentor(scope.row.id)">Xóa người dùng</div>
@@ -90,6 +88,15 @@
                             </template>
                         </el-table-column>
                     </el-table>
+
+                    <el-pagination
+                        background
+                        layout="prev, pager, next"
+                        @current-change="getCourses"
+                        :current-page.sync="current_page"
+                        :page-size="10"
+                        :total="total">
+                    </el-pagination>
                 </el-card>
             </el-col>
         </el-row>
@@ -122,13 +129,11 @@
 </template>
 
 <script>
+import { CourseService } from '@/services';
     export default {
         data() {
             return {
-                mentors: [
-                    { id: 1, name: "John Doe", email: "john@example.com", status: "active" },
-                    { id: 2, name: "Jane Smith", email: "jane@example.com", status: "inactive" },
-                ],
+                courses: [],
                 filters: {
                     name: "",
                     email: "",
@@ -152,16 +157,25 @@
                 statusDialogVisible: false,
                 selectedMentor: null,
                 newStatus: null,
+                total: 0,
+                current_page: 1,
+                per_page: 10,
             };
         },
-        computed: {
-            filteredMentors() {
-                return this.mentors.filter((mentor) => {
-                    return (this.filters.name ? mentor.name.toLowerCase().includes(this.filters.name.toLowerCase()) : true) && (this.filters.email ? mentor.email.toLowerCase().includes(this.filters.email.toLowerCase()) : true);
-                });
-            },
+        created() {
+            this.getCourses()
         },
         methods: {
+            async getCourses() {
+                const { data } = await CourseService.getCourses({
+                    page: this.current_page,
+                    limit: this.per_page
+                })
+                if (data) {
+                    this.courses = [...data.results];
+                    this.total = data.totalResults
+                }
+            },
             openAddMentorDialog() {
                 this.isEdit = false;
                 this.mentorForm = { id: null, name: "", email: "", status: "" };
@@ -206,14 +220,14 @@
                 this.mentors = this.mentors.filter((mentor) => mentor.id !== id);
             },
             applyFilters() {
-                // This method will trigger the computed property `filteredMentors` to recalculate
+                // This method will trigger the computed property `filteredCourses` to recalculate
             },
             resetFilters() {
                 this.filters = {
                     name: "",
                     email: "",
                 };
-                // This method will trigger the computed property `filteredMentors` to recalculate
+                // This method will trigger the computed property `filteredCourses` to recalculate
             },
         },
     };

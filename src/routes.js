@@ -26,6 +26,9 @@ import PublishedEducations from './pages/recruitment/PublishedEducations'
 import CourseCreate from './pages/course/CourseCreate'
 import ListCourse from './pages/course/ListCourse'
 import CourseDetail from './pages/course/CourseDetail'
+import ModuleDetail from './pages/course/ModuleDetail'
+import TestDetail from './pages/course/TestDetail'
+import NewModule from './pages/course/NewModule'
 import LoginPage from './pages/LoginPage'
 import MentorProfile from './pages/mentor/MentorProfile'
 import MentorShiftList from './pages/mentor/MentorShiftList'
@@ -170,6 +173,21 @@ export default [
 				path: '/courses/:id',
 				component: CourseDetail,
 				name: 'CourseDetail'
+			},
+			{
+				path: '/courses/:courseId/modules',
+				component: NewModule,
+				name: 'NewModule'
+			},
+			{
+				path: '/courses/:courseId/modules/:moduleId',
+				component: ModuleDetail,
+				name: 'ModuleDetail'
+			},
+			{
+				path: '/courses/:courseId/tests/:testId',
+				component: TestDetail,
+				name: 'TestDetail'
 			},
 			{
 				path: '/roadmaps',

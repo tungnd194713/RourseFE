@@ -51,7 +51,7 @@
                     <el-table-column
 						label="Yêu cầu">
 						<template slot-scope="scope">
-                            <el-button style="width: 100%" type="primary" @click="showRequirement(scope.row.requirements)">Xem</el-button>
+                            <el-button style="width: 100%" type="primary" @click="showRequirement(scope.row.requirements, scope.row.custom_requirement)">Xem</el-button>
 						</template>
 					</el-table-column>
                     <el-table-column
@@ -147,6 +147,7 @@
                         hoặc tương đương
                     </li>
                 </ul>
+                <span v-html="requirement.custom_requirement"></span>
             </div>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="dialogVisible = false">OK</el-button>
@@ -236,12 +237,13 @@ export default {
             const { data } = await RoadMapService.getEducationRequests()
             this.tableData = [...data.results]
         },
-        showRequirement(requirements) {
+        showRequirement(requirements, custom_requirement = null) {
             this.requirement.majorColleges = requirements.filter((item) => item.type === 'Major');
             this.requirement.certificates = requirements.filter((item) => item.type === 'Certificate');
             this.requirement.beginnerSkills = requirements.filter((item) => item.type === 'Skill' && item.level === 'Beginner').map(obj => obj.skills)
             this.requirement.intermediateSkills = requirements.filter((item) => item.type === 'Skill' && item.level === 'Intermediate').map(obj => obj.skills);
             this.requirement.advancedSkills = requirements.filter((item) => item.type === 'Skill' && item.level === 'Advanced').map(obj => obj.skills);
+            this.requirement.custom_requirement = custom_requirement
             this.dialogVisible = true;
 					console.log(this.requirement.certificates)
         },

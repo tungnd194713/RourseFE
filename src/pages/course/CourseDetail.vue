@@ -1,99 +1,391 @@
 <template>
-  <div>
-    <div class="course-detail-page">
-			<!-- Course information section -->
-			<div class="course-info">
-				<h1>{{ course.title }}</h1>
-				<p>{{ course.description }}</p>
-				<el-divider></el-divider>
-			</div>
-
-			<!-- Course modules section -->
-			<div class="course-modules">
-				<h2>Course Modules</h2>
-				<el-button type="primary" icon="el-icon-plus" @click="addModule">Add Module</el-button>
-				<el-table :data="course.modules" border>
-					<el-table-column label="Module Name" prop="name"></el-table-column>
-					<el-table-column label="Actions" width="200">
-						<template slot-scope="scope">
-							<el-button type="text" size="small" @click="editModule(scope.row)">Edit</el-button>
-							<el-button type="text" size="small" @click="deleteModule(scope.row)">Delete</el-button>
-						</template>
-					</el-table-column>
-				</el-table>
-			</div>
+	<div>
+		<div class="px-4 py-4">
+			<div class="d-flex justify-content-between mb-4">
+				<el-breadcrumb separator-class="el-icon-arrow-right">
+					<el-breadcrumb-item style="font-size: 32px">
+						{{ this.courseInfo.title || 'Tên khóa học' }}
+					</el-breadcrumb-item>
+				</el-breadcrumb>
+                <el-button v-if="this.courseInfo.canEdit" @click="secondDialog = true">Sửa thông tin</el-button>
+            </div>
+            <h4>Chi phí: {{ this.courseInfo.point_cost }} point</h4>
+            <h4>Mô tả: </h4>
+            <div style="margin-left: 20px; margin-bottom: 20px; font-size: 20px">{{ this.courseInfo.description }}</div>
+            <h4>Tags kĩ năng: </h4>
+            <div style="margin-left: 20px; margin-bottom: 20px; font-size: 20px">
+                <el-button type="primary" v-for="tag in this.courseInfo.skill_tags" :key="tag._id" class="my-2 skill-tag-btn">
+                    {{ tag.skill.name }} - {{ tag.level }}
+                </el-button>
+            </div>
+			<h4>Danh sách nội dung:</h4>
+			<el-tabs v-model="activeName">
+				<el-tab-pane label="Danh sách module" name="ModuleList">
+					<div class="table-container">
+						<el-table
+							class="table"
+							border
+							:data="tableData"
+							style="width: 100%">
+												<el-table-column
+														width="50"
+								label="No.">
+								<template slot-scope="scope">
+									<span style="margin-left: 10px">{{ scope.$index + 1 }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+														width="200"
+								label="Tiêu đề">
+								<template slot-scope="scope">
+									<span style="margin-left: 10px">{{ scope.row.name }}</span>
+								</template>
+							</el-table-column>
+												<el-table-column
+								label="Mô tả">
+								<template slot-scope="scope">
+																<span style="margin-left: 10px">{{ scope.row.description }}</span>
+								</template>
+							</el-table-column>
+												<el-table-column
+								label="Độ dài video">
+								<template slot-scope="scope">
+																<span style="margin-left: 10px">{{ scope.row.video_duration }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								width="200"
+								label="">
+								<template slot-scope="scope">
+									<el-button
+										size="mini"
+										@click="$router.push({ name: 'ModuleDetail', params: { courseId: $route.params.id, moduleId: scope.row.id || scope.row._id } })">Xem chi tiết</el-button>
+									<el-button
+										v-if="courseInfo.canEdit"
+										size="mini"
+										type="primary"
+										@click="removeCourseModule(scope.row.id || scope.row._id)">Xóa</el-button>
+								</template>
+							</el-table-column>
+						</el-table>
+						<!-- <el-pagination
+							background
+							layout="prev, pager, next"
+							:total="1000">
+						</el-pagination> -->
+					</div>
+					<div v-if="this.courseInfo.canEdit" class="action-buttons">
+							<el-button type="success" @click="$router.push({ name: 'NewModule', params: { courseId: $route.params.id } })">Thêm module</el-button>
+							<el-button type="primary" @click="seedModule" :disabled="seedLoading" v-loading.fullscreen.lock="seedLoading">Seed module (OpenAI)</el-button>
+					</div>
+				</el-tab-pane>
+				<el-tab-pane label="Danh sách bài test" name="TestList">
+					<div class="table-container">
+						<el-table
+								class="table"
+								border
+								:data="testData"
+								style="width: 100%">
+								<el-table-column
+										width="50"
+										label="No.">
+										<template slot-scope="scope">
+												<span style="margin-left: 10px">{{ scope.$index + 1 }}</span>
+										</template>
+								</el-table-column>
+								<el-table-column
+										width="200"
+										label="Tên bài test">
+										<template slot-scope="scope">
+												<span style="margin-left: 10px">{{ scope.row.name }}</span>
+										</template>
+								</el-table-column>
+								<el-table-column
+										label="Thời gian làm bài">
+										<template slot-scope="scope">
+												<span style="margin-left: 10px">{{ scope.row.time }}</span>
+										</template>
+								</el-table-column>
+								<el-table-column
+										label="Ghi chú">
+										<template slot-scope="scope">
+												<span style="margin-left: 10px">{{ scope.row.note }}</span>
+										</template>
+								</el-table-column>
+								<el-table-column
+										label="Số câu hỏi">
+										<template slot-scope="scope">
+												<span style="margin-left: 10px">{{ scope.row.questions ? scope.row.questions.length : '0' }}</span>
+										</template>
+								</el-table-column>
+								<el-table-column
+										width="200"
+										label="">
+										<template slot-scope="scope">
+												<el-button
+														size="mini"
+														@click="$router.push({ name: 'TestDetail', params: { courseId: courseInfo.id, testId: scope.row.id || scope.row._id } })">Chỉnh sửa</el-button>
+												<el-button
+														size="mini"
+														type="primary"
+														v-if="courseInfo.canEdit"
+														@click="deleteTest(scope.row.id || scope.row._id)">Xóa</el-button>
+										</template>
+								</el-table-column>
+						</el-table>
+						<!-- <el-pagination
+								background
+								layout="prev, pager, next"
+								:total="1000">
+						</el-pagination> -->
+				</div>
+				<div v-if="this.courseInfo.canEdit" class="action-buttons">
+						<el-button type="success" @click="testDialogVisible = true">Thêm bài test</el-button>
+				</div>
+				<el-dialog title="Tạo bài test mới" :visible.sync="testDialogVisible">
+						<el-form :model="testForm" :rules="testRules" ref="testForm" label-width="200px">
+								<el-form-item label="Tên bài test">
+										<el-input v-model="testForm.name"></el-input>
+								</el-form-item>
+								<el-form-item label="Thời gian làm bài (phút)">
+										<el-input-number v-model="testForm.time" :min="1"></el-input-number>
+								</el-form-item>
+								<el-form-item label="Mô tả">
+										<el-input type="textarea" v-model="testForm.note"></el-input>
+								</el-form-item>
+						</el-form>
+						<div slot="footer" class="dialog-footer">
+								<el-button @click="testDialogVisible = false">Cancel</el-button>
+								<el-button type="primary" @click="saveTest">Save</el-button>
+						</div>
+				</el-dialog>
+				</el-tab-pane>
+			</el-tabs>
+			
 		</div>
-  </div>
+    <el-dialog title="Cập nhật khóa học" :visible.sync="secondDialog" width="80%">
+			<div class="form-container">
+				<el-form ref="courseForm" :model="courseInfo" label-width="300px">
+					<el-form-item label="Tiêu đề khóa học" class="form-item" prop="title">
+						<el-input v-model="courseInfo.title" placeholder="Nhập tiêu đề khóa học"></el-input>
+					</el-form-item>
+					<el-form-item label="Mô tả khóa học" class="form-item" prop="description">
+						<el-input type="textarea" v-model="courseInfo.description" placeholder="Nhập mô tả"></el-input>
+					</el-form-item>
+					<el-form-item label="Thời gian hoàn thành dự kiến (tiếng)" class="form-item" prop="description">
+						<el-input type="number" v-model="courseInfo.estimated_time"></el-input>
+					</el-form-item>
+					<el-form-item label="Thumbnail Image" class="form-item" prop="thumbnail">
+						<el-upload class="upload-demo" drag action="https://jsonplaceholder.typicode.com/posts/" :before-upload="beforeUpload" :auto-upload="false" :file-list="fileList" :on-remove="handleRemove" :limit="1" list-type="picture">
+							<i class="el-icon-upload"></i>
+							<div class="el-upload__text">Drop file here or <em>click to upload</em></div>
+						</el-upload>
+						<div v-if="courseInfo.thumbnail" class="thumbnail-preview">
+							<img :src="courseInfo.thumbnail" alt="Thumbnail Preview" />
+						</div>
+					</el-form-item>
+					<el-form-item label="Skill Tags" class="form-item" prop="tags">
+						<div v-for="(tag, index) in courseInfo.skill_tags" :key="index" class="tag-level-group">
+							<el-select v-model="tag.skill.name" placeholder="Select tag" class="tag-select">
+								<el-option v-for="tagItem in subjectList" :key="tagItem.id" :label="tagItem.name" :value="tagItem.id"></el-option>
+							</el-select>
+							<el-select v-model="tag.level" placeholder="Select level" class="level-select">
+								<el-option v-for="level in levels" :key="level + Date.now()" :label="level" :value="level"></el-option>
+							</el-select>
+							<el-button type="danger" icon="el-icon-close" @click="removeTag(index)" class="remove-tag-btn"></el-button>
+						</div>
+						<el-button type="primary" icon="el-icon-plus" @click="addTag" class="add-tag-btn">Thêm tag</el-button>
+					</el-form-item>
+					<el-form-item class="form-item">
+						<el-button type="primary" class="submit-btn" @click="updateCourse">Cập nhật khóa học</el-button>
+					</el-form-item>
+				</el-form>
+			</div>
+		</el-dialog>
+	</div>	
 </template>
-
 <script>
-import { CourseService } from '@/services'
+import jobEducationStatus from '@/constants/jobEducationStatus'
+import { CourseService, RoadMapService } from '@/services'
+
 export default {
-  data() {
-    return {
-      course: {
-        name: 'Course 1',
-        description: 'Description for Course 1',
-        modules: [
-          { id: 1, name: 'Module 1' },
-          { id: 2, name: 'Module 2' },
-          { id: 3, name: 'Module 3' }
-        ]
-      }
-    };
-  },
-	created() {
-		this.findCourseById()
+	data() {
+		return {
+			tableData: [{
+                name: 'Javascript Variables',
+                video_duration: 5,
+                description: 'This is javascript variables',
+            }],
+			dialogVisible: false,
+			certificateModel: {
+                name: '',
+                link: '',
+            },
+            jobEducationStatus,
+            courseInfo: {},
+            secondDialog: false,
+						activeName: 'ModuleList',
+            testDialogVisible: false,
+            testForm: {},
+            testRules: {
+                name: [
+                    { required: true, message: 'Test name is required', trigger: 'blur' },
+                    { min: 3, message: 'Test name must be at least 3 characters', trigger: 'blur' }
+                ],
+                time: [
+                    { required: true, message: 'Test time is required', trigger: 'blur' },
+                    { type: 'number', min: 1, message: 'Test time must be at least 1 minute', trigger: 'blur' }
+                ],
+                note: [
+                    { required: true, message: 'Test note is required', trigger: 'blur' },
+                    { min: 10, message: 'Test note must be at least 10 characters', trigger: 'blur' }
+                ]
+            },
+			seedLoading: false,
+		}
 	},
-  methods: {
-		async findCourseById() {
-			try {
-				const { data } = await CourseService.findCourseById(this.$route.params.id);
-				this.course = data
-			} catch (e) {
+    created() {
+        this.getCourseDetail()
+    },
+	methods: {
+		handleEdit(index, row) {
+			console.log(index, row);
+		},
+		handleDelete(index, row) {
+			console.log(index, row);
+		},
+		async seedModule() {
+			this.seedLoading = true;
+			const { data } = await CourseService.seedModuleData({
+				courseId: this.$route.params.id,
+				title: this.courseInfo.skill_tags[0].skill.name,
+				level: this.courseInfo.skill_tags[0].level,
+			})
+			if (data) {
 				this.$notify({
-          title: 'Error',
-          message: e.statusText
-        });
+					title: 'Success',
+					message: 'Đã seed modules!'
+				})
+				this.getCourseDetail()
+			}
+			this.seedLoading = false;
+		},
+		async getCourseDetail() {
+				const { data } = await CourseService.getCourse(this.$route.params.id);
+				if (data) {
+						this.courseInfo = data;
+						this.tableData = this.courseInfo.modules
+						this.testData = this.courseInfo.tests
+				}
+		},
+        async updateCourse() {
+			// Validate the form
+			this.$refs.courseForm.validate(async (valid) => {
+				if (valid) {
+					try {
+						const formData = new FormData();
+						formData.append('title', this.courseInfo.title);
+						formData.append('description', this.courseInfo.description);
+						formData.append('estimated_time', this.courseInfo.estimated_time);
+						formData.append('point_cost', this.courseInfo.point_cost);
+						formData.append('thumbnail', 'https://careers.techvify.com.vn/wp-content/uploads/2022/07/vuejs-la-gi-2.jpg');
+						formData.append(`tags`, JSON.stringify(this.courseInfo.skill_tags.map((item) => {
+                            return {
+                                skill: item.skill.id || item.skill._id,
+                                level: item.level
+                            }
+                        })));
+
+						const response = await CourseService.updateCourse(this.$route.params.id, formData)
+						if (response.status === 200) {
+							this.secondDialog = false;
+							this.$notify({
+								title: 'Success',
+								message: 'Đã cập nhật khóa học'
+							});
+							await this.getCourseDetail()
+						}
+					} catch (e) {
+                        console.log(e)
+						this.$notify({
+							title: 'Error',
+							message: e.statusText
+						});
+					}
+					// this.resetForm()
+				} else {
+					console.log('Form validation failed.');
+					return false;
+				}
+			});
+		},
+		async removeCourseModule(id) {
+			const { data } = await CourseService.removeCourseModule(this.$route.params.id, id);
+			if (data) {
+				this.$notify({
+					title: 'Success',
+					message: 'Đã xóa module'
+				});
+				this.getCourseDetail()
 			}
 		},
-    addModule() {
-      // Redirect to the module creation page
-      this.$router.push({ name: 'createModule' });
-    },
-    editModule(module) {
-      // Redirect to the module edit page passing the module ID
-      this.$router.push({ name: 'editModule', params: { moduleId: module.id }});
-    },
-    deleteModule(module) {
-      this.$confirm('Are you sure you want to delete this module?', 'Warning', {
-        confirmButtonText: 'Confirm',
-        cancelButtonText: 'Cancel',
-        type: 'warning'
-      }).then(() => {
-        const index = this.course.modules.findIndex(m => m.id === module.id);
-        if (index !== -1) {
-          this.course.modules.splice(index, 1);
-          this.$message.success('Module deleted successfully');
+		async saveTest() {
+            this.$refs.testForm.validate(async (valid) => {
+                if (valid) {
+                    try {
+                        const { data } = await RoadMapService.createNewTestToCourse(this.courseInfo.id, this.testForm);
+                        if (data) {
+                            this.testDialogVisible = false
+                            this.$notify({
+                                title: 'Success',
+                                message: 'Đã tạo bài test!'
+                            });
+                            this.$router.push({name: 'TestDetail', params: { courseId: this.$route.params.id, testId: data }})
+                        }
+                    } catch (e) {
+                        this.$notify({
+                            title: 'Error',
+                            message: 'Something wrong!'
+                        });
+                    }
+                }
+            })
+        },
+        async deleteTest(testId) {
+            try {
+                const { data } = await RoadMapService.deleteTestById(testId);
+                if (data) {
+                    this.$notify({
+                        title: 'Success',
+                        message: 'Đã xóa bài test!'
+                    });
+					this.getCourseDetail()
+                }
+            } catch (e) {
+                this.$notify({
+                    title: 'Error',
+                    message: 'Something wrong!'
+                });
+            }
         }
-      }).catch(() => {
-        this.$message.info('Deletion canceled');
-      });
-    }
-  }
-};
+	},
+	
+}
 </script>
-
-<style scoped>
-.course-detail-page {
-	padding: 20px;
+<style scoped lang="scss">
+.table-container {
+	
+}
+.table {
+	margin-bottom: 20px;
+}
+.el-pagination {
+	float: right;
 }
 
-.course-info {
-  margin-bottom: 20px;
-}
-
-.course-modules {
-  margin-bottom: 20px;
+</style>
+<style lang="scss">
+.cell {
+    word-break: keep-all !important;
 }
 </style>

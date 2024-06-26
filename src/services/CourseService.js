@@ -7,8 +7,20 @@ const CourseService = {
   updateCourse(courseId, body) {
     return ApiService.update('/course/' + courseId, body)
   },
-  getCourse(moduleId) {
-    return ApiService.get('/course/module/' + moduleId)
+  getCourse(courseId) {
+    return ApiService.get('/course/detail/' + courseId)
+  },
+  getCourseModule(courseId, moduleId) {
+    return ApiService.get('/course/detail/' + courseId + '/modules/' + moduleId)
+  },
+  createCourseModule(courseId, data) {
+    return ApiService.post('/course/detail/' + courseId + '/modules/', data)
+  },
+  removeCourseModule(courseId, moduleId) {
+    return ApiService.delete('/course/detail/' + courseId + '/modules/' + moduleId)
+  },
+  updateCourseModule(courseId, moduleId, data) {
+    return ApiService.update('/course/detail/' + courseId + '/modules/' + moduleId, data)
   },
   getNotes(moduleId) {
     return ApiService.get('/course/module/' + moduleId + '/note')
@@ -28,8 +40,18 @@ const CourseService = {
 	createCourse(body) {
 		return ApiService.post('/course', body);
 	},
-	getCourses(body) {
-		return ApiService.post('/course/list', body);
+	getCourses(query, body = {}) {
+    let queryString = '?'
+		if (query.sortBy) {
+			queryString += `&sortBy=${query.sortBy}`
+		}
+		if (query.limit) {
+			queryString += `&limit=${query.limit}`
+		}
+		if (query.page) {
+			queryString += `&page=${query.page}`
+		}
+		return ApiService.post('/course/list' + queryString, body);
 	},
 	addModuleToCourse(courseId, body) {
 		return ApiService.post(`/course/${courseId}/add-module`, body);
