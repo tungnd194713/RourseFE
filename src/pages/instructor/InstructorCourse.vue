@@ -57,7 +57,7 @@
                                 <template slot-scope="scope">
                                     <el-button
                                         size="mini"
-                                        @click="$router.push({ name: 'EducationModuleDetail', params: { ...$route.params, moduleId: scope.row.id || scope.row._id } })">Xem chi tiết</el-button>
+                                        @click="$router.push({ name: 'InstructorModuleDetail', params: { ...$route.params, courseId: courseInfo._id || courseInfo.id, moduleId: scope.row.id || scope.row._id } })">Xem chi tiết</el-button>
                                     <el-button
                                         size="mini"
                                         type="primary"

@@ -30,12 +30,6 @@
               clearable>
             </el-input>
           </li>
-          <li class="half-config">
-            <div>
-              Cho phép tua?
-            </div>
-            <el-switch class="mx-4"></el-switch>
-          </li>
         </ul>
       </div>
       <el-main>
@@ -82,14 +76,9 @@
             </el-button>
           </el-col>
         </el-row>
-        <el-row v-if="inputVideo">
-          <el-col :span="12">
+        <el-row v-if="inputVideo" type="flex" justify="center">
+          <el-col :span="15">
             <video-component :is="inputVideo" :options="videoOptions" @getVideoDuration="getVideoDuration" />
-          </el-col>
-          <el-col :span="12">
-            <div class="quizz-container">
-              <CreateQuizzes ref="quizzes" :videoDuration="videoDuration"/>
-            </div>
           </el-col>
         </el-row>
       </el-main>
@@ -99,14 +88,12 @@
 
 <script>
 import VideoComponent from '@/components/VideoComponent.vue';
-import CreateQuizzes from '@/components/CreateQuizzes.vue'
 import { RoadMapService } from '@/services'
 
 export default {
   name: 'CreateModule',
   components: {
     VideoComponent,
-    CreateQuizzes,
   },
   data() {
     return {
@@ -134,7 +121,6 @@ export default {
 				description: '',
 				videoUrl: '',
 				uploadingVideo: '',
-				check_point_quizzes: [],
 				video_duration: 0,
 				is_video_uploaded: false,
 			},
@@ -177,15 +163,11 @@ export default {
         });
 			}
 			else {
-				if (this.inputVideo) {
-					this.moduleData.check_point_quizzes = [...this.$refs.quizzes.quizzes];
-				}
 				try {
 						const formData = new FormData();
 						formData.append('name', this.moduleData.name);
 						formData.append('description', this.moduleData.description);
 						formData.append('video', this.moduleData.videoUrl);
-						this.moduleData.check_point_quizzes.length && formData.append('check_point_quizzes', this.moduleData.check_point_quizzes);
 						formData.append('video_duration', this.videoDuration);
 
 						const response = await RoadMapService.createEducationModule(this.$route.params.courseId, formData)

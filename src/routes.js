@@ -43,7 +43,7 @@ import ExamDetail from './pages/recruitment/ExamDetail'
 import TestPreview from './pages/recruitment/TestPreview'
 import InstructorExamDetail from './pages/instructor/InstructorExamDetail'
 import InstructorTestPreview from './pages/instructor/InstructorTestPreview'
-// import InstructorModuleDetail from './pages/instructor/InstructorModuleDetail'
+import InstructorModuleDetail from './pages/instructor/InstructorModuleDetail'
 import CompanyList from './pages/users_management/CompanyList'
 import InstructorList from './pages/users_management/InstructorList'
 import JobSeekerList from './pages/users_management/JobSeekerList'
@@ -290,6 +290,11 @@ export default [
 				path: '/instructors/instructor-courses/:instructorCourseId/courses/:courseId/modules/create',
 				component: InstructorCreateModule,
 				name: 'InstructorCreateModule'
+			},
+			{
+				path: '/instructors/instructor-courses/:instructorCourseId/courses/:courseId/modules/:moduleId',
+				component: InstructorModuleDetail,
+				name: 'InstructorModuleDetail'
 			},
 			{
 				path: '/instructors/instructor-courses/:instructorCourseId/courses/:courseId/tests/:testId',
