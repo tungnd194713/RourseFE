@@ -139,7 +139,7 @@
 								:total="1000">
 						</el-pagination> -->
 				</div>
-				<div v-if="this.courseInfo.canEdit" class="action-buttons">
+				<div class="action-buttons">
 						<el-button type="success" @click="testDialogVisible = true">Thêm bài test</el-button>
 				</div>
 				<el-dialog title="Tạo bài test mới" :visible.sync="testDialogVisible">
