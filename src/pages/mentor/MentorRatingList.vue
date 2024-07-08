@@ -14,12 +14,12 @@
 			<el-table empty-text="Không có dữ liệu" :data="ratings" border>
 				<el-table-column label="Người học">
 					<template slot-scope="scope">
-						{{ scope.row.user.name }}
+						{{ scope.row.user ? scope.row.user.name : 'Người học không tồn tại' }}
 					</template>
 				</el-table-column>
 				<el-table-column label="Khóa học">
 					<template slot-scope="scope">
-						{{ scope.row.course.title }}
+						{{ scope.row.course ? scope.row.course.title : 'Khóa học không tồn tại' }}
 					</template>
 				</el-table-column>
 				<el-table-column prop="rating_star" label="Rating" width="200">

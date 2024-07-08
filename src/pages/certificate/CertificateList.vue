@@ -3,7 +3,7 @@
 		<div class="px-4 py-4">
 			<h2>Danh sách chứng chỉ</h2>
 			<h4>Các chứng chỉ có thể chọn trong hệ thống:</h4>
-			<el-button class="mb-4" @click="dialogVisible = true">Thêm bản ghi</el-button>
+			<el-button class="mb-4" @click="openAddDialog">Thêm bản ghi</el-button>
 			<div class="table-container">
 				<el-table
 					class="table"
@@ -24,7 +24,7 @@
 						<template slot-scope="scope">
 							<el-button
 								size="mini"
-								@click="handleEdit(scope.$index, scope.row)">Sửa</el-button>
+								@click="handleEdit(scope.row)">Sửa</el-button>
 							<el-button
 								size="mini"
 								type="primary"
@@ -63,7 +63,7 @@
 
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">Hủy</el-button>
-        <el-button type="primary" @click="addAccount">Thêm</el-button>
+        <el-button type="primary" @click="addCertificate">Thêm / Sửa</el-button>
       </span>
     </el-dialog>
 	</div>	
@@ -77,23 +77,71 @@ export default {
 			tableData: [],
 			dialogVisible: false,
 			certificateModel: {
-        name: '',
-        link: '',
-      },
+				name: '',
+			},
 			total: 0,
 			current_page: 1,
 			per_page: 10,
+			editingId: null,
 		}
 	},
 	created() {
 		this.getCertificates(this.current_page);
 	},
 	methods: {
-		handleEdit(index, row) {
-			console.log(index, row);
+		async addCertificate() {
+			this.dialogVisible = false
+			try {
+				let data = null
+				if (this.editingId) {
+					data = await SubjectService.updateCertificate(this.editingId, this.certificateModel);
+				} else {
+					data = await SubjectService.addCertificate(this.certificateModel);
+				}
+				if (data && data.data) {
+					this.getCertificates()
+					this.$notify({
+						title: 'Success',
+						message: 'Đã thêm / sửa bản ghi'
+					});
+					this.getCertificates()
+				}
+			} catch (e) {
+				this.$notify({
+					title: 'Error',
+					message: e.statusText
+				});
+			}
 		},
-		handleDelete(index, row) {
+		openAddDialog() {
+			this.dialogVisible = true
+			this.certificateModel = {
+				name: '',
+			}
+			this.editingId = null
+		},
+		handleEdit(row) {
+			this.dialogVisible = true;
+			this.certificateModel.name = row.name
+			this.editingId = row.id || row._id
+		},
+		async handleDelete(index, row) {
 			console.log(index, row);
+			try {
+				const { data } = await SubjectService.removeCertificate(row.id || row._id);
+				if (data) {
+					this.$notify({
+						title: 'Success',
+						message: 'Đã xóa bản ghi'
+					});
+					this.getCertificates()
+				}
+			} catch (e) {
+				this.$notify({
+					title: 'Error',
+					message: e.statusText
+				});
+			}
 		},
 		toSubject(item) {
 			this.$router.push({ name: 'CertificateSubject', params: { id: item } })
@@ -105,9 +153,9 @@ export default {
 				this.total = data.meta.total
 			} catch (e) {
 				this.$notify({
-          title: 'Error',
-          message: e.statusText
-        });
+					title: 'Error',
+					message: e.statusText
+				});
 			}
 		}
 	}

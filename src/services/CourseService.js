@@ -40,6 +40,9 @@ const CourseService = {
 	createCourse(body) {
 		return ApiService.post('/course', body);
 	},
+  deleteCourse(courseId) {
+		return ApiService.delete('/course/' + courseId);
+	},
 	getCourses(query, body = {}) {
     let queryString = '?'
 		if (query.sortBy) {

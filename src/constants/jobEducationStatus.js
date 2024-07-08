@@ -3,4 +3,6 @@ export default [
     'Đã gửi',
     'Mở đào tạo',
     'Yêu cầu thay đổi',
+    'Đóng đào tạo',
+    'Đã hủy',
 ]

@@ -1,7 +1,7 @@
 <template>
 	<!-- Sidebar -->
 	<el-aside width="200px" style="background-color: #f0f2f5">
-		<el-menu v-if="$store.getters?.authUser?.role === 'admin'" default-active="1" class="el-menu-vertical-demo">
+		<el-menu v-if="$store.getters?.authUser?.role === 'admin'" :default-active="activeIndex" class="el-menu-vertical-demo" @select="updateActiveIndex">
 			<el-submenu index="5">
 				<template slot="title">Chương trình đào tạo</template>
 				<el-menu-item index="5-1" @click="$router.push({name: 'EducationRecruitment'})">Danh sách yêu cầu</el-menu-item>
@@ -12,13 +12,13 @@
 			<el-submenu index="2">
 				<template slot="title">Kỹ thuật</template>
 				<el-menu-item index="2-1" @click="$router.push({name: 'SubjectList'})">Kỹ năng</el-menu-item>
-				<el-menu-item index="2-1" @click="$router.push({name: 'CertificateList'})">Bằng cấp</el-menu-item>
-				<el-menu-item index="2-2" @click="$router.push({name: 'MajorList'})">Chuyên ngành</el-menu-item>
-				<el-menu-item index="2-3" @click="$router.push({name: 'CollegeList'})">Đại học</el-menu-item>
+				<el-menu-item index="2-2" @click="$router.push({name: 'CertificateList'})">Bằng cấp</el-menu-item>
+				<el-menu-item index="2-3" @click="$router.push({name: 'MajorList'})">Chuyên ngành</el-menu-item>
+				<el-menu-item index="2-4" @click="$router.push({name: 'CollegeList'})">Đại học</el-menu-item>
 			</el-submenu>
 			<el-submenu index="3">
 				<template slot="title">Học liệu</template>
-				<el-menu-item index="2-1" @click="$router.push({name: 'ListCourse'})">Danh sách khóa học</el-menu-item>
+				<el-menu-item index="3-1" @click="$router.push({name: 'ListCourse'})">Danh sách khóa học</el-menu-item>
 				<!-- <el-menu-item index="2-2" @click="$router.push({name: 'MajorList'})">Chuyên ngành</el-menu-item>
 				<el-menu-item index="2-3" @click="$router.push({name: 'CollegeList'})">Đại học</el-menu-item> -->
 			</el-submenu>
@@ -52,8 +52,21 @@
 
 <script>
   export default {
-    
-  }
+    data() {
+      return {
+        activeIndex: localStorage.getItem('activeIndex') || '1'
+      };
+    },
+    methods: {
+      updateActiveIndex(index) {
+        this.activeIndex = index;
+        localStorage.setItem('activeIndex', index);
+      },
+      navigate(routeName) {
+        this.$router.push({ name: routeName });
+      }
+    }
+  };
 </script>
 
 <style scoped>

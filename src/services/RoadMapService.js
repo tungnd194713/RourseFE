@@ -28,8 +28,18 @@ const RoadMapService = {
 	getPublishedEducations() {
     return ApiService.post(`/roadmap/educations`);
   },
-  getEducationRequests() {
-    return ApiService.post(`/roadmap/education-requests`);
+  getEducationRequests(query, body) {
+    let queryString = '?'
+		if (query.sortBy) {
+			queryString += `&sortBy=${query.sortBy}`
+		}
+		if (query.limit) {
+			queryString += `&limit=${query.limit}`
+		}
+		if (query.page) {
+			queryString += `&page=${query.page}`
+		}
+    return ApiService.post(`/roadmap/education-requests${queryString}`, body);
   },
   getEducationRoadmap(jobEducationId) {
     return ApiService.get(`/roadmap/education-requests/` + jobEducationId);

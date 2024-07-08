@@ -89,8 +89,12 @@ export default {
   },
   methods: {
     checkLogged() {
-      if (this.$store.getters.accessToken && this.$store.getters.authUser.role == this.role) {
-        this.$router.push({name : this.router})
+      if (this.$store.getters.accessToken && this.$store.getters.authUser.role) {
+        if (this.$store.getters.authUser.role === 'mentor') {
+          this.$router.push({path: '/mentor/dashboard'});
+        } else {
+          this.$router.push({path: '/'});
+        }
       }
     },
     async submitForm() {
@@ -101,11 +105,12 @@ export default {
                 localStorage.setItem('refreshToken', data.tokens.refresh.token);
                 localStorage.setItem('refreshTokenExpires', data.tokens.refresh.expires);
                 localStorage.setItem('user', JSON.stringify(data.user));
-								if (data.user.role === 'mentor') {
-									this.$router.push({path: '/mentor/dashboard'});
-								} else {
-									this.$router.push({path: '/'});
-								}
+								// if (data.user.role === 'mentor') {
+								// 	this.$router.push({path: '/mentor/dashboard'});
+								// } else {
+								// 	this.$router.push({path: '/'});
+								// }
+                location.reload();
             } catch (e) {
               if (e.status === 401) {
                 this.$notify({

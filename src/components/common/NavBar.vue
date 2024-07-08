@@ -6,7 +6,7 @@
     </div>
     <div v-if="!$store.getters.accessToken" class="buttons">
       <el-button type="primary" @click="showLoginModal">Login</el-button>
-      <el-button type="primary" @click="handleRegister">Register</el-button>
+      <!-- <el-button type="primary" @click="handleRegister">Register</el-button> -->
     </div>
     <div v-else class="buttons">
       <el-button type="primary" @click="handleLogout">Logout</el-button>
@@ -40,10 +40,7 @@ export default {
 		handleLogout() {
 			this.$store.dispatch(ACTION_USER_LOGOUT).then(res => {
 				console.log(res)
-				this.$router.push({
-					path: '/'
-				}).catch(() => {})
-				this.$router.go(0)
+				location.reload()
 			})
 		}
   }

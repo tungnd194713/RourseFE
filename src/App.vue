@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div v-loading="$store.getters.isLoading" id="app">
 	<NavBar />
     <router-view />
   </div>

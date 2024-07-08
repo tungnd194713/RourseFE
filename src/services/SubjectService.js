@@ -34,6 +34,36 @@ const SubjectService = {
 	deleteSubjectFromMajor(certificate_id, subject_id) {
 		return ApiService.delete(`/technical/majors/${certificate_id}/subjects/${subject_id}`)
 	},
+	getColleges(current_page = 1, per_page = 10) {
+		return ApiService.get(`/technical/colleges?current_page=${current_page}&per_page=${per_page}`);
+	},
+	addMajor(body) {
+		return ApiService.post(`/technical/majors`, body);
+	},
+	addCertificate(body) {
+		return ApiService.post(`/technical/certificates`, body);
+	},
+	addCollege(body) {
+		return ApiService.post(`/technical/colleges`, body);
+	},
+	updateCollege(id, body) {
+		return ApiService.update(`/technical/colleges/${id}`, body);
+	},
+	updateCertificate(id, body) {
+		return ApiService.update(`/technical/certificates/${id}`, body);
+	},
+	updateMajor(id, body) {
+		return ApiService.update(`/technical/majors/${id}`, body);
+	},
+	removeCollege(id) {
+		return ApiService.delete(`/technical/colleges/${id}`);
+	},
+	removeMajor(id) {
+		return ApiService.delete(`/technical/majors/${id}`);
+	},
+	removeCertificate(id) {
+		return ApiService.delete(`/technical/certificates/${id}`);
+	},
 }
 
 export default SubjectService;

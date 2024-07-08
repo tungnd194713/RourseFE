@@ -2,7 +2,59 @@
 	<div>
 		<div class="px-4 py-4">
 			<h2>Danh sách tin tuyển dụng đăng ký đào tạo</h2>
-			<h4 style="color: gray">Chỗ này để search và filter:</h4>
+            <el-row :gutter="20" class="filters mb-4">
+                <el-col :span="6">
+                    <el-input v-model="filters.jobName" placeholder="Lọc theo tên vị trí công việc"></el-input>
+                </el-col>
+                <el-col :span="6">
+                    <el-input v-model="filters.companyName" placeholder="Lọc theo tên công ty"></el-input>
+                </el-col>
+                <el-col :span="3">
+                    <el-select 
+                        v-model="filters.status"
+                        class="full-width">
+                        <el-option 
+                            :value="null"
+                            key="all"
+                            label="Trạng thái">
+                        </el-option>
+                        <el-option 
+                            :value="1" 
+                            key="1"
+                            label="Đang xử lý">
+                        </el-option>
+                        <el-option 
+                            :value="2" 
+                            key="2"
+                            label="Đã gửi">
+                        </el-option>
+                        <el-option 
+                            :value="3" 
+                            key="3"
+                            label="Mở đào tạo">
+                        </el-option>
+                        <el-option 
+                            :value="4" 
+                            key="4"
+                            label="Yêu cầu thay đổi">
+                        </el-option>
+                        <el-option 
+                            :value="5" 
+                            key="5"
+                            label="Đóng đào tạo">
+                        </el-option>
+                        <el-option 
+                            :value="6" 
+                            key="6"
+                            label="Đã hủy">
+                        </el-option>
+                    </el-select>
+                </el-col>
+                <el-col :span="6">
+                    <el-button type="primary" v-loading.fullscreen.lock="loading" @click="getEducationRequests">Tìm</el-button>
+                    <el-button @click="resetFilters">Reset</el-button>
+                </el-col>
+            </el-row>
 			<div class="table-container">
 				<el-table
 					class="table"
@@ -20,14 +72,14 @@
                         width="200"
 						label="Tuyển dụng">
 						<template slot-scope="scope">
-							<span>{{ scope.row.job.title }}</span>
+							<span>{{ scope.row.job ? scope.row.job.title : '' }}</span>
 						</template>
 					</el-table-column>
 					<el-table-column
                         width="200"
 						label="Nhà tuyển dụng">
 						<template slot-scope="scope">
-                            <span>{{ scope.row.company.company_name }}</span>
+                            <span>{{ scope.row.company ? scope.row.company.company_name : '' }}</span>
 						</template>
 					</el-table-column>
                     <el-table-column
@@ -82,8 +134,11 @@
 				</el-table>
 				<el-pagination
 					background
-					layout="prev, pager, next"
-					:total="1000">
+                    layout="prev, pager, next"
+                    @current-change="getEducationRequests"
+                    :current-page.sync="query.page"
+                    :page-size="10"
+                    :total="totalResults">
 				</el-pagination>
 			</div>
 		</div>
@@ -222,12 +277,30 @@ export default {
             checkingRoadmap: 0,
             changeRequest: [],
             changeRequestDialog: false,
+            filters: {
+                jobName: '',
+                companyName: '',
+                status: null,
+            },
+            query: {
+                page: 1,
+                limit: 10,
+                sortBy: 'createdAt',
+            },
+            totalResults: 0,
 		}
 	},
     created() {
         this.getEducationRequests()
     },
 	methods: {
+        resetFilters() {
+            this.filters = {
+                jobName: '',
+                companyName: '',
+                status: null,
+            }
+        },
 		handleEdit(index, row) {
 			console.log(index, row);
 		},
@@ -235,7 +308,7 @@ export default {
 			console.log(index, row);
 		},
         async getEducationRequests() {
-            const { data } = await RoadMapService.getEducationRequests()
+            const { data } = await RoadMapService.getEducationRequests(this.query, this.filters)
             this.tableData = [...data.results]
         },
         showRequirement(requirements, custom_requirement = null) {

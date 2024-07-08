@@ -78,10 +78,7 @@
                                             <div @click="$router.push({ name: 'CourseDetail', params: { id: scope.row.id || scope.row._id } })">Xem chi tiết</div>
                                         </el-dropdown-item>
                                         <el-dropdown-item>
-                                            <div>Xóa khóa học</div>
-                                        </el-dropdown-item>
-                                        <el-dropdown-item>
-                                            <div @click="deleteMentor(scope.row.id)">Xóa người dùng</div>
+                                            <div @click="openDeleteCourseDialog(scope.row.id || scope.row._id)">Xóa khóa học</div>
                                         </el-dropdown-item>
                                     </el-dropdown-menu>
                                 </el-dropdown>
@@ -115,6 +112,15 @@
                 <el-button @click="mentorDialogVisible = false">Cancel</el-button>
                 <el-button type="primary" @click="handleSaveMentor">Save</el-button>
             </div>
+        </el-dialog>
+
+        <!-- Status Change Confirmation Dialog -->
+        <el-dialog title="Xóa khóa học" :visible.sync="deleteCourseDialog" width="400px">
+            <span>Bạn có chắc muốn xóa khóa học này?</span>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="deleteCourseDialog = false">Hủy</el-button>
+                <el-button type="primary" @click="confirmDeleteCourse">Xác nhận</el-button>
+            </span>
         </el-dialog>
 
         <!-- Status Change Confirmation Dialog -->
@@ -160,12 +166,29 @@ import { CourseService } from '@/services';
                 total: 0,
                 current_page: 1,
                 per_page: 10,
+                deleteCourseDialog: false,
+                deleteCourseId: null,
             };
         },
         created() {
             this.getCourses()
         },
         methods: {
+            openDeleteCourseDialog(courseId) {
+                this.deleteCourseId = courseId
+                this.deleteCourseDialog = true
+            },
+            async confirmDeleteCourse() {
+                this.deleteCourseDialog = false
+                const { data } = await CourseService.deleteCourse(this.deleteCourseId)
+                if (data) {
+                    this.$notify({
+                        title: 'Success',
+                        message: 'Đã xóa khóa học!'
+                    });
+                    this.getCourses()
+                }
+            },
             async getCourses() {
                 const { data } = await CourseService.getCourses({
                     page: this.current_page,
