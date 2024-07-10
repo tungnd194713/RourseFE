@@ -50,6 +50,9 @@ const RoadMapService = {
   sendRoadmap(jobEducationId) {
     return ApiService.get(`/roadmap/education-requests/` + jobEducationId + '/send');
   },
+	replyChangeRequest(jobEducationId, requestId, body) {
+    return ApiService.post(`/roadmap/education-requests/` + jobEducationId + '/change-requests/' + requestId + '/reply', body);
+  },
   getCourseDetail(jobEducationId, courseId) {
     return ApiService.get(`/roadmap/education-requests/` + jobEducationId + '/courses/' + courseId);
   },

@@ -116,19 +116,23 @@
                         width="250"
 						label="">
 						<template slot-scope="scope">
-							<el-button
-								size="mini"
-								@click="$router.push({ name: 'EducationRoadmap', params: { jobEducationId: scope.row._id } })">Xem chi tiết</el-button>
-							<el-button
-                                v-if="scope.row.status === 1 || scope.row.status === 4"
-								size="mini"
-								type="primary"
-								@click="checkRoadmap(scope.row._id || scope.row.id)">Gửi</el-button>
-                            <el-button
-                                v-if="scope.row.status === 2"
-								size="mini"
-								type="primary"
-								@click="unsendRoadmap(scope.row._id || scope.row.id)">Hoàn tác</el-button>
+							<el-dropdown split-button type="primary">
+								Hành động
+								<el-dropdown-menu slot="dropdown">
+									<el-dropdown-item>
+										<div @click="$router.push({ name: 'EducationRoadmap', params: { jobEducationId: scope.row._id } })">Xem chi tiết</div>
+									</el-dropdown-item>
+									<el-dropdown-item v-if="scope.row.status === 1 || scope.row.status === 4">
+										<div @click="checkRoadmap(scope.row._id || scope.row.id)">Gửi</div>
+									</el-dropdown-item>
+									<el-dropdown-item v-if="scope.row.status === 2">
+										<div @click="unsendRoadmap(scope.row._id || scope.row.id)">Hoàn tác</div>
+									</el-dropdown-item>
+									<el-dropdown-item v-if="scope.row.status === 4">
+										<div @click="openChangeRequestDialog(scope.row)">Xem yêu cầu thay đổi</div>
+									</el-dropdown-item>
+								</el-dropdown-menu>
+							</el-dropdown>
 						</template>
 					</el-table-column>
 				</el-table>
@@ -142,6 +146,68 @@
 				</el-pagination>
 			</div>
 		</div>
+		<el-dialog
+      title="Từ chối thay đổi"
+      :visible.sync="rejectChangeDialog"
+      width="40%"
+      :before-close="handleClose"
+    >
+      <el-form ref="changeForm" :model="changeForm" label-position="top">
+        <el-form-item label="Lý do từ chối">
+          <el-input v-model="changeForm.rejectReason" type="textarea" class="full-width-input"></el-input>
+					<!-- <VueEditor v-model="changeForm.content" :editor-toolbar="customToolbar" class="full-width-input"/> -->
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="handleClose">Hủy</el-button>
+        <el-button type="primary" @click="rejectRequest">Lưu</el-button>
+      </span>
+    </el-dialog>
+
+    <el-drawer
+      title="Yêu cầu thay đổi"
+      :visible.sync="drawerVisible"
+      direction="rtl"
+      size="30%"
+      :before-close="handleDrawerClose"
+    >
+      <el-collapse v-model="activeNames" style="margin: 0 20px">
+        <el-collapse-item
+          v-for="blog in changeRequests"
+          :key="blog.id"
+          :name="blog.id"
+        >
+          <template slot="title">
+						{{ blog.title }}
+						<i v-if="blog.status === 2" class="el-icon-error" style="color: red; font-size: 20px; margin-left: 8px"></i>
+						<i v-else-if="blog.status === 1" class="el-icon-success" style="color: green; font-size: 20px; margin-left: 8px"></i>
+						<i v-else class="el-icon-info" style="font-size: 20px; margin-left: 8px"></i>
+					</template>
+          <el-card class="blog-card">
+            <div class="blog-content">
+							<span v-html="`<div>${blog.content}</div>`"></span>
+						</div>
+						<div v-if="blog.status === 2" class="blog-content" style="color: red">
+							<div>Lý do từ chối: </div>
+							<div>{{ blog.reject_reason }}</div>
+						</div>
+            <div class="blog-dates">
+              <el-tag type="info">Ngày tạo: {{ formatDate(blog.requested_date) }}</el-tag>
+              <el-tag v-if="blog.replied_date" :type="blog.status === 1 ? 'success' : 'danger'">Ngày xử lý: {{ formatDate(blog.replied_date) }}</el-tag>
+            </div>
+						<div class="blog-actions">
+              <el-button v-if="!blog.status" type="danger" size="small" @click="openModal(blog)">Từ chối</el-button>
+              <el-button v-if="!blog.status" type="success" size="small" @click="markAsComplete(blog)">Hoàn thành</el-button>
+              <el-button v-else-if="blog.status" type="primary" size="small" @click="undoStatus(blog)">Hoàn tác</el-button>
+            </div>
+          </el-card>
+        </el-collapse-item>
+      </el-collapse>
+      
+      <span slot="footer" class="drawer-footer">
+        <el-button @click="handleDrawerClose">Close</el-button>
+      </span>
+    </el-drawer>
         <el-dialog
 					title="Yêu cầu công việc"
 					:visible.sync="dialogVisible"
@@ -288,6 +354,19 @@ export default {
                 sortBy: 'createdAt',
             },
             totalResults: 0,
+			rejectChangeDialog: false,
+			drawerVisible: false,
+			activeNames: [],
+			changeRequests: [
+				{ id: '1', title: 'First Blog', content: 'Content of the first blog', requested_date: new Date(), replied_date: new Date() },
+				{ id: '2', title: 'Second Blog', content: 'Content of the second blog', requested_date: new Date(), replied_date: new Date() },
+				// Add more blog objects here
+			],
+			changeForm: {
+				rejectReason: '',
+			},
+			requestEducationId: '',
+			rejectRequestId: '',
 		}
 	},
     created() {
@@ -357,12 +436,114 @@ export default {
                 this.getEducationRequests()
             }
         },
-        openChangeRequestDialog(item) {
-            if (item.status === 4) {
-                this.changeRequest = [...item.change_requests];
-                this.changeRequestDialog = true
-            }
-        }
+			openChangeRequestDialog(item) {
+					if (item.status === 4) {
+							// this.changeRequest = [...item.change_requests];
+							// this.changeRequestDialog = true
+						this.drawerVisible = true
+						this.changeRequests = [...item.change_requests]
+						this.requestEducationId = item.id || item._id;
+					}
+			},
+		openModal(request) {
+      this.rejectChangeDialog = true;
+			this.rejectRequestId = request._id
+    },
+    handleClose() {
+      this.rejectChangeDialog = false;
+			this.changeForm.rejectReason = ''
+			this.rejectRequestId = ''
+    },
+    openDrawer() {
+      this.drawerVisible = true;
+    },
+    handleDrawerClose() {
+      this.drawerVisible = false;
+			this.requestEducationId = '';
+    },
+    formatDate(date) {
+      return date ? new Date(date).toLocaleString() : '';
+    },
+		async markAsComplete(request) {
+			const now = Date.now()
+			const index = this.changeRequests.findIndex((item) => item._id === request._id);
+				if (index !== -1) {
+					this.changeRequests[index].status = 1
+					this.changeRequests[index].replied_date = now
+				} else {
+					this.$notify({
+						title: 'Error',
+						message: 'Kong tim thay'
+					});
+					return
+				}
+			const data = await RoadMapService.replyChangeRequest(this.requestEducationId, request._id || request.id, {
+				status: 1,
+				replied_date: now,
+			})
+			if (data.status === 200) {
+				this.$notify({
+						title: 'Success',
+						message: 'Đã đánh dấu đối ứng yêu cầu'
+				});
+			}
+		},
+		async undoStatus(request) {
+			const index = this.changeRequests.findIndex((item) => item._id === request._id);
+				if (index !== -1) {
+					this.changeRequests[index].status = 0
+					this.changeRequests[index].replied_date = null
+				} else {
+					this.$notify({
+						title: 'Error',
+						message: 'Kong tim thay'
+					});
+					return
+				}
+			const data = await RoadMapService.replyChangeRequest(this.requestEducationId, request._id || request.id, {
+				status: 0,
+				replied_date: '',
+			})
+			if (data.status === 200) {
+				this.$notify({
+						title: 'Success',
+						message: 'Đã hoàn tác đối ứng yêu cầu'
+				});
+			}
+		},
+		async rejectRequest() {
+			if (!this.changeForm?.rejectReason) {
+				this.$notify({
+					title: 'Error',
+					message: 'Chưa nhập lý do từ chối'
+				});
+				return
+			}
+			const now = Date.now()
+			const index = this.changeRequests.findIndex((item) => item._id === this.rejectRequestId);
+			if (index !== -1) {
+				this.changeRequests[index].status = 2
+				this.changeRequests[index].replied_date = now
+			} else {
+				this.$notify({
+					title: 'Error',
+					message: 'Kong tim thay'
+				});
+				return
+			}
+			this.rejectChangeDialog = false
+			const data = await RoadMapService.replyChangeRequest(this.requestEducationId, this.rejectRequestId || this.rejectRequestId, {
+				status: 2,
+				replied_date: now,
+				reject_reason: this.changeForm.rejectReason,
+			})
+			if (data.status === 200) {
+				this.$notify({
+						title: 'Success',
+						message: 'Đã từ chối đối ứng yêu cầu'
+				});
+			}
+		},
 	}
 }
 </script>
@@ -380,6 +561,28 @@ export default {
 }
 .el-pagination {
 	float: right;
+}
+.full-width-input {
+  width: 100%;
+}
+.drawer-footer {
+  text-align: right;
+}
+.blog-card {
+  margin-bottom: 20px;
+}
+.blog-content {
+  margin-bottom: 10px;
+}
+.blog-dates {
+  display: flex;
+  justify-content: space-between;
+}
+.blog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
 }
 </style>
 <style lang="scss">
