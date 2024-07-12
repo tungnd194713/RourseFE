@@ -66,10 +66,10 @@ const CourseService = {
 		return ApiService.post(`/course/transactions/list`, data);
 	},
   seedModuleData(data) {
-		return ApiService.delete(`/course/seed-course-module`, data);
+		return ApiService.patch(`/course/seed-course-module`, data);
 	},
   seedQuestionData(data) {
-		return ApiService.delete(`/course/seed-test-question`, data);
+		return ApiService.patch(`/course/seed-test-question`, data);
 	},
 }
 

@@ -92,6 +92,9 @@ const ApiService = {
   update(resource, params, config = {}) {
     return Vue.axios.put(resource, params, config)
   },
+	patch(resource, params, config = {}) {
+    return Vue.axios.patch(resource, params, config)
+  },
   updateBulk(resource, params, config = {}) {
     return Vue.axios.put(resource, params, config)
   },
